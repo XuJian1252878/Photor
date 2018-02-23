@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 使用 ?attr/ 性质的属性，当用户在模块的外部有用相同的变量重新定义值的时候，那么将会被用户定义的值覆盖
+ 便于向用户留出接口，可以在模块外部定义模块的属性 -->
+<android.support.v7.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:minHeight="?attr/actionBarSize"
+    android:theme="?attr/actionBarTheme"
+    app:popupTheme="?attr/actionBarPopupTheme"
+    android:background="?attr/colorPrimary">
+
+</android.support.v7.widget.Toolbar>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <!-- http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0317/2613.html
+    关于控件设置了padding属性之后，滚动 重绘区域的问题-->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_photos"
+        android:paddingBottom="?android:attr/actionBarSize"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </android.support.v7.widget.RecyclerView>
+
+    <RelativeLayout
+        android:id="@+id/category_footer"
+        android:layout_alignParentBottom="true"
+        android:background="#cc000000"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize">
+
+        <Button
+            android:id="@+id/category_btn"
+            android:gravity="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_alignParentStart="true"
+            android:text="@string/__picker_all_image"
+            android:textSize="16sp"
+            android:textColor="@color/__picker_folder_text_color"
+            android:drawableEnd="@drawable/__picker_text_indicator"
+            android:drawablePadding="5dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:background="@null"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
+
+</RelativeLayout>

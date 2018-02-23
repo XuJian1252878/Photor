@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 为主页面的添加图片按钮加上描边信息 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <stroke
+        android:width="1dip"
+        android:color="@color/__picker_item_photo_border_n"/>
+</shape>
