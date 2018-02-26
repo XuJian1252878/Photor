@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Photor</string>
+
+    <string name="main_bottom_tab_menu_home">home</string>
+    <string name="main_bottom_tab_menu_gallery">gallery</string>
+    <string name="main_bottom_tab_menu_resource">resource</string>
+
+    <string name="main_activity_action_menu_item_backup">Backup</string>
+    <string name="main_activity_action_menu_item_delete">Delete</string>
+    <string name="main_activity_action_menu_item_settings">Settings</string>
 </resources>
