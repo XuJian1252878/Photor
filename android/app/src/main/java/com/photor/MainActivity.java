@@ -38,6 +38,19 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mMainViewPager; // 主页面的ViewPager
     private int previousBtmNavItemId = -1; // 上一次下部导航栏所在的item的下标
 
+
+    // Used to load the 'native-lib' library on application startup.
+    static {
+        System.loadLibrary("native-lib");
+    }
+
+    /**
+     * A native method that is implemented by the 'native-lib' native library,
+     * which is packaged with this application.
+     */
+    public native String stringFromJNI();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), working.");
         }
+
+        // Jni 测试
+        Log.d("jni output", "Jni output: " + stringFromJNI());
     }
 
     @Override
