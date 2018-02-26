@@ -99,7 +99,7 @@ android {
 
     defaultConfig {
         applicationId "com.photor"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -137,22 +137,20 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:26.1.0"
-    implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.facebook.react:react-native:+'
+    // From node_modules
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-
-    implementation "com.android.support:recyclerview-v7:26.1.0"
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'com.android.support:design:26.1.0'
-
     // 实现图片圆形化的功能
     implementation 'de.hdodenhof:circleimageview:2.1.0'
-
     // BottomNavigationView的扩展
     implementation 'com.github.ittianyu:BottomNavigationViewEx:1.2.4'
-
     // 消息小气泡的实现
     implementation 'q.rorbin:badgeview:1.1.0'
+    implementation project(':openCVLibrary340')
 }
 
 // Run this once to be able to run the application with BUCK

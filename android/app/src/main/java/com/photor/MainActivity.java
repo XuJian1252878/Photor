@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +22,8 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.photor.adapters.MainViewPagerAdapter;
 import com.photor.fragment.util.BottomNavigationEnum;
 import com.photor.fragment.util.FragmentDataGenerator;
+
+import org.opencv.android.OpenCVLoader;
 
 import java.util.List;
 
@@ -41,6 +44,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initUI(); // 初始化MainActivity的UI信息
+
+        // opencv 测试
+        if (!OpenCVLoader.initDebug()) {
+            Log.e(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), not working.");
+        } else {
+            Log.d(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), working.");
+        }
     }
 
     @Override
