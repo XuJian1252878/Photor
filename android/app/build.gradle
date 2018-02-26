@@ -109,7 +109,9 @@ android {
         // 使用Cmake工具
         externalNativeBuild {
             cmake {
-                cppFlags ""
+//                cppFlags ""
+                //arguments  '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=gnustl_static'
+                cppFlags "-std=c++11","-frtti", "-fexceptions"
             }
         }
     }
