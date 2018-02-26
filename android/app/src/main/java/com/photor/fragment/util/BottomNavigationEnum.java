@@ -1,29 +1,46 @@
 package com.photor.fragment.util;
 
+import com.photor.R;
+
 /**
  * Created by xujian on 2018/2/26.
  */
 
 public enum  BottomNavigationEnum {
 
-    HOME(0, "HOME_MAIN_BOTTOM_NAVIGATION"),
-    GALLERY(1, "GALLERY_MAIN_BOTTOM_NAVIGATION"),
-    RESOURCE(2, "RESOURCE_MAIN_BOTTOM_NAVIGATION");
+    HOME(0, R.id.menu_main_bottom_tab_home, "HOME_MAIN_BOTTOM_NAVIGATION"),
+    GALLERY(1, R.id.menu_main_bottom_tab_gallery, "GALLERY_MAIN_BOTTOM_NAVIGATION"),
+    RESOURCE(2, R.id.menu_main_bottom_tab_resource, "RESOURCE_MAIN_BOTTOM_NAVIGATION");
 
-    private int navigationItemIndex;
+    private int navItemIndex;
+    private int navItemId;
     private String tag;
 
-    BottomNavigationEnum(int index, String tag) {
+    BottomNavigationEnum(int index, int id, String tag) {
 
-        this.navigationItemIndex = index;
+        this.navItemIndex = index;
+        this.navItemId = id;
         this.tag = tag;
     }
 
-    public int getNavigationItemIndex() {
-        return navigationItemIndex;
+    public int getNavItemIndex() {
+        return navItemIndex;
+    }
+
+    public int getNavItemId() {
+        return navItemId;
     }
 
     public String getTag() {
         return tag;
+    }
+
+    public static int findNavIndexById(int id) {
+        for(BottomNavigationEnum bne: BottomNavigationEnum.values()) {
+            if (bne.getNavItemId() == id) {
+                return bne.getNavItemIndex();
+            }
+        }
+        return -1;
     }
 }

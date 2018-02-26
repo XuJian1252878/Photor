@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.photor.R;
+
 /**
  * Created by xujian on 2018/2/26.
  */
@@ -17,7 +19,6 @@ public class HomeFragment extends Fragment {
         HomeFragment homeFragment = new HomeFragment();
 
         Bundle args = new Bundle();
-
         homeFragment.setArguments(args);
 
         return homeFragment;
@@ -26,6 +27,7 @@ public class HomeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
+        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        return rootView;
     }
 }

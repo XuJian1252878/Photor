@@ -1,12 +1,12 @@
 package com.photor;
 
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,14 +17,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.photor.adapters.MainViewPagerAdapter;
 import com.photor.fragment.util.BottomNavigationEnum;
 import com.photor.fragment.util.FragmentDataGenerator;
 
+import java.util.List;
+
+import q.rorbin.badgeview.Badge;
+import q.rorbin.badgeview.QBadgeView;
+
 public class MainActivity extends AppCompatActivity {
 
-    private Fragment[] mMainFragments;
-    private BottomNavigationView mBottomNavigationView;
+    private List<Fragment> mMainFragments;
+    private BottomNavigationViewEx mBottomNavigationView;
     private DrawerLayout mDrawerLayout;
+    private ViewPager mMainViewPager; // 主页面的ViewPager
+    private int previousBtmNavItemId = -1; // 上一次下部导航栏所在的item的下标
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,11 +105,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 3. 初始化底部导航栏
         mMainFragments = FragmentDataGenerator.getMainFragments(getSupportFragmentManager());
         mBottomNavigationView = findViewById(R.id.bottom_main_navigation);
+        mMainViewPager = findViewById(R.id.main_container);
 
-        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+        // 3. 初始化底部导航栏
+        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationViewEx.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 onBottomNavigationItemSelected(item.getItemId());
@@ -110,8 +120,31 @@ public class MainActivity extends AppCompatActivity {
         // 由于第一次进来没有回调onNavigationItemSelected，因此需要手动调用一下切换状态的方法
         onBottomNavigationItemSelected(R.id.menu_main_bottom_tab_home);
 
-        // 4. 初始化浮动小圆点
-        FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
+        // 测试BottomNavigationView的小气泡功能
+        // add badge
+        addBadgeAt(2, 1);
+
+        // 4. 设置主页面的ViewPager
+        mMainViewPager.setAdapter(new MainViewPagerAdapter(getSupportFragmentManager(), mMainFragments));
+
+        mMainViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                // ViewPager和BottomNavigationView联动绑定
+                mBottomNavigationView.setCurrentItem(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+        // 5. 初始化浮动小圆点
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,28 +162,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    // ViewPager和BottomNavigationView联动绑定
     private void onBottomNavigationItemSelected(int id) {
-        Fragment fragment = null;
-
-        switch (id) {
-            case R.id.menu_main_bottom_tab_home:
-                fragment = mMainFragments[BottomNavigationEnum.HOME.getNavigationItemIndex()];
-                break;
-            case R.id.menu_main_bottom_tab_gallery:
-                fragment = mMainFragments[BottomNavigationEnum.GALLERY.getNavigationItemIndex()];
-                break;
-            case R.id.menu_main_bottom_tab_resource:
-                fragment = mMainFragments[BottomNavigationEnum.RESOURCE.getNavigationItemIndex()];
-                break;
-            default:
-                break;
+        if (previousBtmNavItemId != id) {
+            // only set item when item changed
+            previousBtmNavItemId = id;
+            mMainViewPager.setCurrentItem(BottomNavigationEnum.findNavIndexById(id));
         }
+    }
 
-        if (fragment != null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main_container, fragment, BottomNavigationEnum.HOME.getTag())
-                    .commit();
-        }
+
+    // 返回当前的activity
+    private MainActivity getActivity() {
+        return this;
+    }
+
+
+    private Badge addBadgeAt(int position, int number) {
+        // add badge
+        return new QBadgeView(this)
+                .setBadgeNumber(number)
+                .setGravityOffset(35, 0, true)
+                .bindTarget(mBottomNavigationView.getBottomNavigationItemView(position))
+                .setOnDragStateChangedListener(new Badge.OnDragStateChangedListener() {
+                    @Override
+                    public void onDragStateChanged(int dragState, Badge badge, View targetView) {
+                        if (Badge.OnDragStateChangedListener.STATE_SUCCEED == dragState)
+                            Toast.makeText(getActivity(), "Badge test", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
