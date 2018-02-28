@@ -8,4 +8,6 @@
     <string name="main_activity_action_menu_item_backup">Backup</string>
     <string name="main_activity_action_menu_item_delete">Delete</string>
     <string name="main_activity_action_menu_item_settings">Settings</string>
+
+    <string name="star_align_enter_btn_label">star align</string>
 </resources>

@@ -6,7 +6,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.photor.MainActivity">
+    tools:context="com.photor.base.MainActivity">
 
 
     <!-- CoordinatorLayout 监听其所有子控件的各种事件，然后自动帮我们做出最合理的响应 -->
@@ -34,6 +34,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"
             android:orientation="vertical">
 
             <!--http://snoykuo.blogspot.com/2018/01/android-bottomnavigationview-bottombar.html -->

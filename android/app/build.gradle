@@ -159,12 +159,23 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'com.android.support:design:26.1.0'
+
     // 实现图片圆形化的功能
     implementation 'de.hdodenhof:circleimageview:2.1.0'
+
     // BottomNavigationView的扩展
     implementation 'com.github.ittianyu:BottomNavigationViewEx:1.2.4'
+
     // 消息小气泡的实现
     implementation 'q.rorbin:badgeview:1.1.0'
+
+    // 引入 glide 库
+    implementation("com.github.bumptech.glide:glide:4.5.0") {
+        exclude group: "com.android.support"
+    }
+    implementation "com.android.support:support-fragment:26.1.0"
+
+    implementation project(':photopicker')
     implementation project(':openCVLibrary341')
 }
 

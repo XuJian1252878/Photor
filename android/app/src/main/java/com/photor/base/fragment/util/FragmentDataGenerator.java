@@ -1,11 +1,11 @@
-package com.photor.fragment.util;
+package com.photor.base.fragment.util;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-import com.photor.fragment.GalleryFragment;
-import com.photor.fragment.HomeFragment;
-import com.photor.fragment.ResourceFragment;
+import com.photor.base.fragment.GalleryFragment;
+import com.photor.base.fragment.HomeFragment;
+import com.photor.base.fragment.ResourceFragment;
 
 import java.util.Arrays;
 import java.util.List;

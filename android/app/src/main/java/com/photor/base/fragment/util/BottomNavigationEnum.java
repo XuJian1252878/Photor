@@ -1,4 +1,4 @@
-package com.photor.fragment.util;
+package com.photor.base.fragment.util;
 
 import com.photor.R;
 

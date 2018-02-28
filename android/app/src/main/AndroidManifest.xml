@@ -35,7 +35,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".base.MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize">
@@ -46,7 +46,11 @@
             </intent-filter>
         </activity>
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-        <activity android:name=".activity.test.OpencvTestActivity"></activity>
+        <activity android:name=".base.activity.test.OpencvTestActivity" />
+        <activity android:name=".staralign.StarAlignBaseActivity"></activity>
+
+        <activity android:name="com.example.photopicker.PhotoPickerActivity"></activity>
+        <activity android:name="com.example.photopicker.PhotoPagerActivity"></activity>
     </application>
 
 </manifest>

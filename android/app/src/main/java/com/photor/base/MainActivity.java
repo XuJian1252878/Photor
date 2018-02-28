@@ -1,4 +1,4 @@
-package com.photor;
+package com.photor.base;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -19,9 +19,10 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
-import com.photor.adapters.MainViewPagerAdapter;
-import com.photor.fragment.util.BottomNavigationEnum;
-import com.photor.fragment.util.FragmentDataGenerator;
+import com.photor.R;
+import com.photor.base.adapters.MainViewPagerAdapter;
+import com.photor.base.fragment.util.BottomNavigationEnum;
+import com.photor.base.fragment.util.FragmentDataGenerator;
 
 import org.opencv.android.OpenCVLoader;
 

@@ -11,7 +11,7 @@ using namespace cv::xfeatures2d;
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_photor_MainActivity_stringFromJNI(
+Java_com_photor_base_MainActivity_stringFromJNI(
         JNIEnv *env,
         jobject /* this */) {
     std::string hello = "Hello from C++";
@@ -21,20 +21,17 @@ Java_com_photor_MainActivity_stringFromJNI(
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_photor_activity_test_OpencvTestActivity_stringFromJNI(JNIEnv *env, jobject instance) {
-
-    // TODO
+Java_com_photor_base_activity_test_OpencvTestActivity_stringFromJNI(JNIEnv *env, jobject instance) {
     std::string hello = "hello from opencv test!";
     return env->NewStringUTF(hello.c_str());
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_photor_activity_test_OpencvTestActivity_nativeProcessFrame(JNIEnv *env, jobject instance,
-                                                                    jlong addrGray,
-                                                                    jlong addrRgba) {
+Java_com_photor_base_activity_test_OpencvTestActivity_nativeProcessFrame(JNIEnv *env, jobject instance,
+                                                                         jlong addrGray,
+                                                                         jlong addrRgba) {
 
-    // TODO
     Mat &mGr = *(Mat *) addrGray;
     Mat &mRgb = *(Mat *) addrRgba;
     vector<KeyPoint> v;
@@ -49,5 +46,4 @@ Java_com_photor_activity_test_OpencvTestActivity_nativeProcessFrame(JNIEnv *env,
         const KeyPoint &kp = v[i];
         circle(mRgb, Point((int)kp.pt.x, (int)kp.pt.y), 10, Scalar(0, 255, 255, 255));
     }
-
 }

@@ -1,4 +1,4 @@
-package com.photor.fragment;
+package com.photor.base.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

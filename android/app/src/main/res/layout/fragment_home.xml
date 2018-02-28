@@ -18,4 +18,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"/>
 
+
+    <Button
+        android:id="@+id/star_align_enter_btn"
+        android:text="@string/star_align_enter_btn_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

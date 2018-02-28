@@ -1,4 +1,4 @@
-package com.photor.fragment;
+package com.photor.base.fragment;
 
 import android.content.Context;
 import android.os.Bundle;

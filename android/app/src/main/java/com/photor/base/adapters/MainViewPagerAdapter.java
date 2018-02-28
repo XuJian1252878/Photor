@@ -1,4 +1,4 @@
-package com.photor.adapters;
+package com.photor.base.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

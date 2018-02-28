@@ -1,4 +1,4 @@
-package com.photor.fragment;
+package com.photor.base.fragment;
 
 import android.Manifest;
 import android.content.Intent;
@@ -16,7 +16,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.photor.R;
-import com.photor.activity.test.OpencvTestActivity;
+import com.photor.base.activity.test.OpencvTestActivity;
+import com.photor.staralign.StarAlignBaseActivity;
 
 /**
  * Created by xujian on 2018/2/26.
@@ -40,12 +41,21 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
+        // opencv android sdk 测试函数
         Button opencvTestButton = rootView.findViewById(R.id.opencv_test);
         opencvTestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(checkPermission(Manifest.permission.CAMERA,REQUEST_PERMISSION))
                     init();
+            }
+        });
+
+        // 星空图片测试
+        rootView.findViewById(R.id.star_align_enter_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), StarAlignBaseActivity.class));
             }
         });
 
