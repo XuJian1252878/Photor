@@ -9,5 +9,6 @@
     <string name="main_activity_action_menu_item_delete">删除</string>
     <string name="main_activity_action_menu_item_settings">设置</string>
 
-    <string name="star_align_enter_btn_label">星空图片对齐</string>
+    <string name="star_align_btn_select_label">请选择星空图片</string>
+    <string name="star_align_btn_enter_label">星空图片对齐</string>
 </resources>

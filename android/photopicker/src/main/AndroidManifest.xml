@@ -11,6 +11,7 @@
 
     <application>
 
+        <!--android:authorities="${applicationId}.provider 这样就能实时获取applicationID，作为模块的写法 -->
         <provider
             android:name="com.example.photopicker.utils.PhotoFileProvider"
             android:authorities="${applicationId}.provider"

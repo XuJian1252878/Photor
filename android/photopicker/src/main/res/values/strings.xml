@@ -7,6 +7,8 @@
     <string name="pick_permission_dialog_cancel">CANCEL</string>
     <string name="pick_permission_rationale">Storage read permission is needed to pick files.</string>
     <string name="pick_permission_rationale_write_storage">Storage write permission is needed to save the image.</string>
+    <string name="pick_photo_add_item_label">+</string>
+
     <string name="__picker_image_count">%1$d</string>
     <string name="__picker_all_image">All Images</string>
 

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.photopicker.widget.SquareItemLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="1dp"
+    android:background="@drawable/picker_photo_add_item_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="@string/pick_photo_add_item_label"
+        android:gravity="center"
+        android:textSize="32sp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</com.example.photopicker.widget.SquareItemLayout>
