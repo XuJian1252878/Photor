@@ -175,6 +175,8 @@ dependencies {
     }
     implementation "com.android.support:support-fragment:26.1.0"
 
+    // 引入图片进度条
+
     implementation project(':photopicker')
     implementation project(':openCVLibrary341')
 }

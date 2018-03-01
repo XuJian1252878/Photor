@@ -22,4 +22,13 @@
         android:text="@string/star_align_btn_select_label"
         android:layout_gravity="center_horizontal"/>
 
+
+
+    <Button
+        android:id="@+id/square_progress_bar_test_btn"
+        android:text="测试进度条"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
 </LinearLayout>

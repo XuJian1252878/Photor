@@ -48,15 +48,16 @@ Java_com_photor_base_activity_test_OpencvTestActivity_nativeProcessFrame(JNIEnv 
     }
 }
 
-
 /**
  * return: 对齐成功返回MAT
- */extern "C"
+ */
+extern "C"
  JNIEXPORT jint JNICALL
- Java_com_photor_staralign_StarAlignBaseActivity_alignStarPhotos(JNIEnv *env, jobject instance,
-                                                                 jobject starPhotos,
-                                                                 jint alignBasePhotoIndex,
-                                                                 jlong alignResMatAddr) {
+ Java_com_photor_staralign_task_StarPhotoAlignTask_alignStarPhotos(JNIEnv *env, jobject instance,
+                                                                   jobject starPhotos,
+                                                                   jint alignBasePhotoIndex,
+                                                                   jlong alignResMatAddr) {
+
      // 获取ArrayList对象的class
      jclass photoArrayList = static_cast<jclass>(env->FindClass("java/util/ArrayList"));
      jmethodID photoArrayListSize = env->GetMethodID(photoArrayList, "size", "()I");
@@ -101,4 +102,5 @@ Java_com_photor_base_activity_test_OpencvTestActivity_nativeProcessFrame(JNIEnv 
 //     memcpy(resMatPtr->data, resultImage.data, resMatPtr->step * resMatPtr->rows);
 
      return 1; // 表示成功放回对齐之后的图像信息
+
  }

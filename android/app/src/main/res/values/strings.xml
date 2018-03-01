@@ -11,4 +11,6 @@
 
     <string name="star_align_btn_select_label">select star photo</string>
     <string name="star_align_enter_btn_label">star align</string>
+    <string name="star_align_progress_dialog_title">star aligning</string>
+    <string name="star_align_progress_dialog_negetive_btn_label">cancel</string>
 </resources>

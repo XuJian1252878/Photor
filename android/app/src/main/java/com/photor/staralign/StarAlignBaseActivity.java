@@ -1,6 +1,8 @@
 package com.photor.staralign;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,16 +13,17 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.photopicker.PhotoPicker;
-import com.example.photopicker.PhotoPickerActivity;
 import com.example.photopicker.PhotoPreview;
 import com.photor.R;
 import com.photor.staralign.adapter.StarPhotoAdapter;
 import com.photor.staralign.event.StarPhotoItemClickListener;
+import com.photor.staralign.task.StarPhotoAlignTask;
 
 import org.opencv.core.Mat;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class StarAlignBaseActivity extends AppCompatActivity {
 
@@ -41,7 +44,7 @@ public class StarAlignBaseActivity extends AppCompatActivity {
     }
 
     private void initUI() {
-        // 初始化显示选择图片的RecyclerView
+        // 1. 初始化显示选择图片的RecyclerView
         recyclerView = findViewById(R.id.star_align_rv);
         starPhotoAdapter = new StarPhotoAdapter(selectedPhotos, this);
 
@@ -67,7 +70,7 @@ public class StarAlignBaseActivity extends AppCompatActivity {
                 }));
 
 
-        // 设置 选择图片/进行图片对齐 操作的按钮
+        // 2. 设置 选择图片/进行图片对齐 操作的按钮
         starAlignBtn = findViewById(R.id.star_align_btn);
         updateStarAlignBtnText();
 
@@ -80,8 +83,38 @@ public class StarAlignBaseActivity extends AppCompatActivity {
                             .setPhotoCount(StarPhotoAdapter.MAX_PHOTO_COUNT)
                             .start(StarAlignBaseActivity.this);
                 } else {
-                    alignStarPhotos(selectedPhotos, 0, alignResMat.getNativeObjAddr());
+                    new StarPhotoAlignTask(StarAlignBaseActivity.this, selectedPhotos, 0, alignResMat.getNativeObjAddr()).execute();
                 }
+            }
+        });
+
+        // 3. 初始化 星空图片处理的 processbar
+        findViewById(R.id.square_progress_bar_test_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 显示 star align处理的进度条
+//                ProgressDialog dialog = new ProgressDialog(StarAlignBaseActivity.this);
+//                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // 设置进度条的形式为圆形转动的进度条
+//                dialog.setCancelable(false); // 设置是否可以通过点击Back键取消
+//                dialog.setCanceledOnTouchOutside(false); // 设置在点击Dialog外是否取消Dialog进度条
+//                dialog.setTitle(R.string.star_align_progress_dialog_title);
+//                // 设置dismiss监听
+//                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                    @Override
+//                    public void onDismiss(DialogInterface dialog) {
+//                        // 取消
+//                    }
+//                });
+//
+//                // 设置取消按钮
+//                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "取消",
+//                        new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//
+//                            }
+//                        });
+//                dialog.show();
             }
         });
     }
@@ -110,10 +143,7 @@ public class StarAlignBaseActivity extends AppCompatActivity {
         if (selectedPhotos.size() < 2) {
             starAlignBtn.setText(R.string.star_align_btn_select_label);
         } else {
-            starAlignBtn.setText(R.string.star_align_btn_enter_label);
+            starAlignBtn.setText(R.string.star_align_enter_btn_label);
         }
     }
-
-    // 进行图像对齐操作的 jni native function
-    private native int alignStarPhotos(ArrayList<String> starPhotos, int alignBasePhotoIndex, long alignResMatAddr);
 }
