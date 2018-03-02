@@ -32,4 +32,14 @@ public class FileUtil {
         return imgPath;
     }
 
+
+    public static boolean delteFileByPath(String filePath) {
+        File deleteFile = new File(filePath);
+        if (deleteFile.exists()) {
+            return deleteFile.delete();
+        }
+
+        return true;
+    }
+
 }

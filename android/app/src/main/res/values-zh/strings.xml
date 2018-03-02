@@ -13,4 +13,7 @@
     <string name="star_align_btn_enter_label">星空图片对齐</string>
     <string name="star_align_progress_dialog_title">正在进行对齐操作</string>
     <string name="star_align_progress_dialog_negetive_btn_label">取消</string>
+
+    <string name="save_align_res_btn_label">保存</string>
+    <string name="delete_align_res_btn_label">删除</string>
 </resources>

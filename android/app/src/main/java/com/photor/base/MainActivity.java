@@ -199,12 +199,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // 返回当前的activity
-    private MainActivity getActivity() {
-        return this;
-    }
-
-
     private Badge addBadgeAt(int position, int number) {
         // add badge
         return new QBadgeView(this)
@@ -215,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDragStateChanged(int dragState, Badge badge, View targetView) {
                         if (Badge.OnDragStateChangedListener.STATE_SUCCEED == dragState)
-                            Toast.makeText(getActivity(), "Badge test", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Badge test", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

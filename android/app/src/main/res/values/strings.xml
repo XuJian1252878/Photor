@@ -13,4 +13,7 @@
     <string name="star_align_enter_btn_label">star align</string>
     <string name="star_align_progress_dialog_title">star aligning</string>
     <string name="star_align_progress_dialog_negetive_btn_label">cancel</string>
+
+    <string name="save_align_res_btn_label">save</string>
+    <string name="delete_align_res_btn_label">delete</string>
 </resources>

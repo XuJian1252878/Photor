@@ -69,6 +69,7 @@ public class StarPhotoAlignThread extends Thread {
                     }
                 })
                 .setNegativeBtnShow(true)
+                .setMessage("正在对齐图片")
                 .create();
         starAlignProgressDialog.show();
 
