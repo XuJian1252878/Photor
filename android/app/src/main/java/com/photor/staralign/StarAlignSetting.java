@@ -2,6 +2,7 @@ package com.photor.staralign;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import java.util.ArrayList;
@@ -31,11 +32,13 @@ public class StarAlignSetting {
     }
 
 
-    private static class StarAlignSettingBuilder {
+    public static class StarAlignSettingBuilder {  // 这个类如果是private，那么外部类无法调用这了builder类里面的函数。
         private Bundle bundle;
         private Intent intent;
 
         public StarAlignSettingBuilder() {
+            bundle = new Bundle();
+            intent = new Intent();
         }
 
         public StarAlignSettingBuilder setPhotoCount(int photoCount) {

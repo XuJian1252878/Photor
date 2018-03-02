@@ -3,6 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/xfeatures2d.hpp>
 #include <bits/stdc++.h>
+#include "StarImageRegistBuilder.h"
 
 using namespace std;
 using namespace cv;
@@ -48,9 +49,9 @@ Java_com_photor_base_activity_test_OpencvTestActivity_nativeProcessFrame(JNIEnv 
     }
 }
 
-/**
- * return: 对齐成功返回MAT
- */
+///**
+// * return: 对齐成功返回MAT
+// */
 extern "C"
  JNIEXPORT jint JNICALL
  Java_com_photor_staralign_task_StarPhotoAlignTask_alignStarPhotos(JNIEnv *env, jobject instance,
@@ -104,3 +105,69 @@ extern "C"
      return 1; // 表示成功放回对齐之后的图像信息
 
  }
+
+
+
+
+
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env, jobject instance,
+                                                                    jobject starPhotos,
+                                                                    jint alignBasePhotoIndex,
+                                                                    jlong alignResMatAddr,
+                                                                    jstring generateImgAbsPath_) {
+
+    const char *generateImgAbsPath = env->GetStringUTFChars(generateImgAbsPath_, 0); // 存储对齐图片的路径信息
+
+    // 获取ArrayList对象的class
+    jclass photoArrayList = static_cast<jclass>(env->FindClass("java/util/ArrayList"));
+    jmethodID photoArrayListSize = env->GetMethodID(photoArrayList, "size", "()I");
+    jmethodID photoArrayListGet = env->GetMethodID(photoArrayList, "get", "(I)Ljava/lang/Object;");
+
+    int starPhotoSize = env->CallIntMethod(starPhotos, photoArrayListSize);
+
+    if (photoArrayList == NULL) {
+        return -2;  // 表示没有选择要对齐的星空图片
+    } else if (starPhotoSize < 2) {
+        return -1;  // 表示没有足够的图片进行对齐
+    }
+
+
+    jboolean isCopyStr = JNI_FALSE;
+    Mat* resMatPtr = (Mat*) alignResMatAddr; // 存储图片对齐的结果信息
+    const char* basicPhotoPathPtr = env->GetStringUTFChars(
+            static_cast<jstring>(env->CallObjectMethod(starPhotos, photoArrayListGet, alignBasePhotoIndex)),
+            &isCopyStr);
+
+    // 指明图片分块的策略 5 * 5
+    int rowParts = 5;
+    int columnParts = 5;
+
+    string test = string(basicPhotoPathPtr);
+
+    Mat_<Vec3b> targetImage = imread(string(basicPhotoPathPtr), IMREAD_UNCHANGED);
+    std::vector<Mat_<Vec3b>> sourceImages;
+    for (int index = 0; index < starPhotoSize; index ++) {
+        if (index == alignBasePhotoIndex)  // jint 和 int相互比较
+            continue;
+        const char* sourcePhotoPathPtr = env->GetStringUTFChars(
+                static_cast<jstring>(env->CallObjectMethod(starPhotos, photoArrayListGet, index)),
+                &isCopyStr);
+        sourceImages.push_back(imread(string(sourcePhotoPathPtr), IMREAD_UNCHANGED));
+    }
+
+    StarImageRegistBuilder starImageRegistBuilder = StarImageRegistBuilder(targetImage, sourceImages, rowParts, columnParts);
+    Mat_<Vec3b> resultImage = starImageRegistBuilder.registration(StarImageRegistBuilder::MERGE_MODE_MEAN);
+
+    // 通过传地址在java中获得mat的方式
+    resMatPtr->create(resultImage.rows, resultImage.cols, resultImage.type());
+    memcpy(resMatPtr->data, resultImage.data, resMatPtr->step * resMatPtr->rows);
+
+    // 将对齐结果写入文件中
+    imwrite(string(generateImgAbsPath), resultImage);
+    env->ReleaseStringUTFChars(generateImgAbsPath_, generateImgAbsPath);
+
+    return 1; // 表示成功放回对齐之后的图像信息
+}

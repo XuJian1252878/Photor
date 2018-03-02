@@ -108,6 +108,7 @@ public class BaseDialog extends Dialog {
             if (!TextUtils.isEmpty(mDialog.negativeText)) {
                 mDialog.btnNegative.setText(mDialog.negativeText);
             }
+            mDialog.btnNegative.setVisibility(View.VISIBLE);
         }
         mDialog.btnPositive.setOnClickListener(mDialog.onPositiveListener);
         if (!TextUtils.isEmpty(mDialog.positiveText)) {
