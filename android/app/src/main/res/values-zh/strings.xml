@@ -10,7 +10,7 @@
     <string name="main_activity_action_menu_item_settings">设置</string>
 
     <string name="star_align_btn_select_label">请选择星空图片</string>
-    <string name="star_align_btn_enter_label">星空图片对齐</string>
+    <string name="star_align_enter_btn_label">星空图片对齐</string>
     <string name="star_align_progress_dialog_title">正在进行对齐操作</string>
     <string name="star_align_progress_dialog_negetive_btn_label">取消</string>
 

@@ -13,7 +13,7 @@ import java.util.Locale;
  * Created by xujian on 2018/3/2.
  */
 
-public class FileUtil {
+public class FileUtils {
 
     public static String generateImgAbsPath() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());

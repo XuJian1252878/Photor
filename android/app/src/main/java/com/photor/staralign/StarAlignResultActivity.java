@@ -14,7 +14,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.photor.R;
-import com.photor.util.FileUtil;
+import com.photor.util.FileUtils;
 import com.photor.widget.TipToast;
 
 import java.io.FileInputStream;
@@ -47,7 +47,7 @@ public class StarAlignResultActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                FileUtil.delteFileByPath(alignResImgPath);
+                FileUtils.delteFileByPath(alignResImgPath);
                 Toast.makeText(this, "图片未保存", Toast.LENGTH_SHORT).show();
                 finish();
                 return true;
@@ -60,7 +60,7 @@ public class StarAlignResultActivity extends AppCompatActivity {
         super.onBackPressed();
         // 返回按键按下的时候，如果用户没有进行 对齐结果图片的操作，那么删除图片
         if (!isSavedAlignRes) {
-            FileUtil.delteFileByPath(alignResImgPath);
+            FileUtils.delteFileByPath(alignResImgPath);
         }
     }
 
@@ -120,7 +120,7 @@ public class StarAlignResultActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        FileUtil.delteFileByPath(alignResImgPath);
+                        FileUtils.delteFileByPath(alignResImgPath);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

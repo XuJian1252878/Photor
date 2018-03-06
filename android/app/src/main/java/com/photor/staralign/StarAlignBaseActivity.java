@@ -1,16 +1,14 @@
 package com.photor.staralign;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Environment;
+import android.graphics.Bitmap;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -22,9 +20,10 @@ import com.photor.staralign.adapter.StarPhotoAdapter;
 import com.photor.staralign.event.StarAlignEnum;
 import com.photor.staralign.event.StarAlignProgressListener;
 import com.photor.staralign.event.StarPhotoItemClickListener;
-import com.photor.staralign.task.StarPhotoAlignTask;
 import com.photor.staralign.task.StarPhotoAlignThread;
-import com.photor.util.FileUtil;
+import com.photor.util.FileUtils;
+import com.photor.util.ImageUtils;
+import com.photor.widget.graffiti.GraffitiView;
 
 import org.opencv.core.Mat;
 
@@ -95,7 +94,7 @@ public class StarAlignBaseActivity extends AppCompatActivity {
                     StarPhotoAlignThread thread = null;
                     try {
                         // 开始图片对齐操作
-                        final String imgAbsPath =  FileUtil.generateImgAbsPath();
+                        final String imgAbsPath =  FileUtils.generateImgAbsPath();
                         thread = new StarPhotoAlignThread(StarAlignBaseActivity.this,
                                 selectedPhotos, 0, alignResMat.getNativeObjAddr(), imgAbsPath,
                                 new StarAlignProgressListener() {
@@ -116,6 +115,17 @@ public class StarAlignBaseActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+            }
+        });
+
+        // 3. 测试 对图片进行分割的按钮
+        findViewById(R.id.graffiti_test_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String baseImgPath = selectedPhotos.get(0);
+                Intent intent = new Intent(StarAlignBaseActivity.this, StarAlignSplitActivity.class);
+                intent.putExtra("baseImgPath", baseImgPath);
+                startActivity(intent);
             }
         });
     }
