@@ -3,9 +3,14 @@ package com.photor.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
+import android.provider.MediaStore;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -16,6 +21,8 @@ import java.io.IOException;
  */
 
 public class ImageUtils {
+
+    private static final Bitmap.Config BITMAP_CONFIG;
 
     public static final Bitmap createBitmapFromPath(String path, Context context) {
         WindowManager manager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
@@ -129,6 +136,35 @@ public class ImageUtils {
 
     public static int dp2px(Context context, float dp) {
         return (int)(context.getResources().getDisplayMetrics().density * dp + 0.5F);
+    }
+
+    public static Bitmap getBitmapFromDrawable(Drawable drawable) {
+        if(drawable == null) {
+            return null;
+        } else if(drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable)drawable).getBitmap();
+        } else {
+            try {
+                Bitmap bitmap;
+                if(drawable instanceof ColorDrawable) {
+                    bitmap = Bitmap.createBitmap(2, 2, BITMAP_CONFIG);
+                } else {
+                    bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), BITMAP_CONFIG);
+                }
+
+                Canvas canvas = new Canvas(bitmap);
+                drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                drawable.draw(canvas);
+                return bitmap;
+            } catch (Exception var3) {
+                var3.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+    static {
+        BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
     }
 
 }
