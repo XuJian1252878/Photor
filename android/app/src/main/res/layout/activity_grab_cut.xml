@@ -45,11 +45,13 @@
         </LinearLayout>
     </HorizontalScrollView>
 
+        <!-- http://blog.csdn.net/shine_journey/article/details/78263708 -->
     <ImageView
         android:id="@+id/image_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
+        android:layerType="software"
         android:maxHeight="1000dp"
         android:background="#435434"/>
 </LinearLayout>

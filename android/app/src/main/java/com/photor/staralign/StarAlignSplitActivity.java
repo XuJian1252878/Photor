@@ -40,9 +40,6 @@ public class StarAlignSplitActivity extends AppCompatActivity {
         initUI();
     }
 
-
-
-
     private void initUI() {
 
         // 1. 显示待切割的图片信息

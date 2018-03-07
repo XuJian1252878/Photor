@@ -24,29 +24,30 @@ void GCApplication::reset()
     iterCount = 0;
 }
 
-void GCApplication::setImageAndShowId(Mat *_image, jmethodID _showId )
+void GCApplication::setImageAndShowId(Mat *_image, Mat *_resImgMat, jmethodID _showId )
 {
     if( _image->empty())
         return;
-    image = _image;
+    oriImgMat = _image;
+    resImgMat = _resImgMat;
     showId = _showId;
-    mask.create( image->size(), CV_8UC1);
+    mask.create( oriImgMat->size(), CV_8UC1);
     reset();
 }
 
 void GCApplication::showImage(JNIEnv *env, jobject instance) const
 {
-    if( image->empty() )
+    if( oriImgMat->empty() )
         return;
 
     Mat res;
     Mat binMask;
     if( !isInitialized )
-        image->copyTo( res );
+        oriImgMat->copyTo( res );
     else
     {
         getBinMask( mask, binMask );
-        image->copyTo( res, binMask );
+        oriImgMat->copyTo( res, binMask );
     }
 
     vector<Point>::const_iterator it;
@@ -61,8 +62,11 @@ void GCApplication::showImage(JNIEnv *env, jobject instance) const
 
     if( rectState == IN_PROCESS || rectState == SET )
         rectangle( res, Point( rect.x, rect.y ), Point(rect.x + rect.width, rect.y + rect.height ), GREEN, 2);
-    unsigned long long img = (unsigned long long) &res;
-    env->CallVoidMethod(instance,showId,img);
+
+    resImgMat->create(res.rows, res.cols, res.type());
+    memcpy(resImgMat->data, res.data, resImgMat->step * resImgMat->rows);
+
+    env->CallVoidMethod(instance, showId);
 }
 
 void GCApplication::setRectInMask()
@@ -71,8 +75,8 @@ void GCApplication::setRectInMask()
     mask.setTo( GC_BGD );
     rect.x = max(0, rect.x);
     rect.y = max(0, rect.y);
-    rect.width = min(rect.width, image->cols-rect.x);
-    rect.height = min(rect.height, image->rows-rect.y);
+    rect.width = min(rect.width, oriImgMat->cols-rect.x);
+    rect.height = min(rect.height, oriImgMat->rows-rect.y);
     (mask(rect)).setTo( Scalar(GC_PR_FGD) );
 }
 
@@ -170,17 +174,18 @@ void GCApplication::mouseClick( int event, int x, int y, int flags ,JNIEnv *env,
 
 int GCApplication::nextIter()
 {
+    LOGD("nextIter enter");
     if( isInitialized )
-        grabCut( *image, mask, rect, bgdModel, fgdModel, 1 );
+        grabCut( *oriImgMat, mask, rect, bgdModel, fgdModel, 1 );
     else
     {
         if( rectState != SET )
             return iterCount;
 
         if( lblsState == SET || prLblsState == SET )
-            grabCut( *image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_MASK );
+            grabCut( *oriImgMat, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_MASK );
         else
-            grabCut( *image, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT );
+            grabCut( *oriImgMat, mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT );
 
         isInitialized = true;
     }
@@ -188,5 +193,6 @@ int GCApplication::nextIter()
 
     bgdPxls.clear(); fgdPxls.clear();
     prBgdPxls.clear(); prFgdPxls.clear();
+    LOGD("nextIter leave");
     return iterCount;
 };

@@ -6,6 +6,14 @@
 #include "StarImageRegistBuilder.h"
 #include "GCApplication.h"
 
+#include <android/log.h>
+#define  LOG_TAG    "JNI_PART"
+#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG, __VA_ARGS__)
+#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG, __VA_ARGS__)
+#define LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG, __VA_ARGS__)
+#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG, __VA_ARGS__)
+#define LOGF(...)  __android_log_print(ANDROID_LOG_FATAL,LOG_TAG, __VA_ARGS__)
+
 using namespace std;
 using namespace cv;
 using namespace cv::xfeatures2d;
@@ -177,14 +185,15 @@ Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env,
 extern "C"
 JNIEXPORT GCApplication* JNICALL
 Java_com_photor_staralign_adapter_GrabCutActivity_initGrabCut(JNIEnv *env, jobject instance,
-                                                              jlong image) {
-    Mat *img = (Mat*) image;
+                                                              jlong oriImgMatAddr, jlong resImgMatAddr) {
+    Mat *oriImgMat = (Mat*) oriImgMatAddr;
+    Mat *resImgMat = (Mat*) resImgMatAddr;
     GCApplication *gcapp = new GCApplication();
 
     jclass jc = env->GetObjectClass(instance);
-    jmethodID showId = env->GetMethodID(jc, "showImage", "(J)V");
+    jmethodID showId = env->GetMethodID(jc, "showImage", "()V");
 
-    gcapp->setImageAndShowId(img, showId);
+    gcapp->setImageAndShowId(oriImgMat, resImgMat, showId);
     gcapp->showImage(env, instance);
 
     return gcapp;

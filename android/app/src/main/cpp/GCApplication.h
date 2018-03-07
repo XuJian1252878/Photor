@@ -15,6 +15,14 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
+#include <android/log.h>
+#define  LOG_TAG    "JNI_PART"
+#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG, __VA_ARGS__)
+#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG, __VA_ARGS__)
+#define LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG, __VA_ARGS__)
+#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG, __VA_ARGS__)
+#define LOGF(...)  __android_log_print(ANDROID_LOG_FATAL,LOG_TAG, __VA_ARGS__)
+
 using namespace std;
 using namespace cv;
 
@@ -28,7 +36,7 @@ public:
     GCApplication();
     ~GCApplication();
     void reset();
-    void setImageAndShowId(Mat *_image, jmethodID _showId );
+    void setImageAndShowId(Mat *_image, Mat *resImgMat, jmethodID _showId );
     void showImage(JNIEnv *env, jobject instance) const;
     void mouseClick( int event, int x, int y, int flags, JNIEnv *env, jobject instance);
     int nextIter();
@@ -37,7 +45,8 @@ private:
     void setRectInMask();
     void setLblsInMask( int flags, Point p ,bool isPr);
 
-    const Mat* image;
+    const Mat* oriImgMat;
+    Mat* resImgMat;
     jmethodID showId;
 
 
