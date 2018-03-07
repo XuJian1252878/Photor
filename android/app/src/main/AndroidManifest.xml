@@ -52,7 +52,7 @@
         <activity android:name="com.example.photopicker.PhotoPagerActivity" />
         <activity android:name=".staralign.StarAlignResultActivity" />
         <activity android:name=".staralign.StarAlignSplitActivity" />
-        <activity android:name=".staralign.adapter.GrabCutActivity"></activity>
+        <activity android:name=".staralign.GrabCutActivity" />
     </application>
 
 </manifest>

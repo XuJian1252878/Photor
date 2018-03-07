@@ -2,8 +2,6 @@ package com.photor.staralign;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.OrientationHelper;
@@ -16,15 +14,12 @@ import android.widget.Toast;
 import com.example.photopicker.PhotoPicker;
 import com.example.photopicker.PhotoPreview;
 import com.photor.R;
-import com.photor.staralign.adapter.GrabCutActivity;
 import com.photor.staralign.adapter.StarPhotoAdapter;
 import com.photor.staralign.event.StarAlignEnum;
 import com.photor.staralign.event.StarAlignProgressListener;
 import com.photor.staralign.event.StarPhotoItemClickListener;
 import com.photor.staralign.task.StarPhotoAlignThread;
 import com.photor.util.FileUtils;
-import com.photor.util.ImageUtils;
-import com.photor.widget.graffiti.GraffitiView;
 
 import org.opencv.core.Mat;
 

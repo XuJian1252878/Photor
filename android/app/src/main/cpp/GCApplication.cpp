@@ -4,6 +4,21 @@
 
 #include "GCApplication.h"
 
+Mat* GCApplication::oriImgMat;
+Mat* GCApplication::resImgMat;
+jmethodID GCApplication::showId;
+
+
+Mat GCApplication::mask;
+Mat GCApplication::bgdModel, GCApplication::fgdModel;
+
+uchar GCApplication::rectState, GCApplication::lblsState, GCApplication::prLblsState;
+bool GCApplication::isInitialized;
+
+Rect GCApplication::rect;
+vector<Point> GCApplication::fgdPxls, GCApplication::bgdPxls, GCApplication::prFgdPxls, GCApplication::prBgdPxls;
+int GCApplication::iterCount;
+
 GCApplication::GCApplication(){
 
 }
@@ -35,7 +50,7 @@ void GCApplication::setImageAndShowId(Mat *_image, Mat *_resImgMat, jmethodID _s
     reset();
 }
 
-void GCApplication::showImage(JNIEnv *env, jobject instance) const
+void GCApplication::showImage(JNIEnv *env, jobject instance)
 {
     if( oriImgMat->empty() )
         return;

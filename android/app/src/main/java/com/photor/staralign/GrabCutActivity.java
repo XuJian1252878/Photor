@@ -1,4 +1,4 @@
-package com.photor.staralign.adapter;
+package com.photor.staralign;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -19,7 +19,6 @@ import org.opencv.imgproc.Imgproc;
 
 public class GrabCutActivity extends AppCompatActivity {
 
-    private long gcapp;
     private int flags = 0; // 0范围，1前景，2背景
     private Bitmap bitmap;
     private ImageView imageView;
@@ -44,7 +43,7 @@ public class GrabCutActivity extends AppCompatActivity {
         bm = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Utils.bitmapToMat(bitmap, oriImgMat);
         Imgproc.cvtColor(oriImgMat, oriImgMat, Imgproc.COLOR_RGBA2RGB);
-        gcapp = initGrabCut(oriImgMat.getNativeObjAddr(), resImgMat.getNativeObjAddr());
+        initGrabCut(oriImgMat.getNativeObjAddr(), resImgMat.getNativeObjAddr());
 
 
         imageView.setOnTouchListener(new View.OnTouchListener() {
@@ -58,16 +57,16 @@ public class GrabCutActivity extends AppCompatActivity {
                 int type = event.getAction();
                 switch (type){
                     case MotionEvent.ACTION_DOWN:
-                        moveGrabCut(0,x,y,flags,gcapp);
+                        moveGrabCut(0, x, y, flags);
                         break;
                     case MotionEvent.ACTION_UP:
-                        moveGrabCut(1,x,y,flags,gcapp);
+                        moveGrabCut(1, x, y, flags);
                         break;
                     case MotionEvent.ACTION_CANCEL:
-                        moveGrabCut(1,x,y,flags,gcapp);
+                        moveGrabCut(1, x, y, flags);
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        moveGrabCut(2,x,y,flags,gcapp);
+                        moveGrabCut(2, x, y, flags);
                         break;
                 }
 
@@ -90,7 +89,7 @@ public class GrabCutActivity extends AppCompatActivity {
     }
     public void onReset(View view){
         flags = 0;
-        reset(gcapp);
+        reset();
     }
     public void onGrabCut(View view){
         Thread thread = new Thread(){
@@ -98,11 +97,11 @@ public class GrabCutActivity extends AppCompatActivity {
             public void run() {
                 super.run();
                 Log.d("grabCut","开始处理");
-                if(grabCut(gcapp)){
+                if(grabCut()){
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            grabCutOver(gcapp);
+                            grabCutOver();
                         }
                     });
                 }
@@ -122,9 +121,9 @@ public class GrabCutActivity extends AppCompatActivity {
     }
 
 
-    public native long initGrabCut(long oriImgMatAddr, long resImgMatAddr);
-    public native void moveGrabCut(int event, int x, int y, int flags,long gcapp);
-    public native void reset(long gcapp);
-    public native boolean grabCut(long gcapp);
-    public native void grabCutOver(long gcapp);
+    public native void initGrabCut(long oriImgMatAddr, long resImgMatAddr);
+    public native void moveGrabCut(int event, int x, int y, int flags);
+    public native void reset();
+    public native boolean grabCut();
+    public native void grabCutOver();
 }

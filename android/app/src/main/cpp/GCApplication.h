@@ -35,30 +35,31 @@ public:
 
     GCApplication();
     ~GCApplication();
-    void reset();
-    void setImageAndShowId(Mat *_image, Mat *resImgMat, jmethodID _showId );
-    void showImage(JNIEnv *env, jobject instance) const;
-    void mouseClick( int event, int x, int y, int flags, JNIEnv *env, jobject instance);
-    int nextIter();
-    int getIterCount() const { return iterCount; }
+    static void reset();
+    static void setImageAndShowId(Mat *_image, Mat *resImgMat, jmethodID _showId );
+    static void showImage(JNIEnv *env, jobject instance);
+    static void mouseClick( int event, int x, int y, int flags, JNIEnv *env, jobject instance);
+    static int nextIter();
+    static int getIterCount() { return iterCount; }
+
 private:
-    void setRectInMask();
-    void setLblsInMask( int flags, Point p ,bool isPr);
+    static void setRectInMask();
+    static void setLblsInMask( int flags, Point p ,bool isPr);
 
-    const Mat* oriImgMat;
-    Mat* resImgMat;
-    jmethodID showId;
+    static Mat* oriImgMat;
+    static Mat* resImgMat;
+    static jmethodID showId;
 
 
-    Mat mask;
-    Mat bgdModel, fgdModel;
+    static Mat mask;
+    static Mat bgdModel, fgdModel;
 
-    uchar rectState, lblsState, prLblsState;
-    bool isInitialized;
+    static uchar rectState, lblsState, prLblsState;
+    static bool isInitialized;
 
-    Rect rect;
-    vector<Point> fgdPxls, bgdPxls, prFgdPxls, prBgdPxls;
-    int iterCount;
+    static Rect rect;
+    static vector<Point> fgdPxls, bgdPxls, prFgdPxls, prBgdPxls;
+    static int iterCount;
 };
 
 
@@ -78,7 +79,7 @@ static void getBinMask( const Mat& comMask, Mat& binMask )
     binMask = comMask & 1;
 }
 
-static void on_mouse(GCApplication *gcapp, int event, int x, int y, int flags,JNIEnv *env, jobject instance)
+static void on_mouse(int event, int x, int y, int flags,JNIEnv *env, jobject instance)
 {
-    gcapp->mouseClick( event, x, y, flags ,env,instance);
+    GCApplication::mouseClick( event, x, y, flags ,env,instance);
 }
