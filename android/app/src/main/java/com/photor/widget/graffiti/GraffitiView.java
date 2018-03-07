@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Shader;
 import android.os.Build;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -208,6 +209,8 @@ public class GraffitiView extends View {
                 mTouchDownX = mTouchX = mLastTouchX = event.getX();
                 mTouchDownY = mTouchY = mLastTouchY = event.getY();
 
+                Log.d("ACTION_DOWN:", toX(mTouchDownX) + "\t" + toY(mTouchDownY));
+
                 if (mPen == Pen.COPY && mCopyLocation.isInIt(toX(mTouchX), toY(mTouchY))) { // 点击copy
                     mCopyLocation.isRelocating = true;
                     mCopyLocation.isCopying = false;
@@ -238,6 +241,9 @@ public class GraffitiView extends View {
                 mLastTouchY = mTouchY;
                 mTouchX = event.getX();
                 mTouchY = event.getY();
+
+                Log.d("ACTION_UP_CANCEL Last:", toX(mLastTouchX) + "\t" + toY(mLastTouchY));
+                Log.d("ACTION_UP_CANCEL cur:", toX(mTouchX) + "\t" + toY(mTouchY));
 
                 // 为了仅点击时也能出现绘图，必须移动path
                 if (mTouchDownX == mTouchX && mTouchDownY == mTouchY & mTouchDownX == mLastTouchX && mTouchDownY == mLastTouchY) {
@@ -285,6 +291,9 @@ public class GraffitiView extends View {
                     mLastTouchY = mTouchY;
                     mTouchX = event.getX();
                     mTouchY = event.getY();
+
+                    Log.d("ACTION_MOVE Last:", toX(mLastTouchX) + "\t" + toY(mLastTouchY));
+                    Log.d("ACTION_MOVE cur:", toX(mTouchX) + "\t" + toY(mTouchY));
 
                     if (mCopyLocation.isRelocating) { // 正在定位location
                         mCopyLocation.updateLocation(toX(mTouchX), toY(mTouchY));

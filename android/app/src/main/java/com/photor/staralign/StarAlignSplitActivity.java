@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,8 +17,13 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.photor.R;
 import com.photor.util.ImageUtils;
+import com.photor.widget.TipToast;
 import com.photor.widget.graffiti.ColorPickerDialog;
 import com.photor.widget.graffiti.GraffitiView;
 
@@ -33,15 +41,20 @@ public class StarAlignSplitActivity extends AppCompatActivity {
     }
 
 
+
+
     private void initUI() {
 
         // 1. 显示待切割的图片信息
         Intent intent = getIntent();
-        String baseImgPath = intent.getStringExtra("baseImgPath");
+        final String baseImgPath = intent.getStringExtra("baseImgPath");
 
-        Bitmap originBitmap;
-        originBitmap = ImageUtils.createBitmapFromPath(baseImgPath, StarAlignSplitActivity.this);
+        // 2. 异步加载划线界面
+        new LoadGraffitiAsyncTask(baseImgPath).execute();
 
+    }
+
+    private void initGraffitiView(Bitmap originBitmap, String baseImgPath) {
         starAlignSplitContainer = findViewById(R.id.star_align_split_container);
 
         final GraffitiView graffitiView = new GraffitiView(StarAlignSplitActivity.this, originBitmap,
@@ -143,5 +156,42 @@ public class StarAlignSplitActivity extends AppCompatActivity {
             }
         });
         paintSizeBar.setProgress((int) graffitiView.getPaintSize());
+    }
+
+
+    private class LoadGraffitiAsyncTask extends AsyncTask<Void, Integer, Void> {
+
+        private Bitmap originBitmap;
+        private String baseImgPath;
+        private TipToast tipToast;
+
+        public LoadGraffitiAsyncTask(String baseImgPath) {
+            this.baseImgPath = baseImgPath;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // 弹出加载图片的对话框提示
+            tipToast = new TipToast.Builder(StarAlignSplitActivity.this)
+                    .setMessage("正在加载")
+                    .create();
+            tipToast.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            originBitmap = ImageUtils.createBitmapFromPath(baseImgPath, StarAlignSplitActivity.this);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            // 界面操作
+            initGraffitiView(originBitmap, baseImgPath);
+            // 关闭提示的对话框
+            tipToast.dismiss();
+        }
     }
 }

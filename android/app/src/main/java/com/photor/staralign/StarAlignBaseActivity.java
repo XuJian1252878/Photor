@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.photopicker.PhotoPicker;
 import com.example.photopicker.PhotoPreview;
 import com.photor.R;
+import com.photor.staralign.adapter.GrabCutActivity;
 import com.photor.staralign.adapter.StarPhotoAdapter;
 import com.photor.staralign.event.StarAlignEnum;
 import com.photor.staralign.event.StarAlignProgressListener;
@@ -128,6 +129,18 @@ public class StarAlignBaseActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        // 4. 抠图功能测试
+        findViewById(R.id.grab_cut_test_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String baseImgPath = selectedPhotos.get(0);
+                Intent intent = new Intent(StarAlignBaseActivity.this, GrabCutActivity.class);
+                intent.putExtra("baseImgPath", baseImgPath);
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override

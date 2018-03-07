@@ -4,6 +4,7 @@
 #include <opencv2/xfeatures2d.hpp>
 #include <bits/stdc++.h>
 #include "StarImageRegistBuilder.h"
+#include "GCApplication.h"
 
 using namespace std;
 using namespace cv;
@@ -170,4 +171,57 @@ Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env,
     env->ReleaseStringUTFChars(generateImgAbsPath_, generateImgAbsPath);
 
     return 1; // 表示成功放回对齐之后的图像信息
+}
+
+
+extern "C"
+JNIEXPORT GCApplication* JNICALL
+Java_com_photor_staralign_adapter_GrabCutActivity_initGrabCut(JNIEnv *env, jobject instance,
+                                                              jlong image) {
+    Mat *img = (Mat*) image;
+    GCApplication *gcapp = new GCApplication();
+
+    jclass jc = env->GetObjectClass(instance);
+    jmethodID showId = env->GetMethodID(jc, "showImage", "(J)V");
+
+    gcapp->setImageAndShowId(img, showId);
+    gcapp->showImage(env, instance);
+
+    return gcapp;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_photor_staralign_adapter_GrabCutActivity_moveGrabCut(JNIEnv *env, jobject instance,
+                                                              jint event, jint x, jint y,
+                                                              jint flags, jlong gcapp) {
+    GCApplication *g = (GCApplication*) gcapp;
+    on_mouse(g,event,x,y,flags,env,instance);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_photor_staralign_adapter_GrabCutActivity_reset(JNIEnv *env, jobject instance,
+                                                        jlong gcapp) {
+    GCApplication *g = (GCApplication *) gcapp;
+    g->reset();
+    g->showImage(env,instance);
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_photor_staralign_adapter_GrabCutActivity_grabCut(JNIEnv *env, jobject instance,
+                                                          jlong gcapp) {
+    GCApplication *g = (GCApplication *) gcapp;
+    int iterCount = g->getIterCount();
+    int newIterCount = g->nextIter();
+    return (jboolean) (newIterCount > iterCount);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_photor_staralign_adapter_GrabCutActivity_grabCutOver(JNIEnv *env, jobject instance,
+                                                              jlong gcapp) {
+    GCApplication *g = (GCApplication *) gcapp;
+    g->showImage(env,instance);
 }

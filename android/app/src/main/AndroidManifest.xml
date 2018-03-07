@@ -51,7 +51,8 @@
         <activity android:name="com.example.photopicker.PhotoPickerActivity" />
         <activity android:name="com.example.photopicker.PhotoPagerActivity" />
         <activity android:name=".staralign.StarAlignResultActivity" />
-        <activity android:name=".staralign.StarAlignSplitActivity"></activity>
+        <activity android:name=".staralign.StarAlignSplitActivity" />
+        <activity android:name=".staralign.adapter.GrabCutActivity"></activity>
     </application>
 
 </manifest>
