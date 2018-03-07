@@ -36,13 +36,12 @@ public:
     GCApplication();
     ~GCApplication();
     static void reset();
-    static void setImageAndShowId(Mat *_image, Mat *resImgMat, jmethodID _showId );
+    static void setImageAndShowId(Mat *_image, Mat *resImgMat, Mat *maskMat, jmethodID _showId );
     static void showImage(JNIEnv *env, jobject instance);
     static void mouseClick( int event, int x, int y, int flags, JNIEnv *env, jobject instance);
     static int nextIter();
     static int getIterCount() { return iterCount; }
 
-private:
     static void setRectInMask();
     static void setLblsInMask( int flags, Point p ,bool isPr);
 
@@ -51,8 +50,7 @@ private:
     static jmethodID showId;
 
 
-    static Mat mask;
-    static Mat bgdModel, fgdModel;
+    static Mat *mask;
 
     static uchar rectState, lblsState, prLblsState;
     static bool isInitialized;
@@ -76,7 +74,8 @@ static void getBinMask( const Mat& comMask, Mat& binMask )
         CV_Error( Error::StsBadArg, "comMask is empty or has incorrect type (not CV_8UC1)" );
     if( binMask.empty() || binMask.rows!=comMask.rows || binMask.cols!=comMask.cols )
         binMask.create( comMask.size(), CV_8UC1 );
-    binMask = comMask & 1;
+    binMask = comMask & 1;  // 获得二进制表示的掩膜
+//    comMask.copyTo(binMask);
 }
 
 static void on_mouse(int event, int x, int y, int flags,JNIEnv *env, jobject instance)

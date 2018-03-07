@@ -27,6 +27,7 @@ public class GrabCutActivity extends AppCompatActivity {
 
     private Mat resImgMat = new Mat();
     private Mat oriImgMat = new Mat();
+    private Mat maskImgMat = new Mat();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,7 @@ public class GrabCutActivity extends AppCompatActivity {
         bm = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Utils.bitmapToMat(bitmap, oriImgMat);
         Imgproc.cvtColor(oriImgMat, oriImgMat, Imgproc.COLOR_RGBA2RGB);
-        initGrabCut(oriImgMat.getNativeObjAddr(), resImgMat.getNativeObjAddr());
+        initGrabCut(oriImgMat.getNativeObjAddr(), resImgMat.getNativeObjAddr(), maskImgMat.getNativeObjAddr());
 
 
         imageView.setOnTouchListener(new View.OnTouchListener() {
@@ -87,6 +88,12 @@ public class GrabCutActivity extends AppCompatActivity {
             flags = 2;
         }
     }
+
+    public void onLoadMask(View view) {
+        Utils.matToBitmap(maskImgMat, bm);
+        imageView.setImageBitmap(bm);
+    }
+
     public void onReset(View view){
         flags = 0;
         reset();
@@ -121,7 +128,7 @@ public class GrabCutActivity extends AppCompatActivity {
     }
 
 
-    public native void initGrabCut(long oriImgMatAddr, long resImgMatAddr);
+    public native void initGrabCut(long oriImgMatAddr, long resImgMatAddr, long maskMatAddr);
     public native void moveGrabCut(int event, int x, int y, int flags);
     public native void reset();
     public native boolean grabCut();

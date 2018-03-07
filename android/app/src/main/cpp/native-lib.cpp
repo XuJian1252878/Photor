@@ -115,11 +115,6 @@ extern "C"
 
  }
 
-
-
-
-
-
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env, jobject instance,
@@ -185,15 +180,17 @@ Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env,
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_photor_staralign_GrabCutActivity_initGrabCut(JNIEnv *env, jobject instance,
-                                                              jlong oriImgMatAddr, jlong resImgMatAddr) {
+                                                      jlong oriImgMatAddr, jlong resImgMatAddr,
+                                                      jlong maskMatAddr) {
     Mat *oriImgMat = (Mat*) oriImgMatAddr;
     Mat *resImgMat = (Mat*) resImgMatAddr;
+    Mat *maskMat = (Mat*) maskMatAddr;
 //    GCApplication *gcapp = new GCApplication();
 
     jclass jc = env->GetObjectClass(instance);
     jmethodID showId = env->GetMethodID(jc, "showImage", "()V");
 
-    GCApplication::setImageAndShowId(oriImgMat, resImgMat, showId);
+    GCApplication::setImageAndShowId(oriImgMat, resImgMat, maskMat, showId);
     GCApplication::showImage(env, instance);
 }
 
@@ -225,3 +222,4 @@ JNIEXPORT void JNICALL
 Java_com_photor_staralign_GrabCutActivity_grabCutOver(JNIEnv *env, jobject instance) {
     GCApplication::showImage(env,instance);
 }
+
