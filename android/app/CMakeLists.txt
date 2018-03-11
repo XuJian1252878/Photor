@@ -170,7 +170,8 @@ add_library( # Sets the name of the library.
              src/main/cpp/StarImage.cpp
              src/main/cpp/StarImagePart.cpp
              src/main/cpp/StarImageRegistBuilder.cpp
-             src/main/cpp/GCApplication.cpp)
+             src/main/cpp/GCApplication.cpp
+             src/main/cpp/StarGrabCut.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by

@@ -203,6 +203,10 @@ public class GraffitiView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
+        // 获取触摸事件进行处理
+        mGraffitiListener.onTouchEvent(this, event, (int)toX(event.getX()), (int)toY(event.getY()));
+
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 mTouchMode = 1;
@@ -554,6 +558,14 @@ public class GraffitiView extends View {
 
     public final float toTransY(float touchY, float graffitiY) {
         return -graffitiY * (mPrivateScale * mScale) + touchY - mCentreTranY;
+    }
+
+    /**
+     * 获取原始的bitmap信息
+     * @return
+     */
+    public Bitmap getOriginBitmap() {
+        return mBitmap;
     }
 
     private static class GraffitiPath {
@@ -1072,5 +1084,14 @@ public class GraffitiView extends View {
          * 准备工作已经完成
          */
         void onReady();
+
+        /**
+         * 获取触摸事件，对触摸事件进行处理
+         * @param v
+         * @param event
+         * @param imgX 图片中的真实X坐标
+         * @param imgY 图片中的真实Y坐标
+         */
+        void onTouchEvent(View v, MotionEvent event, int imgX, int imgY);
     }
 }

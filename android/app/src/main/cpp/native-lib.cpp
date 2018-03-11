@@ -5,6 +5,7 @@
 #include <bits/stdc++.h>
 #include "StarImageRegistBuilder.h"
 #include "GCApplication.h"
+#include "StarGrabCut.h"
 
 #include <android/log.h>
 #define  LOG_TAG    "JNI_PART"
@@ -223,3 +224,49 @@ Java_com_photor_staralign_GrabCutActivity_grabCutOver(JNIEnv *env, jobject insta
     GCApplication::showImage(env,instance);
 }
 
+
+// StarAlignSplitActivity 分割星空前景背景的方法
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_photor_staralign_StarAlignSplitActivity_initGrabCut(JNIEnv *env, jobject instance,
+                                                             jlong oriImgMatAddr,
+                                                             jlong resImgMatAddr,
+                                                             jlong maskMatAddr) {
+    Mat *oriImgMat = (Mat*) oriImgMatAddr;
+    Mat *resImgMat = (Mat*) resImgMatAddr;
+    Mat *maskMat = (Mat*) maskMatAddr;
+
+    jclass jc = env->GetObjectClass(instance);
+    jmethodID showId = env->GetMethodID(jc, "showImage", "()V");
+
+    StarGrabCut::init(oriImgMat, resImgMat, maskMat, showId);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_photor_staralign_StarAlignSplitActivity_moveGrabCut(JNIEnv *env, jobject instance,
+                                                             jint event, jint x, jint y,
+                                                             jint flags) {
+    StarGrabCut::mouseClick(event, x, y, flags, env, instance);
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_photor_staralign_StarAlignSplitActivity_grabCut(JNIEnv *env, jobject instance) {
+    int iterCount = StarGrabCut::getIterCount();
+    int newIterCount = StarGrabCut::nextIter();
+    return (jboolean) (newIterCount > iterCount);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_photor_staralign_StarAlignSplitActivity_grabCutOver(JNIEnv *env, jobject instance) {
+    StarGrabCut::showImage(env, instance);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_photor_staralign_StarAlignSplitActivity_reset(JNIEnv *env, jobject instance) {
+    // 重新设置照片的前景以及背景
+    StarGrabCut::reset();
+}

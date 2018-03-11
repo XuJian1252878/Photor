@@ -23,27 +23,27 @@
 
 
             <Button
-                android:id="@+id/btn_hand_write"
-                android:text="划分界线"
+                android:id="@+id/btn_select_sky"
+                android:text="星空"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <Button
-                android:id="@+id/btn_pen_eraser"
-                android:text="橡皮擦"
+                android:id="@+id/btn_select_ground"
+                android:text="地面"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
 
             <Button
                 android:id="@+id/btn_clear"
-                android:text="清屏"
+                android:text="重置"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <Button
-                android:id="@+id/btn_undo"
-                android:text="撤销"
+                android:id="@+id/btn_star_grab_cut"
+                android:text="确定"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
