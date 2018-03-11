@@ -246,8 +246,8 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_photor_staralign_StarAlignSplitActivity_moveGrabCut(JNIEnv *env, jobject instance,
                                                              jint event, jint x, jint y,
-                                                             jint flags) {
-    StarGrabCut::mouseClick(event, x, y, flags, env, instance);
+                                                             jint flags, jint lastX, jint lastY) {
+    StarGrabCut::mouseClick(event, x, y, flags, lastX, lastY, env, instance);
 }
 
 extern "C"

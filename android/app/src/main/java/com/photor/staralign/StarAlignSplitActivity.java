@@ -7,24 +7,17 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
 import com.photor.R;
 import com.photor.util.ImageUtils;
 import com.photor.widget.TipToast;
@@ -41,14 +34,31 @@ public class StarAlignSplitActivity extends AppCompatActivity {
     private Mat resImgMat = new Mat();
     private Mat oriImgMat = new Mat();
     private Mat maskImgMat = new Mat();
-    private int OPERATE_FLAG = 0;  // 1 星空（前景）；2 地面（背景）
 
+    // 表示当前划分分界线的状态
+    private enum BoundaryEnum {
+        NOT_INIT_POSITION(-1);
+
+        private int state;
+
+        BoundaryEnum(int state) {
+            this.state = state;
+        }
+
+        public int getState() {
+            return state;
+        }
+    }
+
+    private int OPERATE_FLAG = 0;  // 1 星空（前景）；2 地面（背景）；3 分界线
     private int GRABCUT_TOUCH_EVENT = -1; // DOWN = 0, UP = 1, MOVE = 2
+    private int LAST_BOUNDARY_X = BoundaryEnum.NOT_INIT_POSITION.getState(),
+            LAST_BOUNDARY_Y = BoundaryEnum.NOT_INIT_POSITION.getState();
 
     private GraffitiView graffitiView;
 
     public native void initGrabCut(long oriImgMatAddr, long resImgMatAddr, long maskMatAddr);
-    public native void moveGrabCut(int event, int x, int y, int flags);
+    public native void moveGrabCut(int event, int x, int y, int flags, int lastX, int latsY);
     public native void reset();
     public native boolean grabCut();
     public native void grabCutOver();
@@ -77,8 +87,11 @@ public class StarAlignSplitActivity extends AppCompatActivity {
         starAlignSplitContainer.removeAllViews();
         ImageView imgView = new ImageView(this);
         Bitmap bm = Bitmap.createBitmap(graffitiView.getOriginBitmap().getWidth(),
-                graffitiView.getOriginBitmap().getHeight(), Bitmap.Config.ARGB_8888);
+                graffitiView.getOriginBitmap().getHeight(), Bitmap.Config.RGB_565);
         Utils.matToBitmap(resImgMat, bm);
+//        Bitmap bm = Bitmap.createBitmap(graffitiView.getOriginBitmap().getWidth(),
+//                graffitiView.getOriginBitmap().getHeight(), Bitmap.Config.RGB_565);
+//        Utils.matToBitmap(maskImgMat, bm);
         imgView.setImageBitmap(bm);
         starAlignSplitContainer.addView(imgView, ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
@@ -107,33 +120,35 @@ public class StarAlignSplitActivity extends AppCompatActivity {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         GRABCUT_TOUCH_EVENT = 0;
-                        moveGrabCut(GRABCUT_TOUCH_EVENT, imgX, imgY, OPERATE_FLAG);
+                        moveGrabCut(GRABCUT_TOUCH_EVENT, imgX, imgY, OPERATE_FLAG, LAST_BOUNDARY_X, LAST_BOUNDARY_Y);
                         break;
                     case MotionEvent.ACTION_MOVE:
                         GRABCUT_TOUCH_EVENT = 2;
-                        moveGrabCut(GRABCUT_TOUCH_EVENT, imgX, imgY, OPERATE_FLAG);
+                        moveGrabCut(GRABCUT_TOUCH_EVENT, imgX, imgY, OPERATE_FLAG, LAST_BOUNDARY_X, LAST_BOUNDARY_Y);
                         break;
                     case MotionEvent.ACTION_UP:
                         GRABCUT_TOUCH_EVENT = 1;
-                        moveGrabCut(GRABCUT_TOUCH_EVENT, imgX, imgY, OPERATE_FLAG);
+                        moveGrabCut(GRABCUT_TOUCH_EVENT, imgX, imgY, OPERATE_FLAG, LAST_BOUNDARY_X, LAST_BOUNDARY_Y);
                         break;
                     default:
                         break;
+                }
+                if (OPERATE_FLAG == 3) {
+                    LAST_BOUNDARY_X = imgX;
+                    LAST_BOUNDARY_Y = imgY;
                 }
             }
         });
 
         graffitiView.setPen(GraffitiView.Pen.HAND);
-        graffitiView.setShape(GraffitiView.Shape.HAND_WRITE);
-
         starAlignSplitContainer.addView(graffitiView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         // 2. 绑定绘图需要的事件
-        graffitiView.setShape(GraffitiView.Shape.HOLLOW_RECT);
         // 2.1 设置选择星空区域的矩形框
         findViewById(R.id.btn_select_sky).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                graffitiView.setShape(GraffitiView.Shape.HOLLOW_RECT);
                 graffitiView.setColor(Color.RED);
                 OPERATE_FLAG = 1;  // 星空
             }
@@ -143,12 +158,23 @@ public class StarAlignSplitActivity extends AppCompatActivity {
         findViewById(R.id.btn_select_ground).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                graffitiView.setShape(GraffitiView.Shape.HOLLOW_RECT);
                 graffitiView.setColor(Color.BLUE);
                 OPERATE_FLAG = 2;  // 地面
             }
         });
 
-        // 2.3 设置清屏模式
+        // 2.3 设置划分界限的的线条
+        findViewById(R.id.btn_star_ground_boundary).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                graffitiView.setColor(Color.GREEN);
+                graffitiView.setShape(GraffitiView.Shape.HAND_WRITE);
+                OPERATE_FLAG = 3;  // 分界线
+            }
+        });
+
+        // 2.4 设置清屏模式
         findViewById(R.id.btn_clear).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,7 +184,7 @@ public class StarAlignSplitActivity extends AppCompatActivity {
             }
         });
 
-        // 2.4 设置开始显示前景图像
+        // 2.5 设置开始显示前景图像
         findViewById(R.id.btn_star_grab_cut).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -246,9 +272,9 @@ public class StarAlignSplitActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            originBitmap = ImageUtils.createBitmapFromPath(baseImgPath, StarAlignSplitActivity.this);
+//            originBitmap = ImageUtils.createBitmapFromPath(baseImgPath, StarAlignSplitActivity.this);
             // 将获取的bit 存入 oriImgMat 中
-//            originBitmap = BitmapFactory.decodeFile(baseImgPath);
+            originBitmap = BitmapFactory.decodeFile(baseImgPath);
             Utils.bitmapToMat(originBitmap, oriImgMat);
             // 这个函数的意义 CV_8UC4 -> CV_8UC3
             Imgproc.cvtColor(oriImgMat, oriImgMat, Imgproc.COLOR_RGBA2RGB);

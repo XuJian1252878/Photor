@@ -29,18 +29,22 @@ using namespace cv;
 class StarGrabCut
 {
 public:
-    enum{ NOT_SET = 0, IN_PROCESS = 1, SET = 2 };
+    enum { NOT_SET = 0, IN_PROCESS = 1, SET = 2 };
 
-    enum {SKY = 1, GROUND = 2};
+    enum { SKY = 1, GROUND = 2, BOUNDARY = 3 };
+
+    enum { NOT_INIT_POSITION };  // 用于记录边界线划分时的初始情况
 
     StarGrabCut();
     ~StarGrabCut();
     static void reset();
     static void init(Mat *_image, Mat *resImgMat, Mat *maskMat, jmethodID _showId );
     static void showImage(JNIEnv *env, jobject instance);
-    static void mouseClick( int event, int x, int y, int flags, JNIEnv *env, jobject instance);
+    static void mouseClick( int event, int x, int y, int flags, int lastX, int lastY, JNIEnv *env, jobject instance);
     static int nextIter();
     static int getIterCount() { return iterCount; }
+    static float calcSlop(int x, int y, int lastX, int lastY);
+    static void setPtrAreaInMask(int x, int y, int lastX, int lastY);
 
 
 private:
@@ -54,7 +58,7 @@ private:
 
     static Mat *mask;
 
-    static uchar skyRectState, groundRectState;
+    static uchar skyRectState, groundRectState, boundaryState;
     static bool isInitialized;
 
     static Rect skyRect, groundRect;
