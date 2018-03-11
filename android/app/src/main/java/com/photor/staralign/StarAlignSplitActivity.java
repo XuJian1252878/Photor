@@ -34,6 +34,7 @@ public class StarAlignSplitActivity extends AppCompatActivity {
     private Mat resImgMat = new Mat();
     private Mat oriImgMat = new Mat();
     private Mat maskImgMat = new Mat();
+    private Mat alphaMaskImgMat = new Mat();
 
     // 表示当前划分分界线的状态
     private enum BoundaryEnum {
@@ -57,7 +58,7 @@ public class StarAlignSplitActivity extends AppCompatActivity {
 
     private GraffitiView graffitiView;
 
-    public native void initGrabCut(long oriImgMatAddr, long resImgMatAddr, long maskMatAddr);
+    public native void initGrabCut(long oriImgMatAddr, long resImgMatAddr, long maskMatAddr, long alphaMaskImgMatAddr);
     public native void moveGrabCut(int event, int x, int y, int flags, int lastX, int latsY);
     public native void reset();
     public native boolean grabCut();
@@ -100,7 +101,8 @@ public class StarAlignSplitActivity extends AppCompatActivity {
     private void initGraffitiView(Bitmap originBitmap, String baseImgPath) {
 
         // 先初始化抠图的必备信息 在Async中完成了 oriImgMat 的加载
-        initGrabCut(oriImgMat.getNativeObjAddr(), resImgMat.getNativeObjAddr(), maskImgMat.getNativeObjAddr());
+        initGrabCut(oriImgMat.getNativeObjAddr(), resImgMat.getNativeObjAddr(),
+                maskImgMat.getNativeObjAddr(), alphaMaskImgMat.getNativeObjAddr());
 
         starAlignSplitContainer = findViewById(R.id.star_align_split_container);
         graffitiView = new GraffitiView(StarAlignSplitActivity.this, originBitmap,
@@ -272,9 +274,9 @@ public class StarAlignSplitActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-//            originBitmap = ImageUtils.createBitmapFromPath(baseImgPath, StarAlignSplitActivity.this);
+            originBitmap = ImageUtils.createBitmapFromPath(baseImgPath, StarAlignSplitActivity.this);
             // 将获取的bit 存入 oriImgMat 中
-            originBitmap = BitmapFactory.decodeFile(baseImgPath);
+//            originBitmap = BitmapFactory.decodeFile(baseImgPath);
             Utils.bitmapToMat(originBitmap, oriImgMat);
             // 这个函数的意义 CV_8UC4 -> CV_8UC3
             Imgproc.cvtColor(oriImgMat, oriImgMat, Imgproc.COLOR_RGBA2RGB);

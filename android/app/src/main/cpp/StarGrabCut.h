@@ -38,7 +38,7 @@ public:
     StarGrabCut();
     ~StarGrabCut();
     static void reset();
-    static void init(Mat *_image, Mat *resImgMat, Mat *maskMat, jmethodID _showId );
+    static void init(Mat *_image, Mat *resImgMat, Mat *maskMat, Mat *_alphaMaskMat, jmethodID _showId );
     static void showImage(JNIEnv *env, jobject instance);
     static void mouseClick( int event, int x, int y, int flags, int lastX, int lastY, JNIEnv *env, jobject instance);
     static int nextIter();
@@ -53,8 +53,11 @@ private:
 
     static Mat* oriImgMat;
     static Mat* resImgMat;
+    static Mat* alphaImgMask;
     static jmethodID showId;
 
+    static int mattingPixels;
+    static float mattingPercent;
 
     static Mat *mask;
 

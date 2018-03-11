@@ -3,11 +3,16 @@
 //
 
 #include "StarGrabCut.h"
+#include "globalmatting.h"
+#include "guidedfilter.h"
 
 Mat* StarGrabCut::oriImgMat;
 Mat* StarGrabCut::resImgMat;
+Mat* StarGrabCut::alphaImgMask;
 jmethodID StarGrabCut::showId;
 
+int StarGrabCut::mattingPixels;
+float StarGrabCut::mattingPercent = 0.1;
 
 Mat* StarGrabCut::mask;
 
@@ -30,17 +35,22 @@ void StarGrabCut::reset() {
         mask->setTo(Scalar::all(GC_BGD));
     }
 
+    if (!alphaImgMask->empty()) {
+        alphaImgMask->setTo(Scalar::all(GC_BGD));
+    }
+
     skyRectState = NOT_SET;
     skyRect = Rect(0, 0, 0, 0);
 
     groundRectState = NOT_SET;
     groundRect = Rect(0, 0, 0, 0);
 
-
     boundaryState = NOT_SET;
+
+    mattingPixels = (int)(oriImgMat->rows * mattingPercent / 2);
 }
 
-void StarGrabCut::init(Mat *_image, Mat *_resImgMat, Mat *maskMat, jmethodID _showId) {
+void StarGrabCut::init(Mat *_image, Mat *_resImgMat, Mat *_maskMat, Mat *_alphaMaskMat, jmethodID _showId) {
     if (_image->empty()) {
         return;
     }
@@ -48,8 +58,11 @@ void StarGrabCut::init(Mat *_image, Mat *_resImgMat, Mat *maskMat, jmethodID _sh
     oriImgMat = _image;
     resImgMat = _resImgMat;
 
-    mask = maskMat;
+    mask = _maskMat;
     mask->create(oriImgMat->size(), CV_8UC1);
+
+    alphaImgMask = _alphaMaskMat;
+    alphaImgMask->create(oriImgMat->size(), CV_8UC1);
 
     showId = _showId;
     reset();
@@ -72,19 +85,25 @@ void StarGrabCut::showImage(JNIEnv *env, jobject instance) {
     Mat res;
     Mat binMask;
 
-    if (!isInitialized) {
-        oriImgMat->copyTo(res);
-    } else {
-        getBinMask(*mask, binMask);
-        oriImgMat->copyTo(res, binMask); // 获得星空前景图像
-    }
+//    if (!isInitialized) {
+//        oriImgMat->copyTo(res);
+//    } else {
+//        getBinMask(*mask, binMask);
+//        oriImgMat->copyTo(res, binMask); // 获得星空前景图像
+//    }
 
 //    resImgMat->create(res.rows, res.cols, res.type());
 //    memcpy(resImgMat->data, res.data, resImgMat->step * resImgMat->rows);
 
 
-    resImgMat->create(mask->rows, mask->cols, mask->type());
-    memcpy(resImgMat->data, mask->data, resImgMat->step * resImgMat->rows);
+    if (!isInitialized) {
+        oriImgMat->copyTo(res);
+    } else {
+        oriImgMat->copyTo(res, *alphaImgMask); // 获得星空前景图像
+    }
+
+//    resImgMat->create(alphaImgMask->rows, alphaImgMask->cols, alphaImgMask->type());
+//    memcpy(resImgMat->data, alphaImgMask->data, resImgMat->step * resImgMat->rows);
 
     env->CallVoidMethod(instance, showId);
 }
@@ -112,12 +131,16 @@ void StarGrabCut::setPtrAreaInMask(int x, int y, int lastX, int lastY) {
 
         for (int j = 0; j < oriImgMat->rows; j ++) {
 
-            if (j > yBoundary) {
-//                int pixelValue = *(mask->data + i * mask->step + j);
-//                if (pixelValue == 0 || pixelValue == 255) {
-//                    continue;
-//                }
+            if (j > yBoundary + mattingPixels && yBoundary + mattingPixels < oriImgMat->rows) {  // 设置抠图的背景，地面部分
+                *(mask->data + j * (mask->step) + i) = 0;
+            }
+//            else if (yBoundary - mattingPixels <= j <= yBoundary + mattingPixels) {  // 设置边界可能在的地方（这个错哪了？怎么进不来？）
+//                *(mask->data + j * (mask->step) + i) = 175;
+//            }
+            else if (j < yBoundary - mattingPixels && yBoundary - mattingPixels > 0) {  // 设置抠图的前景，天空部分
                 *(mask->data + j * (mask->step) + i) = 255;
+            } else {
+                *(mask->data + j * (mask->step) + i) = 128;  // 设置边界可能在的地方
             }
 
         }
@@ -223,6 +246,22 @@ int StarGrabCut::nextIter()
 //        }
 //        isInitialized = true;
 //    }
+
+    // 开始抠图操作
+    expansionOfKnownRegions(*oriImgMat, *mask, 9);
+    globalMatting(*oriImgMat, *mask, *resImgMat, *alphaImgMask);
+    *alphaImgMask = guidedFilter(*oriImgMat, *alphaImgMask, 10, 1e-5);
+
+    for (int x = 0; x < (*mask).cols; ++x)
+        for (int y = 0; y < (*mask).rows; ++y)
+        {
+            if ((*mask).at<uchar>(y, x) == 0)
+                (*alphaImgMask).at<uchar>(y, x) = 0;
+            else if ((*mask).at<uchar>(y, x) == 255)
+                (*alphaImgMask).at<uchar>(y, x) = 255;
+        }
+
+    isInitialized = true;
     iterCount++;
 
     LOGD("nextIter leave");

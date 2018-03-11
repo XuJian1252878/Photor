@@ -231,15 +231,17 @@ JNIEXPORT void JNICALL
 Java_com_photor_staralign_StarAlignSplitActivity_initGrabCut(JNIEnv *env, jobject instance,
                                                              jlong oriImgMatAddr,
                                                              jlong resImgMatAddr,
-                                                             jlong maskMatAddr) {
+                                                             jlong maskMatAddr,
+                                                             jlong alphaMaskImgMatAddr) {
     Mat *oriImgMat = (Mat*) oriImgMatAddr;
     Mat *resImgMat = (Mat*) resImgMatAddr;
     Mat *maskMat = (Mat*) maskMatAddr;
+    Mat *alphaMaskMat = (Mat*) alphaMaskImgMatAddr;
 
     jclass jc = env->GetObjectClass(instance);
     jmethodID showId = env->GetMethodID(jc, "showImage", "()V");
 
-    StarGrabCut::init(oriImgMat, resImgMat, maskMat, showId);
+    StarGrabCut::init(oriImgMat, resImgMat, maskMat, alphaMaskMat, showId);
 }
 
 extern "C"
