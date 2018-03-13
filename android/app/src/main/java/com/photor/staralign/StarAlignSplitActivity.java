@@ -68,7 +68,7 @@ public class StarAlignSplitActivity extends AppCompatActivity {
     public native void initGrabCut(long oriImgMatAddr, long resImgMatAddr, long maskMatAddr);
     public native void moveGrabCut(int event, int x, int y, int flags, int lastX, int latsY);
     public native void reset();
-    public native boolean grabCut();
+    public native boolean saveMaskMat(String maskImgPath);
     public native void grabCutOver();
 
 
@@ -202,10 +202,12 @@ public class StarAlignSplitActivity extends AppCompatActivity {
                         .create();
                 tipToast.show();
 
+                // 获得maskImgPath的路径
+                maskImgPath = FileUtils.generateTempImgAbsPath(StarAlignSplitActivity.this);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        if (grabCut()) {
+                        if (saveMaskMat(maskImgPath)) {
                             // 存储获取的mask图像
                             Bitmap bm = Bitmap.createBitmap(maskImgMat.cols(), maskImgMat.rows(), Bitmap.Config.RGB_565);
                             Utils.matToBitmap(maskImgMat, bm);

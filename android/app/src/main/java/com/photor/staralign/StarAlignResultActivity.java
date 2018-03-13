@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,7 +35,7 @@ public class StarAlignResultActivity extends AppCompatActivity {
 
         // 获取对齐结果的图片路径
         alignResImgPath = getIntent().getStringExtra(StarAlignSetting.EXTRA_ALIGN_RESULT_PATH);
-
+        Log.d("alignResImgPath", alignResImgPath);
         initUI();
     }
 

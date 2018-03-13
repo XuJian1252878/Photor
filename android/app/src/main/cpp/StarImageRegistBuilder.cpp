@@ -226,12 +226,12 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarI
     }
 
     // 对应图片部分中没有特征点的情况（导致计算出的映射关系不佳，至少要4对匹配点才能计算出匹配关系）
-    if (imagePoints1.size() >= 6 && imagePoints2.size() < 6) {
+    if (imagePoints1.size() >= 10 && imagePoints2.size() < 10) {
         // 没有特征点信息，那么说明这个区域是没有特征的，所以返回 查询图片部分，作为内容填充
         return sourceImg;
-    } else if (imagePoints1.size() < 6 && imagePoints2.size() >= 6) {
+    } else if (imagePoints1.size() < 10 && imagePoints2.size() >= 10) {
         return targetImg;
-    } else if (imagePoints1.size() < 6 && imagePoints2.size() < 6) {
+    } else if (imagePoints1.size() < 10 && imagePoints2.size() < 10) {
         return targetImg;  // 特征点都不足时，以targetImage为基础进行的配准
     }
 

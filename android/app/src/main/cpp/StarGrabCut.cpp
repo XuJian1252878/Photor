@@ -15,7 +15,6 @@ uchar StarGrabCut::skyRectState, StarGrabCut::groundRectState, StarGrabCut::boun
 bool StarGrabCut::isInitialized;
 
 Rect StarGrabCut::skyRect, StarGrabCut::groundRect;
-int StarGrabCut::iterCount;
 
 StarGrabCut::StarGrabCut() {
 
@@ -113,10 +112,6 @@ void StarGrabCut::setPtrAreaInMask(int x, int y, int lastX, int lastY) {
         for (int j = 0; j < oriImgMat->rows; j ++) {
 
             if (j > yBoundary) {
-//                int pixelValue = *(mask->data + i * mask->step + j);
-//                if (pixelValue == 0 || pixelValue == 255) {
-//                    continue;
-//                }
                 *(mask->data + j * (mask->step) + i) = 255;
             }
 
@@ -188,43 +183,3 @@ void StarGrabCut::setGroundRectInMask() {
     groundRect = Rect(0, groundRect.y, oriImgMat->cols, oriImgMat->rows - groundRect.y);
     ((*mask)(groundRect)).setTo(Scalar(0));
 }
-
-int StarGrabCut::nextIter()
-{
-    LOGD("nextIter enter");
-    Mat bgdModel, fgdModel;
-
-    Rect rect = Rect(0, 0, oriImgMat->cols, oriImgMat->rows);
-
-//    if( isInitialized ) {
-//        // mask 是最终生成的掩膜
-//        grabCut( *oriImgMat, *mask, rect, bgdModel, fgdModel, 1 );
-//    } else {
-//        if( skyRectState != SET || groundRectState != SET)
-//            return iterCount;
-//
-//        if( skyRectState == SET && groundRectState == SET ) {
-//            grabCut( *oriImgMat, *mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_MASK );
-//        }
-//        else {
-//            // 如果是矩形方式选择
-//            /**
-//             * Mat result; // 分割结果 (4种可能取值)
-//             * // 设定矩形,该矩形的长宽分别-1
-//             * Rect rectangle(1, 1, image.cols - 1, image.rows - 1);
-//             * grabCut(image, result, rectangle, bgModel, fgModel, 1, cv::GC_INIT_WITH_RECT);
-//             * // 得到可能为前景的像素
-//             * compare(result, cv::GC_PR_FGD, result, cv::CMP_EQ);  // rect方式这样获得mask
-//             * // 生成输出图像
-//             * Mat foreground(image.size(), CV_8UC3, cv::Scalar(255, 255, 255));
-//             * image.copyTo(foreground, result); // 不复制背景数据
-//             */
-//            grabCut( *oriImgMat, *mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT );
-//        }
-        isInitialized = true;
-//    }
-    iterCount++;
-
-    LOGD("nextIter leave");
-    return iterCount;
-};

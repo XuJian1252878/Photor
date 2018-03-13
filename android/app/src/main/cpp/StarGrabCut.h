@@ -41,11 +41,8 @@ public:
     static void init(Mat *_image, Mat *resImgMat, Mat *maskMat, jmethodID _showId );
     static void showImage(JNIEnv *env, jobject instance);
     static void mouseClick( int event, int x, int y, int flags, int lastX, int lastY, JNIEnv *env, jobject instance);
-    static int nextIter();
-    static int getIterCount() { return iterCount; }
     static float calcSlop(int x, int y, int lastX, int lastY);
     static void setPtrAreaInMask(int x, int y, int lastX, int lastY);
-
 
 private:
     static void setSkyRectInMask();
@@ -62,5 +59,5 @@ private:
     static bool isInitialized;
 
     static Rect skyRect, groundRect;
-    static int iterCount;
+//    static int iterCount;
 };

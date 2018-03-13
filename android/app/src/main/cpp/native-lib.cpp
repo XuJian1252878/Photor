@@ -287,10 +287,13 @@ Java_com_photor_staralign_StarAlignSplitActivity_moveGrabCut(JNIEnv *env, jobjec
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_photor_staralign_StarAlignSplitActivity_grabCut(JNIEnv *env, jobject instance) {
-    int iterCount = StarGrabCut::getIterCount();
-    int newIterCount = StarGrabCut::nextIter();
-    return (jboolean) (newIterCount > iterCount);
+Java_com_photor_staralign_StarAlignSplitActivity_saveMaskMat(JNIEnv *env, jobject instance,
+                                                             jstring maskImgPath_) {
+
+    const char *maskImgPath = env->GetStringUTFChars(maskImgPath_, 0);
+//    bool isSuccess = StarGrabCut::saveMaskMat(maskImgPath);
+    env->ReleaseStringUTFChars(maskImgPath_, maskImgPath);
+    return (jboolean)true;
 }
 
 extern "C"
