@@ -11,11 +11,14 @@
  * @param rowParts
  * @param columnParts
  */
-StarImageRegistBuilder::StarImageRegistBuilder(Mat_<Vec3b> targetImage, std::vector<Mat_<Vec3b>> sourceImages,
-                                               int rowParts, int columnParts) {
+StarImageRegistBuilder::StarImageRegistBuilder(Mat_<Vec3b>& targetImage, std::vector<Mat_<Vec3b>>& sourceImages,
+                                               Mat& skyMaskMat, int rowParts, int columnParts) {
     this->rowParts = rowParts;
     this->columnParts = columnParts;
     this->imageCount = (int)sourceImages.size() + 1;
+
+    this->skyMaskMat = skyMaskMat;
+    this->skyBoundaryRange = (int)(skyMaskMat.rows * 0.002);
 
     // 开始对每一张图片进行分块操作
     for (int index = 0; index < sourceImages.size(); index ++) {
@@ -64,11 +67,11 @@ Mat_<Vec3b> StarImageRegistBuilder::registration(int mergeMode) {
         // 对于每一小块图像都做配准操作
         for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
             for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex ++) {
-//                cout << "registration: " << std::to_string(rPartIndex) + " " + std::to_string(cPartIndex) << endl;
+
+
                 Mat tmpRegistMat = this->getImgTransform(tmpStarImage.getStarImagePart(rPartIndex, cPartIndex),
                                                          this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex));
 
-//                tmpStarImage.setStarImagePart(rPartIndex, cPartIndex, tmpRegistMat);
                 this->sourceStarImages[index].setStarImagePart(rPartIndex, cPartIndex, tmpRegistMat);
 
             }
@@ -90,6 +93,11 @@ Mat_<Vec3b> StarImageRegistBuilder::registration(int mergeMode) {
 Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarImagePart targetImagePart) {
     Mat sourceImg = sourceImagePart.getImage(); // query image
     Mat targetImg = targetImagePart.getImage(); // train image
+
+    // 取出当前mask起始点的位置
+    int rMaskIndex = sourceImagePart.getRowPartIndex() * sourceImg.rows;
+    int cMaskIndex = sourceImagePart.getColumnPartIndex() * sourceImg.cols;
+
 
 //        if( !sourceImg.data || !targetImg.data )
 //        { std::cout<< " --(!) Error loading images " << std::endl; return NULL; }
@@ -127,7 +135,7 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarI
     for (int index = 0; index < knnMatches.size(); index ++) {
         DMatch firstMatch = knnMatches[index][0];
         DMatch secondMatch = knnMatches[index][1];
-        if (firstMatch.distance < 0.75 * secondMatch.distance) {
+        if (firstMatch.distance < 0.9 * secondMatch.distance) {
             tempMatches.push_back(firstMatch);
         }
     }
@@ -136,8 +144,7 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarI
     vector<Point2f> imagePoints1, imagePoints2;
     std::map<int, DMatch> matchRepeatRecords;
     for (int index = 0; index < tempMatches.size(); index ++) {
-        cout << tempMatches[index].distance << "\n";
-//        int queryIdx = matches[index].queryIdx;
+//        int queryIdx = matches[index].queryIdx;f
         int trainIdx = tempMatches[index].trainIdx;
 
         // 记录标准图像中的每个点被配准了多少次，如果被配准多次，那么说明这个特征点匹配不合格
@@ -171,34 +178,47 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarI
 //    double matchDistStdev = sqrt(matchDistAccum / (matchDistCount - 1));
 
     // 3.1 获取准确的最大最小值
-    double maxMatchDist = 0;
-    double minMatchDist = 100;
-    for (iter = matchRepeatRecords.begin(); iter != matchRepeatRecords.end(); iter ++) {
-        if (iter->second.distance < minMatchDist) {
-            minMatchDist = iter->second.distance;
-        }
-        if (iter->second.distance > maxMatchDist) {
-            maxMatchDist = iter->second.distance;
-        }
-    }
+//    double maxMatchDist = 0;
+//    double minMatchDist = 100;
+//    for (iter = matchRepeatRecords.begin(); iter != matchRepeatRecords.end(); iter ++) {
+//        if (iter->second.distance < minMatchDist) {
+//            minMatchDist = iter->second.distance;
+//        }
+//        if (iter->second.distance > maxMatchDist) {
+//            maxMatchDist = iter->second.distance;
+//        }
+//    }
 
     // 4. 根据特征点匹配对，分离出两幅图像中已经被匹配的特征点
     std::vector<DMatch> matches;
-    double matchThreshold = minMatchDist + (maxMatchDist - minMatchDist) * 0.4;  // 阈值越大，留下的特征点越多
-    double slopeThreshold = sqrt(3) / 3.0;
+//    double matchThreshold = minMatchDist + (maxMatchDist - minMatchDist) * 0.4;  // 阈值越大，留下的特征点越多
+    double slopeThreshold = sqrt(3);
     for (iter = matchRepeatRecords.begin(); iter != matchRepeatRecords.end(); iter ++) {
 
         DMatch match = iter->second;
         int queryIdx = match.queryIdx;
         int trainIdx = match.trainIdx;
 
+        // 将检测出的靠近边缘的特征点去除
+        int qy = (int)(keypoints_1[queryIdx].pt.y + this->skyBoundaryRange + rMaskIndex),
+                ty = (int)(keypoints_2[trainIdx].pt.y + this->skyBoundaryRange + rMaskIndex);
+        int qx = (int)(keypoints_1[queryIdx].pt.x + cMaskIndex), tx = (int)(keypoints_2[trainIdx].pt.x + cMaskIndex);
+
+        if (qy >= this->skyMaskMat.rows || ty >= this->skyMaskMat.rows) {
+            continue;
+            // Mat.at(行数, 列数)
+        } else if ( this->skyMaskMat.at<uchar>(qy, qx) == 0 || this->skyMaskMat.at<uchar>(ty, tx) == 0 ) {
+            continue;
+        }
+
         // 5. 设置 匹配点之间的 distance 阈值来选出 质量好的特征点（方差策略的替代方案）
         // 6. 计算两个匹配点之间的斜率
         double slope = abs( (keypoints_1[queryIdx].pt.y - keypoints_2[trainIdx].pt.y) * 1.0 /
-                                    (keypoints_1[queryIdx].pt.x -
-                                            (keypoints_2[trainIdx].pt.x + targetImg.cols) ) );
+                            (keypoints_1[queryIdx].pt.x -
+                             (keypoints_2[trainIdx].pt.x + targetImg.cols) ) );
 
-        if (slope < slopeThreshold && iter->second.distance < matchThreshold) {
+        // && iter->second.distance < matchThreshold
+        if ( slope < slopeThreshold ) {
             matches.push_back(iter->second);
             imagePoints1.push_back(keypoints_1[queryIdx].pt);
             imagePoints2.push_back(keypoints_2[trainIdx].pt);
@@ -206,12 +226,12 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarI
     }
 
     // 对应图片部分中没有特征点的情况（导致计算出的映射关系不佳，至少要4对匹配点才能计算出匹配关系）
-    if (imagePoints1.size() >= 10 && imagePoints2.size() < 10) {
+    if (imagePoints1.size() >= 6 && imagePoints2.size() < 6) {
         // 没有特征点信息，那么说明这个区域是没有特征的，所以返回 查询图片部分，作为内容填充
         return sourceImg;
-    } else if (imagePoints1.size() < 10 && imagePoints2.size() >= 10) {
+    } else if (imagePoints1.size() < 6 && imagePoints2.size() >= 6) {
         return targetImg;
-    } else if (imagePoints1.size() < 10 && imagePoints2.size() < 10) {
+    } else if (imagePoints1.size() < 6 && imagePoints2.size() < 6) {
         return targetImg;  // 特征点都不足时，以targetImage为基础进行的配准
     }
 
@@ -219,7 +239,6 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarI
     Mat homo = findHomography(imagePoints1, imagePoints2, CV_RANSAC);
     // 也可以使用getPerspectiveTransform方法获得透视变换矩阵，不过要求只能有4个点，效果稍差
     // Mat homo = getPerspectiveTransform(imagePoints1,imagePoints2);
-    cout<< "变换矩阵为：\n" << homo << endl << endl; //输出映射矩阵
     /**
      * 这里如果有一副图片中的特征点过少，导致查询图片部分 中的多个特征点直接 和 目标图片部分 中的同一个特征点相匹配，
      * 那么会导致算不出变换矩阵，变换矩阵为 [] 。导致错误。
@@ -261,25 +280,15 @@ Mat StarImageRegistBuilder::mergeImage(int mergeMode) {
             for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
                 for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex ++) {
 
+
                     Mat_<Vec3b> resultImg = resultStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
                     Mat_<Vec3b> targetImg = this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
 
                     for (int index = 0; index < this->sourceStarImages.size(); index ++) {
                         Mat_<Vec3b> sourceImg =  this->sourceStarImages[index].getStarImagePart(rPartIndex, cPartIndex).getImage();
-
-//                        Mat_<Vec3b> tmpImgMat;
-//                        addWeighted(sourceImg, 1.0 / this->imageCount, resultImg, 0, 0, tmpImgMat);
-//                        resultStarImage.addUpStarImagePart(rPartIndex, cPartIndex, tmpImgMat);
-
                         resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(sourceImg, targetImg, this->imageCount);
 
                     }
-
-//                    Mat_<Vec3b> tmpImgMat;
-//                    Mat_<Vec3b> sourceImg =  this->sourceStarImages[0].getStarImagePart(rPartIndex, cPartIndex).getImage();
-//                    addWeighted(this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage(), 0.5,
-//                                sourceImg, 0.5, 0, tmpImgMat);
-//                    resultStarImage.addUpStarImagePart(rPartIndex, cPartIndex, tmpImgMat);
 
                     resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(targetImg, targetImg, this->imageCount);
 

@@ -221,7 +221,7 @@ int StarGrabCut::nextIter()
 //             */
 //            grabCut( *oriImgMat, *mask, rect, bgdModel, fgdModel, 1, GC_INIT_WITH_RECT );
 //        }
-//        isInitialized = true;
+        isInitialized = true;
 //    }
     iterCount++;
 

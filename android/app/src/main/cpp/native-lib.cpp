@@ -6,6 +6,7 @@
 #include "StarImageRegistBuilder.h"
 #include "GCApplication.h"
 #include "StarGrabCut.h"
+#include "Util.h"
 
 #include <android/log.h>
 #define  LOG_TAG    "JNI_PART"
@@ -122,9 +123,11 @@ Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env,
                                                                     jobject starPhotos,
                                                                     jint alignBasePhotoIndex,
                                                                     jlong alignResMatAddr,
+                                                                    jstring maskImgPath_,
                                                                     jstring generateImgAbsPath_) {
 
     const char *generateImgAbsPath = env->GetStringUTFChars(generateImgAbsPath_, 0); // 存储对齐图片的路径信息
+    const char *maskImgPath = env->GetStringUTFChars(maskImgPath_, 0); // 图片的掩膜信息
 
     // 获取ArrayList对象的class
     jclass photoArrayList = static_cast<jclass>(env->FindClass("java/util/ArrayList"));
@@ -150,28 +153,60 @@ Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env,
     int rowParts = 5;
     int columnParts = 5;
 
-    string test = string(basicPhotoPathPtr);
+    Mat_<Vec3b> targetImage = imread(string(basicPhotoPathPtr), IMREAD_UNCHANGED);  // 获得基准的图像信息
+    Mat groundMaskImg = imread(string(maskImgPath), IMREAD_UNCHANGED);
 
-    Mat_<Vec3b> targetImage = imread(string(basicPhotoPathPtr), IMREAD_UNCHANGED);
-    std::vector<Mat_<Vec3b>> sourceImages;
+    groundMaskImg = groundMaskImg & 1;  // 获得可以分割地面图片的模板
+    Mat skyMaskImg = ~ groundMaskImg;  // 获得可以风格的天空图片
+
+    // 基准星空部分图片
+    Mat_<Vec3b> skyTargetImg;
+    targetImage.copyTo(skyTargetImg, skyMaskImg);
+
+    // 基准地面部分图片
+    Mat_<Vec3b> groundTargetImg;
+    targetImage.copyTo(groundTargetImg, groundMaskImg);
+
+    // 待配准的图片列表
+    std::vector<Mat_<Vec3b>> skySourceImages;
+    std::vector<Mat_<Vec3b>> groundSourceImages;
+
     for (int index = 0; index < starPhotoSize; index ++) {
         if (index == alignBasePhotoIndex)  // jint 和 int相互比较
             continue;
         const char* sourcePhotoPathPtr = env->GetStringUTFChars(
                 static_cast<jstring>(env->CallObjectMethod(starPhotos, photoArrayListGet, index)),
                 &isCopyStr);
-        sourceImages.push_back(imread(string(sourcePhotoPathPtr), IMREAD_UNCHANGED));
+
+        Mat_<Vec3b> imgMat = imread(string(sourcePhotoPathPtr), IMREAD_UNCHANGED);
+        Mat_<Vec3b> skyImgMat;
+        imgMat.copyTo(skyImgMat, skyMaskImg);
+
+        Mat_<Vec3b> groundImgMat;
+        imgMat.copyTo(groundImgMat, groundMaskImg);
+
+        skySourceImages.push_back(skyImgMat);
+        groundSourceImages.push_back(groundImgMat);
     }
 
-    StarImageRegistBuilder starImageRegistBuilder = StarImageRegistBuilder(targetImage, sourceImages, rowParts, columnParts);
-    Mat_<Vec3b> resultImage = starImageRegistBuilder.registration(StarImageRegistBuilder::MERGE_MODE_MEAN);
+    // 对星空部分进行对齐操作
+    StarImageRegistBuilder starImageRegistBuilder = StarImageRegistBuilder(skyTargetImg, skySourceImages, skyMaskImg, rowParts, columnParts);
+    Mat_<Vec3b> resSkyMat_ = starImageRegistBuilder.registration(StarImageRegistBuilder::MERGE_MODE_MEAN);
+    Mat_<Vec3b> resSkyMat;
+    resSkyMat_.copyTo(resSkyMat, skyMaskImg);
+
+    // 对地面部分进行对齐操作
+    Mat_<Vec3b> resGroundMat = superimposedImg(groundSourceImages, groundTargetImg);
+
+    // 分别整合星空和地面部分的图片
+    Mat_<Vec3b> resultImage = resSkyMat + resGroundMat;
 
     // 通过传地址在java中获得mat的方式
     resMatPtr->create(resultImage.rows, resultImage.cols, resultImage.type());
     memcpy(resMatPtr->data, resultImage.data, resMatPtr->step * resMatPtr->rows);
 
     // 将对齐结果写入文件中
-    imwrite(string(generateImgAbsPath), resultImage);
+    imwrite(generateImgAbsPath, resultImage);
     env->ReleaseStringUTFChars(generateImgAbsPath_, generateImgAbsPath);
 
     return 1; // 表示成功放回对齐之后的图像信息

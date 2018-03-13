@@ -22,6 +22,8 @@ public class StarPhotoAlignThread extends Thread {
     private long alignResMatAddr;
     private String generateImgAbsPath;
 
+    private String maskImgPath;
+
     private volatile int alignResFlag = -3; // 表示未执行完成
 
     private BaseDialog starAlignProgressDialog;
@@ -31,19 +33,22 @@ public class StarPhotoAlignThread extends Thread {
     public StarPhotoAlignThread(Activity activity, ArrayList<String> starPhotos,
                                 int alignBasePhotoIndex, long alignResMatAddr,
                                 String generateImgAbsPath,
+                                String maskImgPath,
                                 StarAlignProgressListener starAlignProgressListener) {
         super();
         this.activity = activity;
-        this.starPhotos = starPhotos;
-        this.alignBasePhotoIndex = alignBasePhotoIndex;
-        this.alignResMatAddr = alignResMatAddr;
-        this.generateImgAbsPath = generateImgAbsPath;
+        this.starPhotos = starPhotos;  // 选择的星空图片数据
+        this.alignBasePhotoIndex = alignBasePhotoIndex;  // 作为基准的星空图片下标
+        this.alignResMatAddr = alignResMatAddr;  // 图片结果的Mat地址
+        this.generateImgAbsPath = generateImgAbsPath;  // 生成的对齐结果图片的路径
+        this.maskImgPath = maskImgPath;  // 用户划分的mask图片的存储路径
         this.starAlignProgressListener = starAlignProgressListener;
     }
 
     @Override
     public void run() {
-        alignResFlag = alignStarPhotos(starPhotos, alignBasePhotoIndex, alignResMatAddr, generateImgAbsPath);
+        // 进行图片对齐操作
+        alignResFlag = alignStarPhotos(starPhotos, alignBasePhotoIndex, alignResMatAddr, maskImgPath, generateImgAbsPath);
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -88,5 +93,5 @@ public class StarPhotoAlignThread extends Thread {
 
 
     // 进行图像对齐操作的 jni native function
-    private native int alignStarPhotos(ArrayList<String> starPhotos, int alignBasePhotoIndex, long alignResMatAddr, String generateImgAbsPath);
+    private native int alignStarPhotos(ArrayList<String> starPhotos, int alignBasePhotoIndex, long alignResMatAddr, String maskImgPath, String generateImgAbsPath);
 }

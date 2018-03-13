@@ -1,5 +1,6 @@
 package com.photor.staralign;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,6 +20,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.photor.R;
+import com.photor.util.FileUtils;
 import com.photor.util.ImageUtils;
 import com.photor.widget.TipToast;
 import com.photor.widget.graffiti.ColorPickerDialog;
@@ -28,12 +30,18 @@ import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
+
+import static com.photor.staralign.StarAlignBaseActivity.EXTRA_BASE_SELECT_PHOTO_PATH;
+
 public class StarAlignSplitActivity extends AppCompatActivity {
 
     private FrameLayout starAlignSplitContainer;
     private Mat resImgMat = new Mat();
     private Mat oriImgMat = new Mat();
     private Mat maskImgMat = new Mat();
+
+    private String maskImgPath;
 
     // 表示当前划分分界线的状态
     private enum BoundaryEnum {
@@ -76,7 +84,7 @@ public class StarAlignSplitActivity extends AppCompatActivity {
 
         // 1. 显示待切割的图片信息
         Intent intent = getIntent();
-        final String baseImgPath = intent.getStringExtra("baseImgPath");
+        final String baseImgPath = intent.getStringExtra(EXTRA_BASE_SELECT_PHOTO_PATH);
 
         // 2. 异步加载划线界面
         new LoadGraffitiAsyncTask(baseImgPath).execute();
@@ -188,14 +196,33 @@ public class StarAlignSplitActivity extends AppCompatActivity {
         findViewById(R.id.btn_star_grab_cut).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                final TipToast tipToast = new TipToast.Builder(StarAlignSplitActivity.this)
+                        .setMessage("正在分割")
+                        .create();
+                tipToast.show();
+
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         if (grabCut()) {
+                            // 存储获取的mask图像
+                            Bitmap bm = Bitmap.createBitmap(maskImgMat.cols(), maskImgMat.rows(), Bitmap.Config.RGB_565);
+                            Utils.matToBitmap(maskImgMat, bm);
+                            maskImgPath = FileUtils.generateTempImgAbsPath(StarAlignSplitActivity.this);
+                            FileUtils.saveImgBitmap(maskImgPath, bm);
+
+                            // 更新界面信息
                             StarAlignSplitActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     grabCutOver();
+                                    tipToast.dismiss();
+                                    // 返回上一个Activity，并且传回mask路径
+                                    Intent intent = new Intent();
+                                    intent.putExtra(StarAlignBaseActivity.EXTRA_MASK_IMG_PATH, maskImgPath);
+                                    setResult(Activity.RESULT_OK, intent);
+                                    finish();
                                 }
                             });
                         }

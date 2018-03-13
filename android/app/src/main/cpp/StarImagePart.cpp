@@ -58,22 +58,22 @@ void StarImagePart::setImage(Mat_<Vec3b> imageMat) {
 void StarImagePart::addImagePixelValue(Mat resultImg, Mat targetImg, int imageCount) {
     this->imagePart += (resultImg / imageCount * 1.0);
 
-    for (int rIndex = 0; rIndex < this->imagePart.rows; rIndex ++) {
-        for (int cIndex = 0; cIndex < this->imagePart.cols; cIndex ++) {
-
-            bool isBlackPixel = true;
-            Vec3b resultImgItem = this->imagePart.at<Vec3b>(rIndex, cIndex);
-            for (int i = 0; i < 3; i ++) {
-                if (resultImgItem[i] > 0) {
-                    isBlackPixel = false;
-                }
-            }
-
-            if (isBlackPixel) {
-                this->imagePart.at<Vec3b>(rIndex, cIndex) = (targetImg.at<Vec3b>(rIndex, cIndex) * 1.0 / imageCount);
-            }
-        }
-    }
+//    for (int rIndex = 0; rIndex < this->imagePart.rows; rIndex ++) {
+//        for (int cIndex = 0; cIndex < this->imagePart.cols; cIndex ++) {
+//
+//            bool isBlackPixel = true;
+//            Vec3b resultImgItem = this->imagePart.at<Vec3b>(rIndex, cIndex);
+//            for (int i = 0; i < 3; i ++) {
+//                if (resultImgItem[i] > 0) {
+//                    isBlackPixel = false;
+//                }
+//            }
+//
+//            if (isBlackPixel) {
+//                this->imagePart.at<Vec3b>(rIndex, cIndex) = (targetImg.at<Vec3b>(rIndex, cIndex) * 1.0 / imageCount);
+//            }
+//        }
+//    }
 }
 
 

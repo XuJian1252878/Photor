@@ -2,6 +2,8 @@ package com.photor.staralign;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.OrientationHelper;
@@ -9,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.photopicker.PhotoPicker;
@@ -21,6 +24,7 @@ import com.photor.staralign.event.StarPhotoItemClickListener;
 import com.photor.staralign.task.StarPhotoAlignThread;
 import com.photor.util.FileUtils;
 
+import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 
 import java.io.IOException;
@@ -30,6 +34,11 @@ import java.util.List;
 
 public class StarAlignBaseActivity extends AppCompatActivity {
 
+    public static final String EXTRA_MASK_IMG_PATH = "extra_mask_img_path";
+    public static final String EXTRA_BASE_SELECT_PHOTO_PATH = "extra_base_select_photo_path";
+
+    public static final int REQUEST_SPLIT_CODE = 100;
+
     private StarPhotoAdapter starPhotoAdapter;
     private ArrayList<String> selectedPhotos = new ArrayList<>();
 
@@ -37,6 +46,7 @@ public class StarAlignBaseActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
 
     private Mat alignResMat = new Mat(); // 进行图片对齐的Mat结果
+    private String maskImgPath; // 星空模板的路径（地面是白色区域）
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,30 +96,35 @@ public class StarAlignBaseActivity extends AppCompatActivity {
                             .setPhotoCount(StarPhotoAdapter.MAX_PHOTO_COUNT)
                             .start(StarAlignBaseActivity.this);
                 } else {
-//                    new StarPhotoAlignTask(StarAlignBaseActivity.this, selectedPhotos, 0, alignResMat.getNativeObjAddr()).execute();
                     StarPhotoAlignThread thread = null;
-                    try {
-                        // 开始图片对齐操作
-                        final String imgAbsPath =  FileUtils.generateImgAbsPath();
-                        thread = new StarPhotoAlignThread(StarAlignBaseActivity.this,
-                                selectedPhotos, 0, alignResMat.getNativeObjAddr(), imgAbsPath,
-                                new StarAlignProgressListener() {
-                                    @Override
-                                    public void onStarAlignThreadFinish(int alignResultFlag) {
-                                        if (alignResultFlag == StarAlignEnum.STAR_ALIGN_RESLUT_SUCCESS.getResCode()) {
-                                            // 说明对齐操作成功
-                                            StarAlignSetting.builder()
-                                                    .setAlignResultPath(imgAbsPath)
-                                                    .start(StarAlignBaseActivity.this);
-                                        } else {
-                                            Toast.makeText(StarAlignBaseActivity.this, "图片对齐失败", Toast.LENGTH_SHORT);
-                                        }
+                    // 开始图片对齐操作
+                    final String imgAbsPath =  FileUtils.generateImgAbsPath();
+                    thread = new StarPhotoAlignThread(StarAlignBaseActivity.this,
+                            selectedPhotos, 0, alignResMat.getNativeObjAddr(),
+                            imgAbsPath, maskImgPath,
+                            new StarAlignProgressListener() {
+                                @Override
+                                public void onStarAlignThreadFinish(int alignResultFlag) {
+                                    if (alignResultFlag == StarAlignEnum.STAR_ALIGN_RESLUT_SUCCESS.getResCode()) {
+                                        // 说明对齐操作成功
+                                        StarAlignSetting.builder()
+                                                .setAlignResultPath(imgAbsPath)
+                                                .start(StarAlignBaseActivity.this);
+                                    } else {
+                                        Toast.makeText(StarAlignBaseActivity.this, "图片对齐失败", Toast.LENGTH_SHORT);
                                     }
-                                });
-                        thread.startAlign();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+//                                    runOnUiThread(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            ImageView iv = findViewById(R.id.test_result_iv);
+//                                            Bitmap bm = Bitmap.createBitmap(alignResMat.cols(), alignResMat.rows(), Bitmap.Config.ARGB_8888);
+//                                            Utils.matToBitmap(alignResMat, bm);
+//                                            iv.setImageBitmap(bm);
+//                                        }
+//                                    });
+                                }
+                            });
+                    thread.startAlign();
                 }
             }
         });
@@ -120,8 +135,8 @@ public class StarAlignBaseActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String baseImgPath = selectedPhotos.get(0);
                 Intent intent = new Intent(StarAlignBaseActivity.this, StarAlignSplitActivity.class);
-                intent.putExtra("baseImgPath", baseImgPath);
-                startActivity(intent);
+                intent.putExtra(EXTRA_BASE_SELECT_PHOTO_PATH, baseImgPath);
+                startActivityForResult(intent, REQUEST_SPLIT_CODE);
             }
         });
 
@@ -142,6 +157,7 @@ public class StarAlignBaseActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // 图片选择选项
         if (resultCode == Activity.RESULT_OK &&
                 (requestCode == PhotoPicker.REQUEST_CODE || requestCode == PhotoPreview.REQUEST_CODE)) {
             List<String> photos = null;
@@ -155,6 +171,11 @@ public class StarAlignBaseActivity extends AppCompatActivity {
                 updateStarAlignBtnText();
             }
             starPhotoAdapter.notifyDataSetChanged();
+        }
+
+        // 分割图片选项
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_SPLIT_CODE && data != null) {
+            maskImgPath = data.getStringExtra(EXTRA_MASK_IMG_PATH);
         }
     }
 
