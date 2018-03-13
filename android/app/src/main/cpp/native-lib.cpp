@@ -156,7 +156,7 @@ Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env,
     Mat_<Vec3b> targetImage = imread(string(basicPhotoPathPtr), IMREAD_UNCHANGED);  // 获得基准的图像信息
     Mat groundMaskImg = imread(string(maskImgPath), IMREAD_UNCHANGED);
 
-    groundMaskImg = groundMaskImg & 1;  // 获得可以分割地面图片的模板
+//    groundMaskImg = groundMaskImg & 1;  // 获得可以分割地面图片的模板
     Mat skyMaskImg = ~ groundMaskImg;  // 获得可以风格的天空图片
 
     // 基准星空部分图片

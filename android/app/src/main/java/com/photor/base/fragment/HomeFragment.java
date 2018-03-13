@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.photor.R;
 import com.photor.base.activity.test.OpencvTestActivity;
 import com.photor.staralign.StarAlignBaseActivity;
+import com.photor.util.PermissionsUtils;
 
 /**
  * Created by xujian on 2018/2/26.
@@ -55,7 +56,10 @@ public class HomeFragment extends Fragment {
         rootView.findViewById(R.id.star_align_enter_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), StarAlignBaseActivity.class));
+                // 不动态申请权限的话，之后的写文件操作会失败。
+                if (PermissionsUtils.checkCameraPermission(HomeFragment.this)) {
+                    startActivity(new Intent(getActivity(), StarAlignBaseActivity.class));
+                }
             }
         });
 

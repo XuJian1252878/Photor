@@ -3,6 +3,7 @@ package com.photor.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
@@ -20,19 +21,22 @@ import java.util.Locale;
 public class FileUtils {
 
     public static String generateImgAbsPath() {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
-        String imgFileName = "JPEG_" + timeStamp + ".jpg";
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        if (TextUtils.equals(Environment.getExternalStorageState(), Environment.MEDIA_MOUNTED)) {
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+            String imgFileName = "JPEG_" + timeStamp + ".jpg";
+            File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 
-        if (!storageDir.exists()) {
-            if (!storageDir.mkdirs()) {
-                Log.e("TAG", "Throwing Errors....");
+            if (!storageDir.exists()) {
+                if (!storageDir.mkdirs()) {
+                    Log.e("TAG", "Throwing Errors....");
+                }
             }
-        }
 
-        File image = new File(storageDir, imgFileName);
-        String imgPath = image.getAbsolutePath();
-        return imgPath;
+            File image = new File(storageDir, imgFileName);
+            String imgPath = image.getAbsolutePath();
+            return imgPath;
+        }
+        return null;
     }
 
 

@@ -107,6 +107,10 @@ public class StarAlignBaseActivity extends AppCompatActivity {
                                 public void onStarAlignThreadFinish(int alignResultFlag) {
                                     if (alignResultFlag == StarAlignEnum.STAR_ALIGN_RESLUT_SUCCESS.getResCode()) {
                                         // 说明对齐操作成功
+//                                        Bitmap bm = Bitmap.createBitmap(alignResMat.cols(), alignResMat.rows(), Bitmap.Config.RGB_565);
+//                                        Utils.matToBitmap(alignResMat, bm);
+//                                        FileUtils.saveImgBitmap(imgAbsPath, bm);
+
                                         StarAlignSetting.builder()
                                                 .setAlignResultPath(imgAbsPath)
                                                 .start(StarAlignBaseActivity.this);

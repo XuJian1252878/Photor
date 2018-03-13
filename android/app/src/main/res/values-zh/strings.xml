@@ -16,4 +16,7 @@
 
     <string name="save_align_res_btn_label">保存</string>
     <string name="delete_align_res_btn_label">删除</string>
+
+    <string name="permission_write_storage">该操作需要您提供写存储权限</string>
+    <string name="permission_camera">该操作需要您提供照相机、写存储权限</string>
 </resources>

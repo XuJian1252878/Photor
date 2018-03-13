@@ -16,4 +16,7 @@
 
     <string name="save_align_res_btn_label">save</string>
     <string name="delete_align_res_btn_label">delete</string>
+
+    <string name="permission_write_storage">this operation need write storage permission!</string>
+    <string name="permission_camera">this operation need camera, write storage permission!</string>
 </resources>
