@@ -63,6 +63,11 @@ static void getBinMask( const Mat& comMask, Mat& binMask )
     binMask = comMask & 1;  // 获得二进制表示的掩膜
 }
 
+bool StarGrabCut::saveMaskMat(string maskImgPath) {
+    return imwrite(maskImgPath, *mask);
+}
+
+
 void StarGrabCut::showImage(JNIEnv *env, jobject instance) {
     if (oriImgMat->empty()) {
         return;

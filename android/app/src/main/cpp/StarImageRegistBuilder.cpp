@@ -3,6 +3,7 @@
 //
 
 #include "StarImageRegistBuilder.h"
+#include "Util.h"
 
 /**
  *
@@ -18,7 +19,10 @@ StarImageRegistBuilder::StarImageRegistBuilder(Mat_<Vec3b>& targetImage, std::ve
     this->imageCount = (int)sourceImages.size() + 1;
 
     this->skyMaskMat = skyMaskMat;
-    this->skyBoundaryRange = (int)(skyMaskMat.rows * 0.002);
+    this->skyBoundaryRange = (int)(skyMaskMat.rows * 0.005);
+
+    this->targetImage = targetImage;
+    this->sourceImages = sourceImages;
 
     // 开始对每一张图片进行分块操作
     for (int index = 0; index < sourceImages.size(); index ++) {
@@ -272,22 +276,26 @@ Mat StarImageRegistBuilder::mergeImage(int mergeMode) {
                                           this->rowParts, this->columnParts);
     switch(mergeMode) {
         case MERGE_MODE_MEAN:
+
+            for (int index = 0; index < this->sourceStarImages.size(); index ++) {
+//                Mat_<Vec3b> queryImgTransform = superimposedImg(this->sourceImages[index], this->targetImage);
+                Mat_<Vec3b> queryImgTransform = this->sourceImages[index];
+                // 对于配准图像和待配准图像做平均值操作
+                for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
+                    for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex ++) {
+                        Mat_<Vec3b> resultImg = resultStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
+                        Mat_<Vec3b> targetImg = this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
+                        Mat_<Vec3b> sourceImg =  this->sourceStarImages[index].getStarImagePart(rPartIndex, cPartIndex).getImage();
+                        resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(sourceImg, targetImg, queryImgTransform, this->imageCount);
+                    }
+                }
+            }
+
             // 对于配准图像和待配准图像做平均值操作
             for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
-                for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex ++) {
-
-
-                    Mat_<Vec3b> resultImg = resultStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
+                for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex++) {
                     Mat_<Vec3b> targetImg = this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
-
-                    for (int index = 0; index < this->sourceStarImages.size(); index ++) {
-                        Mat_<Vec3b> sourceImg =  this->sourceStarImages[index].getStarImagePart(rPartIndex, cPartIndex).getImage();
-                        resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(sourceImg, targetImg, this->imageCount);
-
-                    }
-
-                    resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(targetImg, targetImg, this->imageCount);
-
+                    resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(targetImg, targetImg, this->targetImage, this->imageCount);
                 }
             }
             return resultStarImage.mergeStarImageParts();

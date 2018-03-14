@@ -201,10 +201,10 @@ public class StarAlignSplitActivity extends AppCompatActivity {
                     public void run() {
                         if (saveMaskMat(maskImgPath)) {
                             // 存储获取的mask图像
-                            Bitmap bm = Bitmap.createBitmap(maskImgMat.cols(), maskImgMat.rows(), Bitmap.Config.RGB_565);
-                            Utils.matToBitmap(maskImgMat, bm);
-                            maskImgPath = FileUtils.generateTempImgAbsPath(StarAlignSplitActivity.this);
-                            FileUtils.saveImgBitmap(maskImgPath, bm);
+//                            Bitmap bm = Bitmap.createBitmap(maskImgMat.cols(), maskImgMat.rows(), Bitmap.Config.RGB_565);
+//                            Utils.matToBitmap(maskImgMat, bm);
+//                            maskImgPath = FileUtils.generateTempImgAbsPath(StarAlignSplitActivity.this);
+//                            FileUtils.saveImgBitmap(maskImgPath, bm);
 
                             // 更新界面信息
                             StarAlignSplitActivity.this.runOnUiThread(new Runnable() {

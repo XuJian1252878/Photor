@@ -18,3 +18,5 @@ using namespace cv::xfeatures2d;
 
 
 Mat_<Vec3b> superimposedImg(vector<Mat_<Vec3b>>& images, Mat_<Vec3b>& trainImg);
+
+Mat_<Vec3b> superimposedImg(Mat_<Vec3b>& queryImg, Mat_<Vec3b>& trainImg);

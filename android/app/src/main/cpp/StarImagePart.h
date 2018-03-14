@@ -33,7 +33,8 @@ public:
 
     void setImage(Mat_<Vec3b> imageMat);
 
-    void addImagePixelValue(Mat resultImg, Mat targetImage, int imageCount);
+    void addImagePixelValue(Mat& resultImg, Mat& targetImage,
+                            Mat& queryImgTransform, int imageCount);
 
     void addUpStarImagePart(Mat_<Vec3b> imageMat);
 

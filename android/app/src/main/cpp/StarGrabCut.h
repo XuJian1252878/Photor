@@ -44,6 +44,8 @@ public:
     static float calcSlop(int x, int y, int lastX, int lastY);
     static void setPtrAreaInMask(int x, int y, int lastX, int lastY);
 
+    static bool saveMaskMat(string maskImgPath);
+
 private:
     static void setSkyRectInMask();
     static void setGroundRectInMask();

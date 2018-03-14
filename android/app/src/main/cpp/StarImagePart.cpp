@@ -53,27 +53,34 @@ void StarImagePart::setImage(Mat_<Vec3b> imageMat) {
  * 前提 this->imagePart 初始为0矩阵
  * @param resultImg 当前被配准的 图片部分
  * @param targetImg 作为配准基准的 图像目标区域
+ * @param queryImgTransform 一整张queryImg图像根据targetImg做变换之后得到的图像，用于填充方块拼接之间的空隙
  * @param imageCount 一共有多少张图片需要被配准
  */
-void StarImagePart::addImagePixelValue(Mat resultImg, Mat targetImg, int imageCount) {
+void StarImagePart::addImagePixelValue(Mat& resultImg, Mat& targetImg,
+                                       Mat& queryImgTransform, int imageCount) {
     this->imagePart += (resultImg / imageCount * 1.0);
 
-//    for (int rIndex = 0; rIndex < this->imagePart.rows; rIndex ++) {
-//        for (int cIndex = 0; cIndex < this->imagePart.cols; cIndex ++) {
-//
-//            bool isBlackPixel = true;
-//            Vec3b resultImgItem = this->imagePart.at<Vec3b>(rIndex, cIndex);
-//            for (int i = 0; i < 3; i ++) {
-//                if (resultImgItem[i] > 0) {
-//                    isBlackPixel = false;
-//                }
-//            }
-//
-//            if (isBlackPixel) {
-//                this->imagePart.at<Vec3b>(rIndex, cIndex) = (targetImg.at<Vec3b>(rIndex, cIndex) * 1.0 / imageCount);
-//            }
-//        }
-//    }
+// 取出当前mask起始点的位置
+    int rMaskIndex = this->getRowPartIndex() * this->getImage().rows;
+    int cMaskIndex = this->getColumnPartIndex() * this->getImage().cols;
+
+    for (int rIndex = 0; rIndex < this->imagePart.rows; rIndex ++) {
+        for (int cIndex = 0; cIndex < this->imagePart.cols; cIndex ++) {
+
+
+            bool isBlackPixel = true;
+            Vec3b resultImgItem = this->imagePart.at<Vec3b>(rIndex, cIndex);
+            for (int i = 0; i < 3; i ++) {
+                if (resultImgItem[i] > 0) {
+                    isBlackPixel = false;
+                }
+            }
+
+            if (isBlackPixel) {
+                this->imagePart.at<Vec3b>(rIndex, cIndex) = (queryImgTransform.at<Vec3b>(rMaskIndex + rIndex, cMaskIndex + cIndex) * 1.0   / imageCount);
+            }
+        }
+    }
 }
 
 

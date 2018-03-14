@@ -199,7 +199,7 @@ Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env,
     Mat_<Vec3b> resGroundMat = superimposedImg(groundSourceImages, groundTargetImg);
 
     // 分别整合星空和地面部分的图片
-    Mat_<Vec3b> resultImage = resSkyMat + resGroundMat;
+    Mat_<Vec3b> resultImage = resSkyMat | resGroundMat;
 
     // 通过传地址在java中获得mat的方式
     resMatPtr->create(resultImage.rows, resultImage.cols, resultImage.type());
@@ -291,9 +291,9 @@ Java_com_photor_staralign_StarAlignSplitActivity_saveMaskMat(JNIEnv *env, jobjec
                                                              jstring maskImgPath_) {
 
     const char *maskImgPath = env->GetStringUTFChars(maskImgPath_, 0);
-//    bool isSuccess = StarGrabCut::saveMaskMat(maskImgPath);
+    bool isSuccess = StarGrabCut::saveMaskMat(maskImgPath);
     env->ReleaseStringUTFChars(maskImgPath_, maskImgPath);
-    return (jboolean)true;
+    return (jboolean)isSuccess;
 }
 
 extern "C"
