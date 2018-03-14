@@ -8,9 +8,12 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,9 +33,9 @@ import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
-import java.io.File;
 
-import static com.photor.staralign.StarAlignBaseActivity.EXTRA_BASE_SELECT_PHOTO_PATH;
+import static com.photor.staralign.StarAlignOperator.EXTRA_BASE_SELECT_PHOTO_PATH;
+import static com.photor.staralign.StarAlignOperator.EXTRA_MASK_IMG_PATH;
 
 public class StarAlignSplitActivity extends AppCompatActivity {
 
@@ -81,6 +84,14 @@ public class StarAlignSplitActivity extends AppCompatActivity {
     }
 
     private void initUI() {
+
+        // 0. 显示action bar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         // 1. 显示待切割的图片信息
         Intent intent = getIntent();
@@ -152,25 +163,6 @@ public class StarAlignSplitActivity extends AppCompatActivity {
         starAlignSplitContainer.addView(graffitiView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         // 2. 绑定绘图需要的事件
-        // 2.1 设置选择星空区域的矩形框
-        findViewById(R.id.btn_select_sky).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                graffitiView.setShape(GraffitiView.Shape.HOLLOW_RECT);
-                graffitiView.setColor(Color.RED);
-                OPERATE_FLAG = 1;  // 星空
-            }
-        });
-
-        // 2.2 设置选择地面区域的矩形框
-        findViewById(R.id.btn_select_ground).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                graffitiView.setShape(GraffitiView.Shape.HOLLOW_RECT);
-                graffitiView.setColor(Color.BLUE);
-                OPERATE_FLAG = 2;  // 地面
-            }
-        });
 
         // 2.3 设置划分界限的的线条
         findViewById(R.id.btn_star_ground_boundary).setOnClickListener(new View.OnClickListener() {
@@ -222,7 +214,7 @@ public class StarAlignSplitActivity extends AppCompatActivity {
                                     tipToast.dismiss();
                                     // 返回上一个Activity，并且传回mask路径
                                     Intent intent = new Intent();
-                                    intent.putExtra(StarAlignBaseActivity.EXTRA_MASK_IMG_PATH, maskImgPath);
+                                    intent.putExtra(EXTRA_MASK_IMG_PATH, maskImgPath);
                                     setResult(Activity.RESULT_OK, intent);
                                     finish();
                                 }
@@ -278,6 +270,17 @@ public class StarAlignSplitActivity extends AppCompatActivity {
         paintSizeBar.setProgress((int) graffitiView.getPaintSize());
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private class LoadGraffitiAsyncTask extends AsyncTask<Void, Integer, Void> {
 

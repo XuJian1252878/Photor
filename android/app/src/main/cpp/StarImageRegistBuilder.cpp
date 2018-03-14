@@ -98,10 +98,6 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarI
     int rMaskIndex = sourceImagePart.getRowPartIndex() * sourceImg.rows;
     int cMaskIndex = sourceImagePart.getColumnPartIndex() * sourceImg.cols;
 
-
-//        if( !sourceImg.data || !targetImg.data )
-//        { std::cout<< " --(!) Error loading images " << std::endl; return NULL; }
-
     //-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
     int minHessian = 400;
 

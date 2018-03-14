@@ -10,7 +10,9 @@
     <string name="main_activity_action_menu_item_settings">设置</string>
 
     <string name="star_align_btn_select_label">请选择星空图片</string>
+    <string name="star_align_btn_boundary_label">划分星空地面分界线</string>
     <string name="star_align_enter_btn_label">星空图片对齐</string>
+
     <string name="star_align_progress_dialog_title">正在进行对齐操作</string>
     <string name="star_align_progress_dialog_negetive_btn_label">取消</string>
 
@@ -19,4 +21,16 @@
 
     <string name="permission_write_storage">该操作需要您提供写存储权限</string>
     <string name="permission_camera">该操作需要您提供照相机、写存储权限</string>
+
+    <string name="sky_ground_boundary_btn_label">分界线</string>
+    <string name="sky_ground_reset_btn_label">重置</string>
+    <string name="sky_ground_split_btn_label">分割</string>
+
+    <string name="sky_ground_align_save_failed">图片文件保存失败！</string>
+
+    <string-array name="star_align_steps">
+        <item>选择图片</item>
+        <item>划定分界线</item>
+        <item>对齐</item>
+    </string-array>
 </resources>

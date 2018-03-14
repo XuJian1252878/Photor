@@ -8,38 +8,60 @@
     tools:context="com.photor.staralign.StarAlignBaseActivity">
 
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/star_align_rv"
+    <include layout="@layout/toolbar_main"/>
+
+    <com.shuhart.stepview.StepView
+        android:id="@+id/star_align_step_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"/>
+        app:selectedCircleColor="@color/colorAccent"
+        app:selectedTextColor="@color/colorAccent"
+        app:nextTextColor="@color/colorAccent"
+        app:nextStepLineColor="@color/colorAccent"
+        app:doneCircleColor="@color/colorAccent"
+        app:doneStepLineColor="@color/colorAccent"
+        app:selectedStepNumberColor="@color/colorPrimary"
+        app:doneStepMarkColor="@color/colorPrimary"
+        android:padding="6dp"
+        android:typeface="@font/iran_sans_mobile"
+        app:animationType="All"
+        app:stepPadding="12dp"
+        app:steps="@array/star_align_steps"
+        android:layout_marginTop="10dp"/>
 
+
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/star_align_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/star_align_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:text="@string/star_align_btn_select_label"
         android:layout_gravity="center_horizontal"/>
 
 
-    <Button
-        android:id="@+id/graffiti_test_btn"
-        android:text="涂鸦测试"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <!--<Button-->
+        <!--android:id="@+id/graffiti_test_btn"-->
+        <!--android:text="涂鸦测试"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content" />-->
 
 
-    <Button
-        android:id="@+id/grab_cut_test_btn"
-        android:text="抠图测试"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <!--<Button-->
+        <!--android:id="@+id/grab_cut_test_btn"-->
+        <!--android:text="抠图测试"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content" />-->
 
-
-    <ImageView
-        android:id="@+id/test_result_iv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </LinearLayout>

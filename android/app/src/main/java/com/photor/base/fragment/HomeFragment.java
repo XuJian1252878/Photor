@@ -27,6 +27,7 @@ import com.photor.util.PermissionsUtils;
 public class HomeFragment extends Fragment {
 
     private static final int REQUEST_PERMISSION = 233;
+    private static final int REQUEST_CAMERA_PERMISSION_STAR_ALIGN = 234;
 
     public static HomeFragment newInstance() {
         HomeFragment homeFragment = new HomeFragment();
@@ -57,8 +58,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // 不动态申请权限的话，之后的写文件操作会失败。
-                if (PermissionsUtils.checkCameraPermission(HomeFragment.this)) {
-                    startActivity(new Intent(getActivity(), StarAlignBaseActivity.class));
+                if (PermissionsUtils.checkCameraPermission(HomeFragment.this, REQUEST_CAMERA_PERMISSION_STAR_ALIGN)) {
+                    startStarAlign();
                 }
             }
         });
@@ -104,6 +105,9 @@ public class HomeFragment extends Fragment {
                     getActivity().finish();
                 }
                 break;
+            case REQUEST_CAMERA_PERMISSION_STAR_ALIGN:  // 申请星空对齐需要的权限信息
+                startStarAlign();
+                break;
             default:
                 getActivity().finish();
                 break;
@@ -112,5 +116,10 @@ public class HomeFragment extends Fragment {
 
     private void showHint(String hint){
         Toast.makeText(getContext(),hint , Toast.LENGTH_LONG).show();
+    }
+
+    // 启动图片对齐的操作
+    private void startStarAlign() {
+        startActivity(new Intent(getActivity(), StarAlignBaseActivity.class));
     }
 }

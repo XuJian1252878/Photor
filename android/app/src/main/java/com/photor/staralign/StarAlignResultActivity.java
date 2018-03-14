@@ -1,5 +1,6 @@
 package com.photor.staralign;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -34,7 +35,7 @@ public class StarAlignResultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_star_align_result);
 
         // 获取对齐结果的图片路径
-        alignResImgPath = getIntent().getStringExtra(StarAlignSetting.EXTRA_ALIGN_RESULT_PATH);
+        alignResImgPath = getIntent().getStringExtra(StarAlignOperator.EXTRA_ALIGN_RESULT_PATH);
         Log.d("alignResImgPath", alignResImgPath);
         initUI();
     }
@@ -49,7 +50,7 @@ public class StarAlignResultActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 FileUtils.delteFileByPath(alignResImgPath);
-                Toast.makeText(this, "图片未保存", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getText(R.string.sky_ground_align_save_failed), Toast.LENGTH_SHORT).show();
                 finish();
                 return true;
         }

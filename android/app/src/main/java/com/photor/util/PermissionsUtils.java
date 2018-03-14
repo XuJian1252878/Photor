@@ -22,27 +22,27 @@ import java.util.List;
 
 public class PermissionsUtils {
 
-    public static boolean checkWriteStoragePermission(Activity activity) {
+    public static boolean checkWriteStoragePermission(Activity activity, int requestCode) {
         boolean writeStoragePermissionGranted = checkSelfPermission(activity, PermissionsConstant.PERMISSIONS_EXTERNAL_WRITE);
         if (!writeStoragePermissionGranted) {
             requestPermission(activity,
                     PermissionsConstant.PERMISSIONS_EXTERNAL_WRITE,
                     activity.getString(R.string.permission_write_storage),
-                    PermissionsConstant.REQUEST_EXTERNAL_WRITE);
+                    requestCode);
         }
 
         return writeStoragePermissionGranted;
     }
 
 
-    public static boolean checkCameraPermission(Fragment fragment) {
+    public static boolean checkCameraPermission(Fragment fragment, int requestCode) {
         boolean cameraPermissionGranted = checkSelfPermission(fragment.getContext(), PermissionsConstant.PERMISSIONS_CAMERA);
 
         if (!cameraPermissionGranted) {
             requestPermission(fragment.getActivity(),
-                    com.example.photopicker.utils.PermissionsConstant.PERMISSIONS_CAMERA,
+                    PermissionsConstant.PERMISSIONS_CAMERA,
                     fragment.getString(R.string.permission_camera),
-                    com.example.photopicker.utils.PermissionsConstant.REQUEST_CAMERA);
+                    requestCode);
         }
 
         return cameraPermissionGranted;

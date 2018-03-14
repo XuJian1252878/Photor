@@ -6,59 +6,45 @@
     android:layout_height="match_parent"
     tools:context="com.photor.staralign.StarAlignSplitActivity">
 
-    <FrameLayout
-        android:id="@+id/star_align_split_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <include layout="@layout/toolbar_main"/>
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
+            android:gravity="center_horizontal"
             android:layout_height="wrap_content">
-
-
-            <Button
-                android:id="@+id/btn_select_sky"
-                android:text="星空"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:id="@+id/btn_select_ground"
-                android:text="地面"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/btn_star_ground_boundary"
-                android:text="分界线"
+                android:text="@string/sky_ground_boundary_btn_label"
+                android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
 
             <Button
                 android:id="@+id/btn_clear"
-                android:text="重置"
+                android:text="@string/sky_ground_reset_btn_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/btn_star_grab_cut"
-                android:text="确定"
+                android:text="@string/sky_ground_split_btn_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal"
             android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
@@ -66,23 +52,23 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:background="@drawable/graffiti_btn_effect_rect_line"
-
                 android:padding="2dp">
 
                 <ImageView
                     android:id="@+id/btn_set_color"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"/>
+                    android:layout_height="fill_parent" />
             </RelativeLayout>
 
             <SeekBar
                 android:id="@+id/paint_size"
-                android:layout_width="260dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="33dp"
                 android:max="100"
                 android:paddingBottom="17dp"
-                android:paddingLeft="12dp"
-                android:paddingRight="10dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="10dp"
                 android:paddingTop="3dp"
                 android:progressDrawable="@drawable/graffiti_seekbar_bg"
                 android:thumb="@drawable/graffiti_thumb_seekbar"/>
@@ -91,12 +77,18 @@
                 android:id="@+id/paint_size_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="2dp"
-                android:text=""
-                android:textColor="#ffffff"
+                android:layout_gravity="center"
+                android:paddingStart="2dp"
+                android:text="30"
+                android:textColor="#000000"
                 android:textSize="14dp"/>
         </LinearLayout>
 
+        <FrameLayout
+            android:id="@+id/star_align_split_container"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 
