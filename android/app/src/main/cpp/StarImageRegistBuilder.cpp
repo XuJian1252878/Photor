@@ -286,7 +286,7 @@ Mat StarImageRegistBuilder::mergeImage(int mergeMode) {
                         Mat_<Vec3b> resultImg = resultStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
                         Mat_<Vec3b> targetImg = this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
                         Mat_<Vec3b> sourceImg =  this->sourceStarImages[index].getStarImagePart(rPartIndex, cPartIndex).getImage();
-                        resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(sourceImg, targetImg, queryImgTransform, this->imageCount);
+                        resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(sourceImg, targetImg, queryImgTransform, this->skyMaskMat, this->imageCount);
                     }
                 }
             }
@@ -295,7 +295,7 @@ Mat StarImageRegistBuilder::mergeImage(int mergeMode) {
             for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
                 for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex++) {
                     Mat_<Vec3b> targetImg = this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
-                    resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(targetImg, targetImg, this->targetImage, this->imageCount);
+                    resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(targetImg, targetImg, this->targetImage, this->skyMaskMat, this->imageCount);
                 }
             }
             return resultStarImage.mergeStarImageParts();
