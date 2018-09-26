@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.photor.R;
 import com.photor.base.activity.test.OpencvTestActivity;
+import com.photor.dofcalculator.activity.DofCalcMainActivity;
 import com.photor.staralign.StarAlignBaseActivity;
 import com.photor.util.PermissionsUtils;
 
@@ -61,6 +62,14 @@ public class HomeFragment extends Fragment {
                 if (PermissionsUtils.checkCameraPermission(HomeFragment.this, REQUEST_CAMERA_PERMISSION_STAR_ALIGN)) {
                     startStarAlign();
                 }
+            }
+        });
+
+        // 景深计算
+        rootView.findViewById(R.id.dof_calc_enter_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDofCalc();
             }
         });
 
@@ -121,5 +130,10 @@ public class HomeFragment extends Fragment {
     // 启动图片对齐的操作
     private void startStarAlign() {
         startActivity(new Intent(getActivity(), StarAlignBaseActivity.class));
+    }
+
+    // 启动景深计算器的操作
+    private void startDofCalc() {
+        startActivity(new Intent(getActivity(), DofCalcMainActivity.class));
     }
 }

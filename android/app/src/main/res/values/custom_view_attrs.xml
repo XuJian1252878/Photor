@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 设定自定义控件DepthOfFieldView的自定义属性 -->
+    <declare-styleable name="DepthOfFieldView">
+        <attr name="textSize" format="dimension" />
+        <attr name="targetPosition" format="float" />
+    </declare-styleable>
+
+    <!-- 设定自定义view的自定义属性，指明这是View的自定义属性 -->
+    <!-- declare-styleable name="Wheel" 能够通过style或theme设置XML属性的值 -->
+    <declare-styleable name="Wheel">
+        <!-- 自定义View的自定义属性 -->
+        <attr name="nodeWidth" format="dimension" />
+        <attr name="nodeTextSize" format="dimension" />
+    </declare-styleable>
+
+</resources>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="distance_list">
+        <item>0.1</item>
+        <item>0.2</item>
+        <item>0.5</item>
+        <item>1</item>
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+        <item>20</item>
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
+        <item>500</item>
+        <item>1000</item>
+    </array>
+
+    <array name="aperture_list">
+        <item>0.5</item>
+        <item>0.7</item>
+        <item>1.0</item>
+        <item>1.4</item>
+        <item>2.0</item>
+        <item>2.8</item>
+        <item>4.0</item>
+        <item>5.6</item>
+        <item>8.0</item>
+        <item>11.0</item>
+        <item>16.0</item>
+        <item>22.0</item>
+        <item>32.0</item>
+        <item>45.0</item>
+        <item>64.0</item>
+    </array>
+
+    <array name="focal_list">
+        <item>8.0</item>
+        <item>10.0</item>
+        <item>14.0</item>
+        <item>24.0</item>
+        <item>35.0</item>
+        <item>50.0</item>
+        <item>85.0</item>
+        <item>135.0</item>
+        <item>200.0</item>
+        <item>500.0</item>
+        <item>800.0</item>
+        <item>1200.0</item>
+        <item>2000.0</item>
+        <item>5000.0</item>
+    </array>
+
+    <string-array name="sensers_array">
+        <item>Nikon 1 series</item>
+        <item>M43</item>
+        <item>APS-C Canon</item>
+        <item>APS-C Nikon/Pentax/Sony</item>
+        <item>APS-H Canon</item>
+        <item>Full Frame 35mm</item>
+        <item>Medium Frame 6x4.5</item>
+        <item>Medium Frame 6x6</item>
+        <item>Medium Frame 6x6</item>
+        <item>Medium Frame 6x7</item>
+        <item>Medium Frame 6x9</item>
+        <item>Medium Frame 6x12</item>
+        <item>Medium Frame 6x17</item>
+        <item>Large Frame 4x5</item>
+        <item>Large Frame 5x7</item>
+        <item>Large Frame 8x10</item>
+    </string-array>
+
+</resources>

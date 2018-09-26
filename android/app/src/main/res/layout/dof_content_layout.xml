@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- app:layout_behavior="@string/appbar_scrolling_view_behavior" 使得这个RelativeLayout不会被之前
+ 的ActionBar覆盖-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.photor.dofcalculator.activity.DofCalcMainActivity"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <com.photor.dofcalculator.view.DepthOfFieldView
+        android:id="@+id/depth_view"
+        android:layout_width="match_parent"
+        android:layout_height="120sp"
+        android:layout_marginStart="1sp"
+        android:layout_marginEnd="2sp"
+        custom:targetPosition="0.5"
+        custom:textSize="20sp">
+
+    </com.photor.dofcalculator.view.DepthOfFieldView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="3dp"
+        android:layout_marginTop="30sp">
+
+        <TextView
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="@dimen/main_activity_text_size"
+            android:text="@string/sensor_size_text_view" />
+
+        <!--<Spinner-->
+        <!--android:id="@+id/sensor_size_spinner"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:spinnerMode="dialog" />-->
+
+        <TextView
+            android:id="@+id/sensor_size_text_view"
+            android:gravity="center"
+            android:textSize="@dimen/main_activity_text_size"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/sensor_size_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sensor_size_button_label"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="30sp"
+        android:layout_marginStart="20sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10sp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="@dimen/main_activity_text_size"
+                    android:text="@string/hyperfocal_distance_text_view_label"/>
+                <TextView
+                    android:id="@+id/hyperfocal_distance_text_view"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:textSize="@dimen/main_activity_text_size"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hyperfocal_distance_text_view_number_init"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10sp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="@dimen/main_activity_text_size"
+                    android:text="@string/near_depth_of_field_text_view_label"/>
+
+                <TextView
+                    android:id="@+id/near_depth_of_field_text_view"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:textSize="@dimen/main_activity_text_size"
+                    android:layout_height="wrap_content"
+                    android:text="@string/near_depth_of_field_text_view_number_init"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10sp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="@dimen/main_activity_text_size"
+                    android:text="@string/depth_of_field_text_view_label"/>
+
+                <TextView
+                    android:id="@+id/depth_of_field_text_view"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="@dimen/main_activity_text_size"
+                    android:text="@string/depth_of_field_text_view_number_init"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10sp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="@dimen/main_activity_text_size"
+                    android:text="@string/far_depth_of_field_text_view_label"/>
+
+                <TextView
+                    android:id="@+id/far_depth_of_field_text_view"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/main_activity_text_size"
+                    android:text="@string/far_depth_of_field_text_view_number_init"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_weight="5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20sp">
+
+        <!-- 关于焦距的设置 -->
+        <!-- android:translationZ="3dp" 数值的大小也决定了 控件在z轴上显示的位置 -->
+        <TextView
+            android:layout_width="80sp"
+            android:layout_height="30sp"
+            android:translationZ="5dp"
+            android:layout_above="@+id/focal_wheel"
+            android:background="@color/accent_material_light"
+            android:textSize="@dimen/main_activity_text_size"
+            android:text="@string/focal_text_view_label"/>
+
+        <!-- 实时显示当前的焦距数值 -->
+        <TextView
+            android:id="@+id/focal_text_view_number"
+            android:layout_width="match_parent"
+            android:layout_height="30sp"
+            android:layout_alignParentStart="true"
+            android:background="@color/accent_material_light"
+            android:text="@string/focal_text_view_number_init"
+            android:textSize="@dimen/main_activity_text_size"
+            android:layout_above="@+id/focal_wheel"
+            android:textAlignment="center"
+            android:translationZ="3dp"/>
+
+        <com.photor.dofcalculator.view.Wheel
+            android:id="@+id/focal_wheel"
+            android:layout_width="match_parent"
+            android:layout_height="70sp"
+            custom:nodeWidth="100sp"
+            custom:nodeTextSize="20sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_above="@+id/aperture_text_view_number"/>
+
+        <!-- 关于光圈的设置 -->
+        <TextView
+            android:layout_width="80sp"
+            android:layout_height="30sp"
+            android:translationZ="5dp"
+            android:textSize="@dimen/main_activity_text_size"
+            android:layout_above="@+id/aperture_wheel"
+            android:background="@color/accent_material_light"
+            android:text="@string/aperture_text_view_label"/>
+
+        <TextView
+            android:id="@+id/aperture_text_view_number"
+            android:layout_width="match_parent"
+            android:layout_height="30sp"
+            android:layout_above="@+id/aperture_wheel"
+            android:layout_alignParentStart="true"
+            android:background="@color/accent_material_light"
+            android:text="@string/aperture_text_view_number_init"
+            android:textSize="@dimen/main_activity_text_size"
+            android:textAlignment="center"
+            android:translationZ="3dp"/>
+
+
+        <com.photor.dofcalculator.view.Wheel
+            android:id="@+id/aperture_wheel"
+            android:layout_width="match_parent"
+            android:layout_height="70sp"
+            custom:nodeWidth="80sp"
+            custom:nodeTextSize="20sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_above="@+id/distance_text_view_number" />
+
+
+        <!-- 关于物体距离的设置 -->
+        <TextView
+            android:layout_width="80sp"
+            android:layout_height="30sp"
+            android:translationZ="5dp"
+            android:textSize="@dimen/main_activity_text_size"
+            android:layout_above="@+id/distance_wheel"
+            android:background="@color/accent_material_light"
+            android:text="@string/distance_text_view_label"/>
+
+        <TextView
+            android:id="@+id/distance_text_view_number"
+            android:layout_width="match_parent"
+            android:layout_height="30sp"
+            android:translationZ="3dp"
+            android:layout_above="@+id/distance_wheel"
+            android:layout_alignParentStart="true"
+            android:background="@color/accent_material_light"
+            android:text="@string/distance_text_view_number_init"
+            android:textSize="@dimen/main_activity_text_size"
+            android:textAlignment="center" />
+
+        <com.photor.dofcalculator.view.Wheel
+            android:id="@+id/distance_wheel"
+            android:layout_width="match_parent"
+            android:layout_height="70sp"
+            custom:nodeWidth="200sp"
+            custom:nodeTextSize="20sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_alignParentBottom="true"/>
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>

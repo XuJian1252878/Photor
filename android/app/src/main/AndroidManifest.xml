@@ -34,6 +34,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+        <!-- 主启动界面 -->
         <activity
             android:name=".base.MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -45,14 +46,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+        <!-- opencv 测试界面 -->
         <activity android:name=".base.activity.test.OpencvTestActivity" />
+
+        <!-- 星野图片对齐界面 -->
         <activity android:name=".staralign.StarAlignBaseActivity" />
-        <activity android:name="com.example.photopicker.PhotoPickerActivity" />
-        <activity android:name="com.example.photopicker.PhotoPagerActivity" />
         <activity android:name=".staralign.StarAlignResultActivity" />
         <activity android:name=".staralign.StarAlignSplitActivity" />
         <activity android:name=".staralign.GrabCutActivity" />
+
+        <!-- 景深计算器界面 -->
+        <activity android:name=".dofcalculator.activity.DofCalcMainActivity" />
+        <activity android:name=".dofcalculator.activity.SensorSizeActivity" />
+        <activity android:name=".dofcalculator.activity.CustomCircleOfConfusionActivity" />
+
+        <!-- 公共组件，图片选择器界面 -->
+        <activity android:name="com.example.photopicker.PhotoPickerActivity" />
+        <activity android:name="com.example.photopicker.PhotoPagerActivity" />
     </application>
 
 </manifest>
