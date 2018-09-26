@@ -59,9 +59,9 @@
         <activity android:name=".staralign.GrabCutActivity" />
 
         <!-- 景深计算器界面 -->
-        <activity android:name=".dofcalculator.activity.DofCalcMainActivity" />
-        <activity android:name=".dofcalculator.activity.SensorSizeActivity" />
-        <activity android:name=".dofcalculator.activity.CustomCircleOfConfusionActivity" />
+        <activity android:launchMode="singleTask" android:name=".dofcalculator.activity.DofCalcMainActivity" />
+        <activity android:launchMode="singleTask" android:name=".dofcalculator.activity.SensorSizeActivity" />
+        <activity android:launchMode="singleTask" android:name=".dofcalculator.activity.CustomCircleOfConfusionActivity" />
 
         <!-- 公共组件，图片选择器界面 -->
         <activity android:name="com.example.photopicker.PhotoPickerActivity" />
