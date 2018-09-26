@@ -2,8 +2,33 @@
 // Created by 许舰 on 2018/3/11.
 //
 
+#include <sys/stat.h>
 #include "Util.h"
 
+Mat_<Vec3b> getTransformImgByHomo(Mat_<Vec3b>& queryImg, Mat homo) {
+    //图像配准
+    Mat imageTransform;
+    warpPerspective(queryImg, imageTransform, homo, Size(queryImg.cols, queryImg.rows));
+
+    return imageTransform;
+}
+
+/**
+ * 按照 平均比例将图片叠加到一起
+ * @param sourceImages
+ * @return
+ */
+Mat_<Vec3b> addMeanImgs(std::vector<Mat_<Vec3b>>& sourceImages) {
+    Mat_<Vec3b> resImage;
+    if (sourceImages.size() <= 0) {
+        return resImage;
+    }
+    resImage = Mat(sourceImages[0].rows, sourceImages[0].cols, sourceImages[0].type());
+    for (int index = 0; index < sourceImages.size(); index ++) {
+        resImage += (sourceImages[index] / sourceImages.size());
+    }
+    return resImage;
+}
 
 Mat_<Vec3b> superimposedImg(vector<Mat_<Vec3b>>& images, Mat_<Vec3b>& trainImg) {
 
@@ -75,7 +100,7 @@ Mat_<Vec3b> superimposedImg(vector<Mat_<Vec3b>>& images, Mat_<Vec3b>& trainImg) 
 
 Mat_<Vec3b> superimposedImg(Mat_<Vec3b>& queryImg, Mat_<Vec3b>& trainImg) {
     //-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
-    int minHessian = 40;
+    int minHessian = 400;
     Ptr<SURF> detector = SURF::create(minHessian);
     std::vector<KeyPoint> trainKeyPoints;
     detector->detect(trainImg, trainKeyPoints);
