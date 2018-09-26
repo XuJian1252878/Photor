@@ -12,26 +12,27 @@ StarImage::StarImage() {
  * @param image
  * @param rowParts
  * @param columnParts
+ * @param isClone  StarImage中的imagePart是不是 原始oriImg 的引用, true 是；false 不是
  */
-StarImage::StarImage(Mat image, int rowParts, int columnParts) {
+StarImage::StarImage(Mat image, int rowParts, int columnParts, bool isClone) {
     this->image = image;
     this->rowParts = rowParts;
     this->columnParts = columnParts;
 
     // 初始化时就对每一个图片进行分块
-    splitImage();
+    splitImage(isClone);
 }
 
 
 /**
  *
  */
-void StarImage::splitImage() {
+void StarImage::splitImage(bool isClone) {
 
     this->initStarImageParts();
 
-    int rowStep = this->image.rows / this->rowParts;
-    int columnStep = this->image.cols / this->columnParts;
+    int rowStep = this->image.rows / this->rowParts;  // y step
+    int columnStep = this->image.cols / this->columnParts;  // x step
 
     for (int rIndex = 0; rIndex < this->rowParts; rIndex ++) {
 
@@ -45,6 +46,22 @@ void StarImage::splitImage() {
 
         for(int cIndex = 0; cIndex < this->columnParts; cIndex ++) {
 
+            // 上 左 下 右
+            int directions[] = {1, 1, 1, 1};
+            // 纵向范围确定
+            if (rIndex == 0) {
+                directions[0] = 0;
+            } else if (rIndex == this->rowParts - 1) {
+                directions[2] = 0;
+            }
+            // 横向范围确定
+            if (cIndex == 0) {
+                directions[1] = 0;
+            } else if (cIndex == this->columnParts - 1) {
+                directions[3] = 0;
+            }
+
+            // 确定最终结果拼接范围
             int atParentStartColumnIndex = cIndex * columnStep;
             int atParentEndColumnIndex = 0;
             if (cIndex == this->columnParts - 1) {
@@ -53,9 +70,19 @@ void StarImage::splitImage() {
                 atParentEndColumnIndex = (cIndex + 1) * columnStep;
             }
 
-            StarImagePart starImagePart = StarImagePart(this->image, atParentStartRowIndex, atParentEndRowIndex,
+            // 确定对齐范围
+            int alignStartRowIndex = atParentStartRowIndex - directions[0] * rowStep / 2;
+            int alignEndRowIndex = atParentEndRowIndex + directions[2] * rowStep / 2;
+            int alignStartColumnIndex = atParentStartColumnIndex - directions[1] * columnStep / 2;
+            int alignEndColumnIndex = atParentEndColumnIndex + directions[3] * columnStep / 2;
+
+            StarImagePart starImagePart = StarImagePart(this->image,
+                                                        atParentStartRowIndex, atParentEndRowIndex,
                                                         atParentStartColumnIndex, atParentEndColumnIndex,
-                                                        rIndex, cIndex);
+                                                        rIndex, cIndex,
+                                                        alignStartRowIndex, alignEndRowIndex,
+                                                        alignStartColumnIndex, alignEndColumnIndex,
+                                                        isClone);
 
             this->starImageParts[rIndex].push_back(starImagePart);
 
@@ -69,7 +96,7 @@ void StarImage::splitImage() {
  * @param columnPartIndex
  * @return
  */
-StarImagePart StarImage::getStarImagePart(int rowPartIndex, int columnPartIndex) {
+StarImagePart& StarImage::getStarImagePart(int rowPartIndex, int columnPartIndex) {
     return this->starImageParts[rowPartIndex][columnPartIndex];
 }
 
@@ -93,18 +120,26 @@ Mat StarImage::mergeStarImageParts() {
         for(int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex ++) {
 
             StarImagePart tmpPart = this->starImageParts[rPartIndex][cPartIndex];
+
             int atParentStartRowIndex = tmpPart.getAtParentStartRowIndex();
             int atParentEndRowIndex = tmpPart.getAtParentEndRowIndex();
             int atParentStartColumnIndex = tmpPart.getAtParentStartColumnIndex();
             int atParentEndColumnIndex = tmpPart.getAtParentEndColumnIndex();
 
-            Mat_<Vec3b> tmpImage = tmpPart.getImage();
+            int alignStartRowIndex = tmpPart.getAlignStartRowIndex();
+            int alignStartColumnIndex = tmpPart.getAlignStartColumnIndex();
+
+            Mat_<Vec3b> tmpAlignImage = tmpPart.getImage();
+
+            int rowStart = atParentStartRowIndex - alignStartRowIndex, rowEnd = atParentEndRowIndex - alignStartRowIndex;
+            int columnStart = atParentStartColumnIndex - alignStartColumnIndex, columnEnd = atParentEndColumnIndex - alignStartColumnIndex;
+
+            Mat_<Vec3b> tmpImage = tmpAlignImage(Range(rowStart, rowEnd),
+                                                 Range(columnStart, columnEnd));
 
             for (int i = atParentStartRowIndex, it = 0; i < atParentEndRowIndex; i ++, it ++) {
                 for (int j = atParentStartColumnIndex, jt = 0; j < atParentEndColumnIndex; j ++, jt ++) {
-//                        resultImage.at<cv::Vec3b>(i, j) = tmpPart.getImage().at<cv::Vec3b>(it, jt);
                     resultImage(i, j) = tmpImage(it, jt);
-//                    cout << "merge: " << std::to_string(i) << "\t" << std::to_string(j) << endl;
                 }
             }
 
