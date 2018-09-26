@@ -157,6 +157,7 @@ android {
         main {
             res.srcDirs = [
                     'src/main/res',
+                    'src/main/res/main',
                     'src/main/res/staralign',
                     'src/main/res/dof'
             ]
