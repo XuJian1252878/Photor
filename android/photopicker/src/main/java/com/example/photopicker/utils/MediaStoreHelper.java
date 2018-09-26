@@ -9,12 +9,11 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 
 import com.example.photopicker.R;
+import com.example.photopicker.PhotoPicker;
 import com.example.photopicker.entity.PhotoDirectory;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.example.photopicker.PhotoPicker.EXTRA_SHOW_GIF;
 
 /**
  * Created by xujian on 2018/2/5.
@@ -47,7 +46,7 @@ public class MediaStoreHelper {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             // 这里的args是和loader对应的activity或者fragment绑定的，直接获取就可以，也有助于代码的分离
-            return new PhotoDirectoryLoader(context, args.getBoolean(EXTRA_SHOW_GIF, false));
+            return new PhotoDirectoryLoader(context, args.getBoolean(PhotoPicker.EXTRA_SHOW_GIF, false));
         }
 
         @Override

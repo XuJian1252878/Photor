@@ -11,12 +11,12 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.lifecycle.AndroidLifecycleUtils;
 import com.example.photopicker.R;
 import com.example.photopicker.entity.Photo;
 import com.example.photopicker.entity.PhotoDirectory;
 import com.example.photopicker.event.OnItemCheckListener;
 import com.example.photopicker.event.OnPhotoClickListener;
-import com.example.photopicker.utils.AndroidLifecycleUtils;
 import com.example.photopicker.utils.MediaStoreHelper;
 
 import java.io.File;

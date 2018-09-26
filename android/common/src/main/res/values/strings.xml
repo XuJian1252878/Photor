@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">common</string>
+
+    <string name="pick_error_no_permission">无权限</string>
+    <string name="pick_permission_dialog_title">权限拒绝</string>
+    <string name="pick_permission_dialog_ok">好</string>
+    <string name="pick_permission_dialog_cancel">拒绝</string>
+
+    <string name="pick_permission_rationale">浏览图片需要您提供浏览存储的权限</string>
+    <string name="pick_permission_rationale_write_storage">保存拍照图片需要您提供写存储权限</string>
+</resources>

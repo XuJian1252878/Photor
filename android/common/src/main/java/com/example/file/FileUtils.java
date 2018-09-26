@@ -1,4 +1,4 @@
-package com.example.photopicker.utils;
+package com.example.file;
 
 import android.content.Context;
 import android.content.pm.PackageManager;

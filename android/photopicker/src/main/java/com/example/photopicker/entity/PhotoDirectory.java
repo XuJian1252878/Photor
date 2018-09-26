@@ -2,7 +2,7 @@ package com.example.photopicker.entity;
 
 import android.text.TextUtils;
 
-import com.example.photopicker.utils.FileUtils;
+import com.example.file.FileUtils;
 
 import java.util.ArrayList;
 import java.util.List;

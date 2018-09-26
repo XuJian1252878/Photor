@@ -7,7 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
-import com.example.photopicker.utils.PermissionsUtils;
+
+import com.example.permissions.PermissionsUtils;
 
 import java.util.ArrayList;
 

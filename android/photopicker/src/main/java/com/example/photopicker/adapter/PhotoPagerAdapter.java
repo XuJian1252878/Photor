@@ -11,8 +11,8 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.lifecycle.AndroidLifecycleUtils;
 import com.example.photopicker.R;
-import com.example.photopicker.utils.AndroidLifecycleUtils;
 
 import java.io.File;
 import java.util.ArrayList;

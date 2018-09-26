@@ -1,4 +1,4 @@
-package com.example.photopicker.utils;
+package com.example.lifecycle;
 
 import android.app.Activity;
 import android.content.Context;

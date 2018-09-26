@@ -1,4 +1,4 @@
-package com.example.photopicker.utils;
+package com.example.permissions;
 
 import android.Manifest;
 

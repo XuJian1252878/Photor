@@ -1,4 +1,4 @@
-package com.example.photopicker.utils;
+package com.example.permissions;
 
 import android.Manifest;
 import android.app.Activity;
@@ -10,7 +10,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 
-import com.example.photopicker.R;
+
+import com.example.common.R;
 
 import java.util.ArrayList;
 import java.util.List;
