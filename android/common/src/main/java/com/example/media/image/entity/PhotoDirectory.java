@@ -1,4 +1,4 @@
-package com.example.photopicker.entity;
+package com.example.media.image.entity;
 
 import android.text.TextUtils;
 

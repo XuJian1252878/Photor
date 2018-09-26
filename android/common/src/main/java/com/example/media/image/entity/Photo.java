@@ -1,4 +1,4 @@
-package com.example.photopicker.entity;
+package com.example.media.image.entity;
 
 /**
  * Created by xujian on 2018/2/5.

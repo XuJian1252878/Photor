@@ -8,4 +8,6 @@
 
     <string name="pick_permission_rationale">浏览图片需要您提供浏览存储的权限</string>
     <string name="pick_permission_rationale_write_storage">保存拍照图片需要您提供写存储权限</string>
+
+    <string name="__picker_all_image">所有图片</string>
 </resources>

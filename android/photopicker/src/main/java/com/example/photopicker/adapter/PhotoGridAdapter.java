@@ -13,17 +13,17 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.lifecycle.AndroidLifecycleUtils;
 import com.example.photopicker.R;
-import com.example.photopicker.entity.Photo;
-import com.example.photopicker.entity.PhotoDirectory;
+import com.example.media.image.entity.Photo;
+import com.example.media.image.entity.PhotoDirectory;
 import com.example.photopicker.event.OnItemCheckListener;
 import com.example.photopicker.event.OnPhotoClickListener;
-import com.example.photopicker.utils.MediaStoreHelper;
+import com.example.media.image.MediaStoreHelper;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.photopicker.PhotoPicker.DEFAULT_COLUMN_NUMBER;
+import static com.example.media.image.PhotoPicker.DEFAULT_COLUMN_NUMBER;
 
 /**
  * Created by xujian on 2018/2/5.

@@ -1,6 +1,6 @@
 package com.example.photopicker.event;
 
-import com.example.photopicker.entity.Photo;
+import com.example.media.image.entity.Photo;
 
 /**
  * Created by xujian on 2018/2/5.

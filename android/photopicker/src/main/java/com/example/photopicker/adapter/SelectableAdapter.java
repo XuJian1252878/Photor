@@ -2,8 +2,8 @@ package com.example.photopicker.adapter;
 
 import android.support.v7.widget.RecyclerView;
 
-import com.example.photopicker.entity.Photo;
-import com.example.photopicker.entity.PhotoDirectory;
+import com.example.media.image.entity.Photo;
+import com.example.media.image.entity.PhotoDirectory;
 import com.example.photopicker.event.Selectable;
 
 import java.util.ArrayList;

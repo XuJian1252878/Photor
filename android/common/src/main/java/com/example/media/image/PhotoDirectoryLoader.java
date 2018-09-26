@@ -1,4 +1,4 @@
-package com.example.photopicker.utils;
+package com.example.media.image;
 
 import android.content.Context;
 import android.net.Uri;

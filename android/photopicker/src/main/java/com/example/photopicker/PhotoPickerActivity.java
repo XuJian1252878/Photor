@@ -10,7 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.photopicker.entity.Photo;
+import com.example.media.image.entity.Photo;
 import com.example.photopicker.event.OnItemCheckListener;
 import com.example.photopicker.fragment.ImagePagerFragment;
 import com.example.photopicker.fragment.PhotoPickerFragment;
@@ -18,14 +18,14 @@ import com.example.photopicker.fragment.PhotoPickerFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.photopicker.PhotoPicker.DEFAULT_COLUMN_NUMBER;
-import static com.example.photopicker.PhotoPicker.DEFAULT_MAX_COUNT;
-import static com.example.photopicker.PhotoPicker.EXTRA_GRID_COLUMN;
-import static com.example.photopicker.PhotoPicker.EXTRA_MAX_COUNT;
-import static com.example.photopicker.PhotoPicker.EXTRA_ORIGINAL_PHOTOS;
-import static com.example.photopicker.PhotoPicker.EXTRA_PREVIEW_ENABLED;
-import static com.example.photopicker.PhotoPicker.EXTRA_SHOW_CAMERA;
-import static com.example.photopicker.PhotoPicker.EXTRA_SHOW_GIF;
+import static com.example.media.image.PhotoPicker.DEFAULT_COLUMN_NUMBER;
+import static com.example.media.image.PhotoPicker.DEFAULT_MAX_COUNT;
+import static com.example.media.image.PhotoPicker.EXTRA_GRID_COLUMN;
+import static com.example.media.image.PhotoPicker.EXTRA_MAX_COUNT;
+import static com.example.media.image.PhotoPicker.EXTRA_ORIGINAL_PHOTOS;
+import static com.example.media.image.PhotoPicker.EXTRA_PREVIEW_ENABLED;
+import static com.example.media.image.PhotoPicker.EXTRA_SHOW_CAMERA;
+import static com.example.media.image.PhotoPicker.EXTRA_SHOW_GIF;
 import static com.example.photopicker.PhotoPicker.KEY_SELECTED_PHOTOS;
 
 public class PhotoPickerActivity extends AppCompatActivity {

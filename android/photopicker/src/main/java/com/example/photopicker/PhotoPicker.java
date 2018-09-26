@@ -12,6 +12,13 @@ import com.example.permissions.PermissionsUtils;
 
 import java.util.ArrayList;
 
+import static com.example.media.image.PhotoPicker.EXTRA_GRID_COLUMN;
+import static com.example.media.image.PhotoPicker.EXTRA_MAX_COUNT;
+import static com.example.media.image.PhotoPicker.EXTRA_ORIGINAL_PHOTOS;
+import static com.example.media.image.PhotoPicker.EXTRA_PREVIEW_ENABLED;
+import static com.example.media.image.PhotoPicker.EXTRA_SHOW_CAMERA;
+import static com.example.media.image.PhotoPicker.EXTRA_SHOW_GIF;
+
 /**
  * 用于方便创建 intent 的Builder类
  * Created by xujian on 2018/1/8.
@@ -28,16 +35,16 @@ public class PhotoPicker {
     // activity返回时，存放返回数据的key
     public static final String KEY_SELECTED_PHOTOS = "SELECTED_PHOTOS";
 
-    public static final int DEFAULT_MAX_COUNT = 9;
-    public static final int DEFAULT_COLUMN_NUMBER = 3;
-
-    // intent 需要填充的key
-    public static final String EXTRA_MAX_COUNT = "MAX_COUNT";
-    public final static String EXTRA_SHOW_CAMERA     = "SHOW_CAMERA";
-    public final static String EXTRA_SHOW_GIF        = "SHOW_GIF";
-    public final static String EXTRA_GRID_COLUMN     = "column";
-    public final static String EXTRA_ORIGINAL_PHOTOS = "ORIGINAL_PHOTOS";
-    public final static String EXTRA_PREVIEW_ENABLED = "PREVIEW_ENABLED";
+//    public static final int DEFAULT_MAX_COUNT = 9;
+//    public static final int DEFAULT_COLUMN_NUMBER = 3;
+//
+//    // intent 需要填充的key
+//    public static final String EXTRA_MAX_COUNT = "MAX_COUNT";
+//    public final static String EXTRA_SHOW_CAMERA     = "SHOW_CAMERA";
+//    public final static String EXTRA_SHOW_GIF        = "SHOW_GIF";
+//    public final static String EXTRA_GRID_COLUMN     = "column";
+//    public final static String EXTRA_ORIGINAL_PHOTOS = "ORIGINAL_PHOTOS";
+//    public final static String EXTRA_PREVIEW_ENABLED = "PREVIEW_ENABLED";
 
 
     public static PhotoPickerBuilder builder() {

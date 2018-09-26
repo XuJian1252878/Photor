@@ -24,15 +24,15 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.example.photopicker.utils.ImageCaptureManager;
 import com.example.lifecycle.AndroidLifecycleUtils;
-import com.example.photopicker.utils.MediaStoreHelper;
+import com.example.media.image.MediaStoreHelper;
 import com.example.permissions.PermissionsConstant;
 import com.example.permissions.PermissionsUtils;
 import com.example.photopicker.PhotoPickerActivity;
 import com.example.photopicker.R;
 import com.example.photopicker.adapter.PhotoGridAdapter;
 import com.example.photopicker.adapter.PopupDirectoryListAdapter;
-import com.example.photopicker.entity.Photo;
-import com.example.photopicker.entity.PhotoDirectory;
+import com.example.media.image.entity.Photo;
+import com.example.media.image.entity.PhotoDirectory;
 import com.example.photopicker.event.OnPhotoClickListener;
 
 import java.io.IOException;
@@ -40,14 +40,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
-import static com.example.photopicker.utils.MediaStoreHelper.INDEX_ALL_PHOTOS;
-import static com.example.photopicker.PhotoPicker.DEFAULT_COLUMN_NUMBER;
-import static com.example.photopicker.PhotoPicker.EXTRA_GRID_COLUMN;
-import static com.example.photopicker.PhotoPicker.EXTRA_MAX_COUNT;
-import static com.example.photopicker.PhotoPicker.EXTRA_ORIGINAL_PHOTOS;
-import static com.example.photopicker.PhotoPicker.EXTRA_PREVIEW_ENABLED;
-import static com.example.photopicker.PhotoPicker.EXTRA_SHOW_CAMERA;
-import static com.example.photopicker.PhotoPicker.EXTRA_SHOW_GIF;
+import static com.example.media.image.MediaStoreHelper.INDEX_ALL_PHOTOS;
+import static com.example.media.image.PhotoPicker.DEFAULT_COLUMN_NUMBER;
+import static com.example.media.image.PhotoPicker.EXTRA_GRID_COLUMN;
+import static com.example.media.image.PhotoPicker.EXTRA_MAX_COUNT;
+import static com.example.media.image.PhotoPicker.EXTRA_ORIGINAL_PHOTOS;
+import static com.example.media.image.PhotoPicker.EXTRA_PREVIEW_ENABLED;
+import static com.example.media.image.PhotoPicker.EXTRA_SHOW_CAMERA;
+import static com.example.media.image.PhotoPicker.EXTRA_SHOW_GIF;
 
 /**
  * Created by xujian on 2018/1/9.

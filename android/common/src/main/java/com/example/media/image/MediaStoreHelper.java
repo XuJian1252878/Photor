@@ -1,4 +1,4 @@
-package com.example.photopicker.utils;
+package com.example.media.image;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,9 +8,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 
-import com.example.photopicker.R;
-import com.example.photopicker.PhotoPicker;
-import com.example.photopicker.entity.PhotoDirectory;
+import com.example.common.R;
+import com.example.media.image.entity.PhotoDirectory;
 
 import java.util.ArrayList;
 import java.util.List;

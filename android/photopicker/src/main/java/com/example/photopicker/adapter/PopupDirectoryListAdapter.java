@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.photopicker.R;
-import com.example.photopicker.entity.PhotoDirectory;
+import com.example.media.image.entity.PhotoDirectory;
 
 import java.util.ArrayList;
 import java.util.List;
