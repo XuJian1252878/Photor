@@ -29,11 +29,11 @@ private:
 public:
     StarImage();
 
-    StarImage(Mat image, int rowParts, int columnParts);
+    StarImage(Mat image, int rowParts, int columnParts, bool isClone = false);
 
-    void splitImage();
+    void splitImage(bool isClone = false);
 
-    StarImagePart getStarImagePart(int rowPartIndex, int columnPartIndex);
+    StarImagePart& getStarImagePart(int rowPartIndex, int columnPartIndex);
 
     void setStarImagePart(int rowPartIndex, int columnPartIndex, Mat_<Vec3b> imageMat);
 

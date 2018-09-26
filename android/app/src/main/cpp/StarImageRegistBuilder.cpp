@@ -64,6 +64,13 @@ void StarImageRegistBuilder::setTargetImagePath(string imgPath) {
  */
 Mat_<Vec3b> StarImageRegistBuilder::registration(int mergeMode) {
 
+    // 最终配准的图像信息
+
+    StarImage resultStarImage = StarImage(Mat(this->targetStarImage.getImage().rows,
+                                              this->targetStarImage.getImage().cols,
+                                              this->targetStarImage.getImage().type(), cv::Scalar(0, 0, 0)),
+                                          this->rowParts, this->columnParts, true); // true 表示 clone，深拷贝，不然会出现图片重叠的现象
+
     // 开始对图像的每一个部分进行对齐操作，分别与targetStarImage 做对比
     for (int index = 0; index < this->sourceStarImages.size(); index ++) {
 
@@ -71,21 +78,33 @@ Mat_<Vec3b> StarImageRegistBuilder::registration(int mergeMode) {
         // 对于每一小块图像都做配准操作
         for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
             for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex ++) {
-
+                Mat homo;
+                bool existHomo = false;
 
                 Mat tmpRegistMat = this->getImgTransform(tmpStarImage.getStarImagePart(rPartIndex, cPartIndex),
-                                                         this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex));
+                                                         this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex), homo, existHomo);
 
-                this->sourceStarImages[index].setStarImagePart(rPartIndex, cPartIndex, tmpRegistMat);
-
+                Mat_<Vec3b>& queryImgTransform = this->sourceImages[index];
+                if (existHomo) {
+                    queryImgTransform = getTransformImgByHomo(queryImgTransform, homo);
+                } else {
+                    queryImgTransform = this->targetImage;
+                }
+                resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(tmpRegistMat, queryImgTransform, this->skyMaskMat, this->imageCount);
             }
         }
     }
 
-    Mat_<Vec3b> resultImage = this->mergeImage(this->MERGE_MODE_MEAN);
+    // 对于配准图像和待配准图像做平均值操作（先买上目标图像的那一部分，这一段代码不能放在source整合的前面，不然图片会出现缝隙，原因待查）
+    for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
+        for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex++) {
+            Mat_<Vec3b> targetImg = this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
+            resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(targetImg, this->targetImage, this->skyMaskMat, this->imageCount);
+        }
+    }
 
     // 对配准好的图像进行整合
-    return resultImage;
+    return resultStarImage.mergeStarImageParts();
 }
 
 /**
@@ -94,13 +113,17 @@ Mat_<Vec3b> StarImageRegistBuilder::registration(int mergeMode) {
  * @param targetImagePart
  * @return
  */
-Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarImagePart targetImagePart) {
+Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarImagePart targetImagePart, Mat& oriImgHomo, bool& existHomo) {
     Mat sourceImg = sourceImagePart.getImage(); // query image
     Mat targetImg = targetImagePart.getImage(); // train image
 
     // 取出当前mask起始点的位置
     int rMaskIndex = sourceImagePart.getRowPartIndex() * sourceImg.rows;
     int cMaskIndex = sourceImagePart.getColumnPartIndex() * sourceImg.cols;
+
+
+//        if( !sourceImg.data || !targetImg.data )
+//        { std::cout<< " --(!) Error loading images " << std::endl; return NULL; }
 
     //-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
     int minHessian = 400;
@@ -144,7 +167,7 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarI
     vector<Point2f> imagePoints1, imagePoints2;
     std::map<int, DMatch> matchRepeatRecords;
     for (int index = 0; index < tempMatches.size(); index ++) {
-//        int queryIdx = matches[index].queryIdx;f
+//        int queryIdx = matches[index].queryIdx;
         int trainIdx = tempMatches[index].trainIdx;
 
         // 记录标准图像中的每个点被配准了多少次，如果被配准多次，那么说明这个特征点匹配不合格
@@ -178,21 +201,21 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarI
 //    double matchDistStdev = sqrt(matchDistAccum / (matchDistCount - 1));
 
     // 3.1 获取准确的最大最小值
-//    double maxMatchDist = 0;
-//    double minMatchDist = 100;
-//    for (iter = matchRepeatRecords.begin(); iter != matchRepeatRecords.end(); iter ++) {
-//        if (iter->second.distance < minMatchDist) {
-//            minMatchDist = iter->second.distance;
-//        }
-//        if (iter->second.distance > maxMatchDist) {
-//            maxMatchDist = iter->second.distance;
-//        }
-//    }
+    double maxMatchDist = 0;
+    double minMatchDist = 100;
+    for (iter = matchRepeatRecords.begin(); iter != matchRepeatRecords.end(); iter ++) {
+        if (iter->second.distance < minMatchDist) {
+            minMatchDist = iter->second.distance;
+        }
+        if (iter->second.distance > maxMatchDist) {
+            maxMatchDist = iter->second.distance;
+        }
+    }
 
     // 4. 根据特征点匹配对，分离出两幅图像中已经被匹配的特征点
     std::vector<DMatch> matches;
-//    double matchThreshold = minMatchDist + (maxMatchDist - minMatchDist) * 0.4;  // 阈值越大，留下的特征点越多
-    double slopeThreshold = sqrt(3);
+    double matchThreshold = minMatchDist + (maxMatchDist - minMatchDist) * 0.1;  // 阈值越大，留下的特征点越多（这个阈值是一个做文章的地方）
+    double slopeThreshold = 0.3;
     for (iter = matchRepeatRecords.begin(); iter != matchRepeatRecords.end(); iter ++) {
 
         DMatch match = iter->second;
@@ -218,20 +241,28 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarI
                              (keypoints_2[trainIdx].pt.x + targetImg.cols) ) );
 
         // && iter->second.distance < matchThreshold
-        if ( slope < slopeThreshold ) {
+        if ( slope < slopeThreshold && iter->second.distance < matchThreshold) {
             matches.push_back(iter->second);
             imagePoints1.push_back(keypoints_1[queryIdx].pt);
             imagePoints2.push_back(keypoints_2[trainIdx].pt);
         }
     }
 
+    // 测试代码：
+    Mat img_matches;
+    drawMatches( sourceImg, keypoints_1, targetImg, keypoints_2, matches, img_matches );
+    int rPartIndex = sourceImagePart.getRowPartIndex();
+    int cPartIndex = sourceImagePart.getColumnPartIndex();
+
+    int IMG_MATCH_POINT_THRESHOLD = 10;  // 这里是个做文章的地方
+
     // 对应图片部分中没有特征点的情况（导致计算出的映射关系不佳，至少要4对匹配点才能计算出匹配关系）
-    if (imagePoints1.size() >= 10 && imagePoints2.size() < 10) {
+    if (imagePoints1.size() >= IMG_MATCH_POINT_THRESHOLD && imagePoints2.size() < IMG_MATCH_POINT_THRESHOLD) {
         // 没有特征点信息，那么说明这个区域是没有特征的，所以返回 查询图片部分，作为内容填充
         return sourceImg;
-    } else if (imagePoints1.size() < 10 && imagePoints2.size() >= 10) {
+    } else if (imagePoints1.size() < IMG_MATCH_POINT_THRESHOLD && imagePoints2.size() >= IMG_MATCH_POINT_THRESHOLD) {
         return targetImg;
-    } else if (imagePoints1.size() < 10 && imagePoints2.size() < 10) {
+    } else if (imagePoints1.size() < IMG_MATCH_POINT_THRESHOLD && imagePoints2.size() < IMG_MATCH_POINT_THRESHOLD) {
         return targetImg;  // 特征点都不足时，以targetImage为基础进行的配准
     }
 
@@ -244,6 +275,7 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarI
      * 那么会导致算不出变换矩阵，变换矩阵为 [] 。导致错误。
      */
     if (homo.rows < 3 || homo.cols < 3) {
+        existHomo = false;
         if (imagePoints1.size() > imagePoints2.size()) {
             return sourceImg; // 因为是星空图片，移动不会很大，在目标图片部分的特征点几乎没有的情况下，那么直接返回待配准图像进行填充细节。
         } else {
@@ -252,57 +284,11 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarI
 
     }
 
+    oriImgHomo = homo;
+    existHomo = true;
     //图像配准
     Mat sourceImgTransform;
     warpPerspective(sourceImg, sourceImgTransform ,homo , Size(targetImg.cols, targetImg.rows));
 
     return sourceImgTransform;
 }
-
-
-/**
- * 对经过射影变换的 每一部分的图形矩阵进行 射影变换操作
- * @return
- */
-Mat StarImageRegistBuilder::mergeImage(int mergeMode) {
-    if (this->imageCount <= 2) {
-        mergeMode = this->MERGE_MODE_MEAN;
-    }
-
-    // 最终配准的图像信息
-    StarImage resultStarImage = StarImage(Mat::zeros(this->targetStarImage.getImage().rows,
-                                                     this->targetStarImage.getImage().cols,
-                                                     this->targetStarImage.getImage().type()),
-                                          this->rowParts, this->columnParts);
-    switch(mergeMode) {
-        case MERGE_MODE_MEAN:
-
-            for (int index = 0; index < this->sourceStarImages.size(); index ++) {
-//                Mat_<Vec3b> queryImgTransform = superimposedImg(this->sourceImages[index], this->targetImage);
-                Mat_<Vec3b> queryImgTransform = this->sourceImages[index];
-                // 对于配准图像和待配准图像做平均值操作
-                for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
-                    for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex ++) {
-                        Mat_<Vec3b> resultImg = resultStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
-                        Mat_<Vec3b> targetImg = this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
-                        Mat_<Vec3b> sourceImg =  this->sourceStarImages[index].getStarImagePart(rPartIndex, cPartIndex).getImage();
-                        resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(sourceImg, targetImg, queryImgTransform, this->skyMaskMat, this->imageCount);
-                    }
-                }
-            }
-
-            // 对于配准图像和待配准图像做平均值操作
-            for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
-                for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex++) {
-                    Mat_<Vec3b> targetImg = this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
-                    resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(targetImg, targetImg, this->targetImage, this->skyMaskMat, this->imageCount);
-                }
-            }
-            return resultStarImage.mergeStarImageParts();
-        case MERGE_MODE_MEDIAN:
-            break;
-        default:
-            break;
-    }
-}
-

@@ -14,12 +14,30 @@
  * @param rowPartIndex
  * @param columnPartIndex
  */
-StarImagePart::StarImagePart(const Mat parentMat, int atParentStartRowIndex, int atParentEndRowIndex,
-              int atParentStartColumnIndex, int atParentEndColumnIndex, int rowPartIndex, int columnPartIndex) {
+StarImagePart::StarImagePart(const Mat parentMat,
+                             int atParentStartRowIndex, int atParentEndRowIndex,
+                             int atParentStartColumnIndex, int atParentEndColumnIndex,
+                             int rowPartIndex, int columnPartIndex,
+                             int alignStartRowIndex, int alignEndRowIndex,
+                             int alignStartColumnIndex, int alignEndColumnIndex,
+                             bool isClone) {
     // [atParentStartRowIndex, atParentEndRowIndex)  [atParentStartColumnIndex, atParentEndColumnIndex)
+    // [alignStartRowIndex, alignEndRowIndex)  [alignStartColumnIndex, alignEndColumnIndex)
 
-    this->imagePart = parentMat(Range(atParentStartRowIndex, atParentEndRowIndex),
-                                Range(atParentStartColumnIndex, atParentEndColumnIndex));
+    /**
+     * this->imagePart = parentMat(Range(alignStartRowIndex, alignEndRowIndex), Range(alignStartColumnIndex, alignEndColumnIndex))
+     * 这样的话，只是对父图的一部分进行引用，对this->imagePart做改变，那么父图也将会改变
+     */
+
+    if (isClone) {
+        this->imagePart = parentMat(Range(alignStartRowIndex, alignEndRowIndex),
+                                    Range(alignStartColumnIndex, alignEndColumnIndex)).clone();
+    } else {
+        this->imagePart = parentMat(Range(alignStartRowIndex, alignEndRowIndex),
+                                    Range(alignStartColumnIndex, alignEndColumnIndex));
+    }
+
+
     this->rowPartIndex = rowPartIndex;
     this->columnPartIndex = columnPartIndex;
 
@@ -27,6 +45,11 @@ StarImagePart::StarImagePart(const Mat parentMat, int atParentStartRowIndex, int
     this->atParentEndRowIndex = atParentEndRowIndex;
     this->atParentStartColumnIndex = atParentStartColumnIndex;
     this->atParentEndColumnIndex = atParentEndColumnIndex;
+
+    this->alignStartRowIndex = alignStartRowIndex;
+    this->alignEndRowIndex = alignEndRowIndex;
+    this->alignStartColumnIndex = alignStartColumnIndex;
+    this->alignEndColumnIndex = alignEndColumnIndex;
 }
 
 
@@ -43,35 +66,33 @@ Mat StarImagePart::getImage() {
  * @param imageMat
  */
 void StarImagePart::setImage(Mat_<Vec3b> imageMat) {
-//    cout << std::to_string(this->imagePart.rows) << "\t" << std::to_string(this->imagePart.cols) << endl;
     this->imagePart = imageMat;
-//    cout << std::to_string(imageMat.rows) << "\t" << std::to_string(imageMat.cols) << endl;
 }
 
 
 /**
  * 前提 this->imagePart 初始为0矩阵
  * @param resultImg 当前被配准的 图片部分
- * @param targetImg 作为配准基准的 图像目标区域
- * @param queryImgTransform 一整张queryImg图像根据targetImg做变换之后得到的图像，用于填充方块拼接之间的空隙
+ * @param queryImgTransform 经过 homo 射影变换参数变换后的一整副图像，以当前的 targetSkyPart为基准
  * @param imageCount 一共有多少张图片需要被配准
  */
-void StarImagePart::addImagePixelValue(Mat& resultImg, Mat& targetImg,
+void StarImagePart::addImagePixelValue(Mat& resultImg,
                                        Mat& queryImgTransform, Mat& skyMaskImg, int imageCount) {
+
+
     this->imagePart += (resultImg / imageCount * 1.0);
 
-    // 注意的是使用方向数组的概念
-    static const int dx[] = {-1, 1, 0, 0, -1, -1, 1, 1};
-    static const int dy[] = {0, 0, -1, 1, -1, 1, -1, 1};
-
     // 取出当前mask起始点的位置
-    int rMaskIndex = this->getRowPartIndex() * this->getImage().rows;
-    int cMaskIndex = this->getColumnPartIndex() * this->getImage().cols;
+    int rMaskIndex = this->getAlignStartRowIndex();
+    int cMaskIndex = this->getAlignStartColumnIndex();
 
     for (int rIndex = 0; rIndex < this->imagePart.rows; rIndex ++) {
         for (int cIndex = 0; cIndex < this->imagePart.cols; cIndex ++) {
 
-            // 如果点已经不在天空的区域内，那么跳过这个点
+            if (rMaskIndex + rIndex >= skyMaskImg.rows || cMaskIndex + cIndex >= skyMaskImg.cols) {
+                continue; ////
+            }
+
             int skyMaskPixel = skyMaskImg.at<uchar>(rMaskIndex + rIndex, cMaskIndex + cIndex);
             if (skyMaskPixel == 0) {
                 continue;
@@ -86,13 +107,10 @@ void StarImagePart::addImagePixelValue(Mat& resultImg, Mat& targetImg,
             }
 
             if (isBlackPixel) {
-                // 在检测出的黑点四周填充原图像的像素，每部分图片之间的缝隙得以覆盖
-                for (int i = 0; i < 8; i ++) {
-                    int new_x = dx[i] + cIndex;
-                    int new_y = dy[i] + rIndex;
-                    if (new_x >= 0 && new_x < resultImg.cols && new_y >= 0 && new_y < resultImg.rows) {
-                        this->imagePart.at<Vec3b>(new_y, new_x) = (queryImgTransform.at<Vec3b>(rMaskIndex + new_y, cMaskIndex + new_x) * 1.0   / imageCount);
-                    }
+                int new_x = cIndex;
+                int new_y = rIndex;
+                if (new_x >= 0 && new_x < resultImg.cols && new_y >= 0 && new_y < resultImg.rows) {
+                    this->imagePart.at<Vec3b>(new_y, new_x) += (queryImgTransform.at<Vec3b>(rMaskIndex + new_y, cMaskIndex + new_x) * 1.0   / imageCount);
                 }
             }
         }
@@ -130,4 +148,20 @@ int StarImagePart::getRowPartIndex() const {
 
 int StarImagePart::getColumnPartIndex() const {
     return columnPartIndex;
+}
+
+int StarImagePart::getAlignStartRowIndex() const {
+    return alignStartRowIndex;
+}
+
+int StarImagePart::getAlignEndRowIndex() const {
+    return alignEndRowIndex;
+}
+
+int StarImagePart::getAlignStartColumnIndex() const {
+    return alignStartColumnIndex;
+}
+
+int StarImagePart::getAlignEndColumnIndex() const {
+    return alignEndColumnIndex;
 }
