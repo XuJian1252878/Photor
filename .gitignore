@@ -51,3 +51,8 @@ buck-out/
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
+
+app/.externalNativeBuild/
+app/src/main/cpp/include/
+app/src/main/jniLibs/
+openCVLibrary341/

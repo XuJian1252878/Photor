@@ -206,6 +206,8 @@ public class StarAlignSplitActivity extends AppCompatActivity {
 //                            maskImgPath = FileUtils.generateTempImgAbsPath(StarAlignSplitActivity.this);
 //                            FileUtils.saveImgBitmap(maskImgPath, bm);
 
+                            Log.i("maskImgPath", "run: " + maskImgPath);
+
                             // 更新界面信息
                             StarAlignSplitActivity.this.runOnUiThread(new Runnable() {
                                 @Override
