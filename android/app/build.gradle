@@ -78,6 +78,7 @@ project.ext.react = [
 
 apply from: "../../node_modules/react-native/react.gradle"
 
+
 /**
  * Set this to true to create two separate APKs instead of one:
  *   - An APK that only works on ARM devices
@@ -130,6 +131,7 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+
     // 配置CMakeLists.txt路径
     externalNativeBuild {
         cmake {
@@ -147,6 +149,17 @@ android {
                 output.versionCodeOverride =
                         versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
             }
+        }
+    }
+
+    // sourceSets 放在android标签的最后才生效
+    sourceSets {
+        main {
+            res.srcDirs = [
+                    'src/main/res',
+                    'src/main/res/staralign',
+                    'src/main/res/dof'
+            ]
         }
     }
 }

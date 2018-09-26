@@ -1,5 +1,6 @@
 package com.photor.dofcalculator.model;
 
+
 import com.photor.R;
 
 /**
