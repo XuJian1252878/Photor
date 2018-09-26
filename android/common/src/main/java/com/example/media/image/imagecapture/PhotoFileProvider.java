@@ -1,4 +1,4 @@
-package com.example.photopicker.utils;
+package com.example.media.image.imagecapture;
 
 import android.support.v4.content.FileProvider;
 

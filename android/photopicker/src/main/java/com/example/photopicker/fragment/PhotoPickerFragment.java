@@ -22,9 +22,9 @@ import android.widget.Button;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
-import com.example.photopicker.utils.ImageCaptureManager;
 import com.example.lifecycle.AndroidLifecycleUtils;
 import com.example.media.image.MediaStoreHelper;
+import com.example.media.image.imagecapture.ImageCaptureManager;
 import com.example.permissions.PermissionsConstant;
 import com.example.permissions.PermissionsUtils;
 import com.example.photopicker.PhotoPickerActivity;

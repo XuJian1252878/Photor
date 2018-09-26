@@ -1,4 +1,4 @@
-package com.example.photopicker.utils;
+package com.example.media.image.imagecapture;
 
 import android.content.Context;
 import android.content.Intent;
