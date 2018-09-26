@@ -157,7 +157,11 @@ Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env,
     Mat groundMaskImg = imread(string(maskImgPath), IMREAD_UNCHANGED);
 
 //    groundMaskImg = groundMaskImg & 1;  // 获得可以分割地面图片的模板
-    Mat skyMaskImg = ~ groundMaskImg;  // 获得可以风格的天空图片
+    Mat skyMaskImg = ~ groundMaskImg;  // 获得可以分割的天空图片
+
+    // 对 mask Mat进行处理，解决星空和地面衔接处出现模糊像素的问题
+    adjustMaskPixel(skyMaskImg);
+    adjustMaskPixel(groundMaskImg);
 
     // 基准星空部分图片
     Mat_<Vec3b> skyTargetImg;
@@ -178,10 +182,12 @@ Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env,
                 static_cast<jstring>(env->CallObjectMethod(starPhotos, photoArrayListGet, index)),
                 &isCopyStr);
 
+        // 读入原始的图像信息
         Mat_<Vec3b> imgMat = imread(string(sourcePhotoPathPtr), IMREAD_UNCHANGED);
+        // 存储星空部分图像
         Mat_<Vec3b> skyImgMat;
         imgMat.copyTo(skyImgMat, skyMaskImg);
-
+        // 存储地面部分图像
         Mat_<Vec3b> groundImgMat;
         imgMat.copyTo(groundImgMat, groundMaskImg);
 
