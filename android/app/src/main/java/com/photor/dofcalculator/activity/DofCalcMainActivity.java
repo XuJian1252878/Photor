@@ -222,16 +222,16 @@ public class DofCalcMainActivity extends AppCompatActivity {
         mHyperfocalDistanceTextView.setText(UtilManager.getInstance().getHyperfocalText(this,
                 mDepthOfFieldCalculator.getHyperfocalDistance()));
         mNearDepthOfFieldTextView.setText(UtilManager.getInstance().getNearDepthOfFieldText(this,
-                mDepthOfFieldCalculator.getNearDepthofField()));
+                mDepthOfFieldCalculator.getNearDepthOfField()));
         mFarDepthOfFieldTextView.setText(UtilManager.getInstance().getFarDepthOfFieldText(this,
                 mDepthOfFieldCalculator.getFarDepthOfField()));
         mDepthOfFieldTextView.setText(UtilManager.getInstance().getDepthOfFieldText(this,
-                mDepthOfFieldCalculator.getFarDepthOfField() - mDepthOfFieldCalculator.getNearDepthofField()));
+                mDepthOfFieldCalculator.getFarDepthOfField() - mDepthOfFieldCalculator.getNearDepthOfField()));
 
         // 由于摄影参数的变化，DepthView需要按照这些参数重绘
         mDepthOfFieldView.setData(mDepthOfFieldCalculator.getFarDepthOfField()
-                - mDepthOfFieldCalculator.getNearDepthofField(), mDepthOfFieldCalculator.getCurDistance(),
-                mDepthOfFieldCalculator.getNearDepthofField(),
+                - mDepthOfFieldCalculator.getNearDepthOfField(), mDepthOfFieldCalculator.getCurDistance(),
+                mDepthOfFieldCalculator.getNearDepthOfField(),
                 mDepthOfFieldCalculator.getFarDepthOfField());
     }
 }

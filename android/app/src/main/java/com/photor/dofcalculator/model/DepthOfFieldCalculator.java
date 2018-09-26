@@ -189,7 +189,7 @@ public class DepthOfFieldCalculator {
 
 
     // 关于前景深的计算
-    public double getNearDepthofField() {
+    public double getNearDepthOfField() {
         double N = getCurAperture(); // 光圈
         double f = getCurFocal() / 1000.0f; // 焦距 mm -> m
         double s = getCurDistance(); // 物距
