@@ -52,7 +52,8 @@ buck-out/
 */fastlane/Preview.html
 */fastlane/screenshots
 
-app/.externalNativeBuild/
-app/src/main/cpp/include/
-app/src/main/jniLibs/
-openCVLibrary341/
+
+android/app/.externalNativeBuild/
+android/app/src/main/cpp/include/
+android/app/src/main/jniLibs/
+android/openCVLibrary341/
