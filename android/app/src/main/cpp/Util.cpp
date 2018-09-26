@@ -147,3 +147,31 @@ Mat_<Vec3b> superimposedImg(Mat_<Vec3b>& queryImg, Mat_<Vec3b>& trainImg) {
 
     return imageTransform;
 }
+
+
+/**
+ * MASK_PIXEL_THRESHOLD 设置像素的阈值
+ */
+int MASK_PIXEL_THRESHOLD = 127;
+/**
+ * 将 uchar Mat矩阵中 <127的像素设置为0 大于127的像素设置为255
+ * @param mask 传入的图片mask图像信息
+ * @return
+ */
+bool adjustMaskPixel(Mat& mask) {
+    if (mask.rows <= 0 || mask.cols <= 0) {
+        return false;
+    }
+
+    for (int x = 0; x < mask.cols; x ++) {
+        for (int y = 0; y < mask.rows; y ++) {
+            if (mask.at<uchar>(y, x) < MASK_PIXEL_THRESHOLD) {
+                mask.at<uchar>(y, x) = 0;
+            } else {
+                mask.at<uchar>(y, x) = 255;
+            }
+        }
+    }
+
+    return true;
+}
