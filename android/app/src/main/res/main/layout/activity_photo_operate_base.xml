@@ -26,7 +26,6 @@
         android:typeface="@font/iran_sans_mobile"
         app:animationType="All"
         app:stepPadding="12dp"
-        app:steps="@array/star_align_steps"
         android:layout_marginTop="10dp"/>
 
 

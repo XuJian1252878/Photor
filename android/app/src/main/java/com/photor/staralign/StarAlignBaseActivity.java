@@ -2,16 +2,10 @@ package com.photor.staralign;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.file.FileUtils;
@@ -27,6 +21,7 @@ import com.photor.staralign.task.StarPhotoAlignThread;
 
 import org.opencv.core.Mat;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -39,13 +34,15 @@ public class StarAlignBaseActivity extends PhotoOperateBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_photo_operate_base);
-
         // 初始化UI操作
         initUI();
     }
 
     private void initUI() {
+
+        // 0. 设置图片选择的step view
+        stepView = findViewById(R.id.photo_operate_step_view);
+        stepView.setSteps(Arrays.asList(getResources().getStringArray(R.array.star_align_steps)));
 
         // 1. 初始化显示选择图片的RecyclerView
         recyclerView = findViewById(R.id.photo_operate_rv);
@@ -147,16 +144,16 @@ public class StarAlignBaseActivity extends PhotoOperateBaseActivity {
         // 图片选择选项
         if (resultCode == Activity.RESULT_OK &&
                 (requestCode == PhotoPicker.REQUEST_CODE || requestCode == PhotoPreview.REQUEST_CODE)) {
-            List<String> photos = null;
-
-            if (data != null) {
-                photos = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
-            }
-            selectedPhotos.clear();
-            if (photos != null) {
-                selectedPhotos.addAll(photos);
-            }
-            photoAdapter.notifyDataSetChanged();
+//            List<String> photos = null;
+//
+//            if (data != null) {
+//                photos = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
+//            }
+//            selectedPhotos.clear();
+//            if (photos != null) {
+//                selectedPhotos.addAll(photos);
+//            }
+//            photoAdapter.notifyDataSetChanged();
 
             // 设定操作步骤信息
             if (selectedPhotos.size() <= 0) {
@@ -181,18 +178,6 @@ public class StarAlignBaseActivity extends PhotoOperateBaseActivity {
             updateStepInfo(StarAlignEnum.STAR_ALIGN_SELECT_PHOTOS.getCode());
         }
 
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case android.R.id.home:
-                finish();
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     // 根据情况显示step view
