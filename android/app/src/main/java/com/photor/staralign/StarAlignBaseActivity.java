@@ -18,58 +18,37 @@ import com.example.file.FileUtils;
 import com.example.photopicker.PhotoPicker;
 import com.example.photopicker.PhotoPreview;
 import com.photor.R;
+import com.photor.base.activity.PhotoOperateBaseActivity;
 import com.photor.base.adapters.PhotoAdapter;
 import com.photor.staralign.event.StarAlignEnum;
 import com.photor.staralign.event.StarAlignProgressListener;
 import com.photor.base.adapters.event.PhotoItemClickListener;
 import com.photor.staralign.task.StarPhotoAlignThread;
-import com.shuhart.stepview.StepView;
 
 import org.opencv.core.Mat;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
-public class StarAlignBaseActivity extends AppCompatActivity {
-
-
+public class StarAlignBaseActivity extends PhotoOperateBaseActivity {
 
 //    public static final int REQUEST_SPLIT_CODE = 100;
-
-    private PhotoAdapter photoAdapter;
-    private ArrayList<String> selectedPhotos = new ArrayList<>();
-
-    private Button starAlignBtn;
-    private RecyclerView recyclerView;
-    private StepView starAlignStepView;
-
     private Mat alignResMat = new Mat(); // 进行图片对齐的Mat结果
     private String maskImgPath; // 星空模板的路径（地面是白色区域）
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_star_align_base);
+//        setContentView(R.layout.activity_photo_operate_base);
 
         // 初始化UI操作
         initUI();
     }
 
     private void initUI() {
-        // -1. 初始化action bar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
-        // 0. 设置图片选择的step view
-        starAlignStepView = findViewById(R.id.star_align_step_view);
 
         // 1. 初始化显示选择图片的RecyclerView
-        recyclerView = findViewById(R.id.star_align_rv);
+        recyclerView = findViewById(R.id.photo_operate_rv);
         photoAdapter = new PhotoAdapter(selectedPhotos, this);
 
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL));
@@ -95,12 +74,12 @@ public class StarAlignBaseActivity extends AppCompatActivity {
 
 
         // 2. 设置 选择图片/进行图片对齐 操作的按钮
-        starAlignBtn = findViewById(R.id.star_align_btn);
+        operateBtn = findViewById(R.id.photo_operate_btn);
         updateStepInfo(StarAlignEnum.STAR_ALIGN_SELECT_PHOTOS.getCode());  // 初始化操作步骤信息（包括stepview和btn文字两个部分）
-        starAlignBtn.setOnClickListener(new View.OnClickListener() {
+        operateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int currentStep = starAlignStepView.getCurrentStep();
+                int currentStep = stepView.getCurrentStep();
                 if (currentStep == StarAlignEnum.STAR_ALIGN_SELECT_PHOTOS.getCode()) {  // 图片选择步骤
                     if (selectedPhotos.size() < 2) {
                         PhotoPicker.builder()
@@ -219,17 +198,17 @@ public class StarAlignBaseActivity extends AppCompatActivity {
     // 根据情况显示step view
     private void updateStepInfo(int currentStep) {
         // 首先更新step view的信息
-        if (currentStep < starAlignStepView.getStepCount()) {
-            starAlignStepView.go(currentStep, true);
+        if (currentStep < stepView.getStepCount()) {
+            stepView.go(currentStep, true);
         }
 
         // 然后更新图片对齐按钮的信息
         if (currentStep == StarAlignEnum.STAR_ALIGN_SELECT_PHOTOS.getCode()) {
-            starAlignBtn.setText(R.string.star_align_btn_select_label);
+            operateBtn.setText(R.string.star_align_btn_select_label);
         } else if (currentStep == StarAlignEnum.STAR_ALIGN_BOUNDARY.getCode()) {
-            starAlignBtn.setText(R.string.star_align_btn_boundary_label);
+            operateBtn.setText(R.string.star_align_btn_boundary_label);
         } else if (currentStep == StarAlignEnum.STAR_ALIGN_RESULT.getCode()) {
-            starAlignBtn.setText(R.string.star_align_enter_btn_label);
+            operateBtn.setText(R.string.star_align_enter_btn_label);
         }
     }
 }

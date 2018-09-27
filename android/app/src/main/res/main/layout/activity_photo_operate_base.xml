@@ -11,7 +11,7 @@
     <include layout="@layout/toolbar_main"/>
 
     <com.shuhart.stepview.StepView
-        android:id="@+id/star_align_step_view"
+        android:id="@+id/photo_operate_step_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:selectedCircleColor="@color/colorAccent"
@@ -36,13 +36,13 @@
         android:layout_height="0dp"
         android:layout_weight="1">
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/star_align_rv"
+            android:id="@+id/photo_operate_rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
     <Button
-        android:id="@+id/star_align_btn"
+        android:id="@+id/photo_operate_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
