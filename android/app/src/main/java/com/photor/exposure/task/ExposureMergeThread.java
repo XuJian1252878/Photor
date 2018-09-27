@@ -12,11 +12,11 @@ import java.util.ArrayList;
 public class ExposureMergeThread extends Thread {
 
 
-    private native int exposureMergePhotos(ArrayList<String> photos, ArrayList<Double> exposureTimes, long resImgAddr, String resImgPath);
+    private native int exposureMergePhotos(ArrayList<String> photos, ArrayList<Float> exposureTimes, long resImgAddr, String resImgPath);
 
     private Activity activity;
     private ArrayList<String> photos;
-    private ArrayList<Double> exposureTimes;
+    private ArrayList<Float> exposureTimes;
     private ExposureProcessFinishListener processFinishListener;
     private String resImgPath;
     private long resImgAddr;
@@ -27,7 +27,7 @@ public class ExposureMergeThread extends Thread {
 
     public ExposureMergeThread(Activity activity,
                                ArrayList<String> photos,
-                               ArrayList<Double> exposureTimes,
+                               ArrayList<Float> exposureTimes,
                                ExposureProcessFinishListener processFinishListener,
                                String resImgPath,
                                long resImgAddr) {

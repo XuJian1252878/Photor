@@ -340,18 +340,23 @@ Java_com_photor_exposure_task_ExposureMergeThread_exposureMergePhotos(JNIEnv *en
 
     int photoSize = env->CallIntMethod(photos, arrayListSize);
 
+    // 获取ArrayList<Double>中的Double对象
+    jclass jcFloat = static_cast<jclass>(env->FindClass("java/lang/Float"));
+    jmethodID jmidFloatValue = env->GetMethodID(jcFloat, "floatValue", "()F");
+
+
     jboolean isCopyStr = JNI_FALSE;
     vector<string> photoVec;
-    vector<double> timeVec;
+    vector<float> timeVec;
     for (int index = 0; index < photoSize; index ++) {
+        // 获取图片路径列表
         const char* sourcePhotoPathPtr = env->GetStringUTFChars(
                 static_cast<jstring>(env->CallObjectMethod(photos, arrayListGet, index)),
                 &isCopyStr);
         photoVec.push_back(string(sourcePhotoPathPtr));
 
-        double time = atof((env->GetStringUTFChars(
-                static_cast<jstring>(env->CallObjectMethod(exposureTimes, arrayListGet, index)),
-                &isCopyStr)));
+        // 获取图片曝光信息列表
+        float time = env->CallFloatMethod(env->CallObjectMethod(exposureTimes, arrayListGet, index), jmidFloatValue);
         timeVec.push_back(time);
 
     }

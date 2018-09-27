@@ -8,10 +8,10 @@ import java.io.IOException;
 
 public class MediaExifHelper {
 
-    public static double getExposureTime(String imagePath) {
+    public static float getExposureTime(String imagePath) {
         try {
             ExifInterface exifInterface = new ExifInterface(imagePath);
-            double exposureTime = Double.valueOf(exifInterface.getAttribute(ExifInterface.TAG_EXPOSURE_TIME));
+            float exposureTime = Float.valueOf(exifInterface.getAttribute(ExifInterface.TAG_EXPOSURE_TIME));
             return exposureTime;
         } catch (IOException e) {
             e.printStackTrace();

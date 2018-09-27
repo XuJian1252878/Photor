@@ -91,15 +91,15 @@ public class ExposureBaseActivity extends PhotoOperateBaseActivity {
                         return;
                     }
                     // 获取所选择图片的曝光时间
-                    List<Double> exposureTimes = new ArrayList<>();
+                    List<Float> exposureTimes = new ArrayList<>();
                     for (String photoPath: selectedPhotos) {
-                        double exposureTime = MediaExifHelper.getExposureTime(photoPath);
+                        float exposureTime = MediaExifHelper.getExposureTime(photoPath);
                         exposureTimes.add(exposureTime);
                     }
 
                     final String resImgPath = FileUtils.generateImgAbsPath();  // 曝光合成结果图片的路径
-                    ExposureMergeThread exposureMergeThread = new ExposureMergeThread(getParent(),
-                            selectedPhotos, (ArrayList<Double>) exposureTimes,
+                    ExposureMergeThread exposureMergeThread = new ExposureMergeThread(ExposureBaseActivity.this,
+                            selectedPhotos, (ArrayList<Float>) exposureTimes,
                             new ExposureProcessFinishListener() {
                         @Override
                         public void onExposureProcessFinish(int expResCode) {

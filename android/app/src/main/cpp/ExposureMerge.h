@@ -13,6 +13,14 @@
 using namespace cv;
 using namespace std;
 
+#include <android/log.h>
+#define  LOG_TAG    "JNI_PART"
+#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG, __VA_ARGS__)
+#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG, __VA_ARGS__)
+#define LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG, __VA_ARGS__)
+#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG, __VA_ARGS__)
+#define LOGF(...)  __android_log_print(ANDROID_LOG_FATAL,LOG_TAG, __VA_ARGS__)
+
 
 /**
  * 曝光合成的流程
@@ -22,7 +30,7 @@ using namespace std;
  * @param generateImgAbsPath 最终结果存储的路径
  * @return
  */
-int ExposureMergeProcess(vector<string>& imagesPath, vector<double>& times, Mat* ldrDurand, string generateImgAbsPath);
+int ExposureMergeProcess(vector<string>& imagesPath, vector<float>& times, Mat* ldrDurand, string generateImgAbsPath);
 
 /**
  *
