@@ -1,4 +1,4 @@
-package com.photor.staralign;
+package com.photor.base.activity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,26 +16,29 @@ import android.widget.Toast;
 
 import com.example.file.FileUtils;
 import com.photor.R;
+import com.photor.staralign.StarAlignOperator;
 import com.photor.widget.TipToast;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-public class StarAlignResultActivity extends AppCompatActivity {
+import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_OPERATE_RESULT_PATH;
 
-    private String alignResImgPath = null;
-    private ImageView alignResImageView;
+public class PhotoOperateResultActivity extends AppCompatActivity {
 
-    private volatile boolean isSavedAlignRes = false;  // 表示用户是否已经存储了 图片对齐的结果
+    private String resImgPath = null;
+    private ImageView resImageView;
+
+    private volatile boolean isSavedOperateRes = false;  // 表示用户是否已经存储了 图片对齐的结果
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_star_align_result);
+        setContentView(R.layout.activity_photo_operate_result);
 
         // 获取对齐结果的图片路径
-        alignResImgPath = getIntent().getStringExtra(StarAlignOperator.EXTRA_ALIGN_RESULT_PATH);
-        Log.d("alignResImgPath", alignResImgPath);
+        resImgPath = getIntent().getStringExtra(EXTRA_PHOTO_OPERATE_RESULT_PATH);
+        Log.d("resImgPath", resImgPath);
         initUI();
     }
 
@@ -48,7 +51,7 @@ public class StarAlignResultActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                FileUtils.delteFileByPath(alignResImgPath);
+                FileUtils.delteFileByPath(resImgPath);
                 Toast.makeText(this, getText(R.string.sky_ground_align_save_failed), Toast.LENGTH_SHORT).show();
                 finish();
                 return true;
@@ -60,8 +63,8 @@ public class StarAlignResultActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         // 返回按键按下的时候，如果用户没有进行 对齐结果图片的操作，那么删除图片
-        if (!isSavedAlignRes) {
-            FileUtils.delteFileByPath(alignResImgPath);
+        if (!isSavedOperateRes) {
+            FileUtils.delteFileByPath(resImgPath);
         }
     }
 
@@ -75,23 +78,23 @@ public class StarAlignResultActivity extends AppCompatActivity {
         }
 
         // 2. 加载结果图片
-        alignResImageView = findViewById(R.id.star_align_result_iv);
+        resImageView = findViewById(R.id.operate_result_iv);
         FileInputStream fis = null;
         try {
-            fis = new FileInputStream(alignResImgPath);
+            fis = new FileInputStream(resImgPath);
             Bitmap bitmap = BitmapFactory.decodeStream(fis);
-            alignResImageView.setImageBitmap(bitmap);
+            resImageView.setImageBitmap(bitmap);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
         // 3. 绑定 保存 和 删除图片按钮的事件
-        findViewById(R.id.save_align_res_btn).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.operate_res_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isSavedAlignRes = true;
-//                Toast.makeText(StarAlignResultActivity.this, "图片已保存", Toast.LENGTH_SHORT).show();
-                final TipToast tipToast = new TipToast.Builder(StarAlignResultActivity.this)
+                isSavedOperateRes = true;
+//                Toast.makeText(PhotoOperateResultActivity.this, "图片已保存", Toast.LENGTH_SHORT).show();
+                final TipToast tipToast = new TipToast.Builder(PhotoOperateResultActivity.this)
                         .setMessage("保存")
                         .create();
                 tipToast.show();
@@ -110,18 +113,18 @@ public class StarAlignResultActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.delete_align_res_btn).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.delete_operate_res_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                final TipToast tipToast = new TipToast.Builder(StarAlignResultActivity.this)
+                final TipToast tipToast = new TipToast.Builder(PhotoOperateResultActivity.this)
                         .setMessage("删除")
                         .create();
                 tipToast.show();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        FileUtils.delteFileByPath(alignResImgPath);
+                        FileUtils.delteFileByPath(resImgPath);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -131,7 +134,7 @@ public class StarAlignResultActivity extends AppCompatActivity {
                         });
                     }
                 }, 2000);
-//                Toast.makeText(StarAlignResultActivity.this, "图片已删除", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(PhotoOperateResultActivity.this, "图片已删除", Toast.LENGTH_SHORT).show();
             }
         });
     }

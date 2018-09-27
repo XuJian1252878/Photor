@@ -24,13 +24,11 @@ int ExposureMergeProcess(vector<string>& imagesPath, vector<float>& times, Mat* 
     Mat responseDebevec;
     Ptr<CalibrateDebevec> calibrateDebevec = createCalibrateDebevec();
     calibrateDebevec->process(images, responseDebevec, times);
-    LOGD("calibrateDebevec");
 
     // 4. 将原始的输入图像合并为HDR线性图像
     Mat hdrDebevec;
     Ptr<MergeDebevec> mergeDebevec = createMergeDebevec();
     mergeDebevec->process(images, hdrDebevec, times, responseDebevec);
-    LOGD("createMergeDebevec");
     // 保存hdr线性图像信息
 //    imwrite("/Users/xujian/Workspace/ImageHDR/hdrDebevec.hdr", hdrDebevec);
 
@@ -41,9 +39,7 @@ int ExposureMergeProcess(vector<string>& imagesPath, vector<float>& times, Mat* 
 //    Ptr<TonemapDurand> tonemapDurand = createTonemapDurand(1.5, 4, 1.0, 1, 1);
     Ptr<TonemapDurand> tonemapDurand = createTonemapDurand(1.9f);
     tonemapDurand->process(hdrDebevec, tmpResMat);
-    LOGD("createTonemapDurand1");
     tmpResMat = 2 * tmpResMat * 255;  //  这个跟亮度有关系，不做*处理的话图片可能会有些暗
-    LOGD("createTonemapDurand");
 
 
     imwrite(generateImgAbsPath, tmpResMat);  // all HDR imaging functions return results in [0, 1] range so we should multiply result by 255.
@@ -51,6 +47,5 @@ int ExposureMergeProcess(vector<string>& imagesPath, vector<float>& times, Mat* 
     ldrDurand->create(tmpResMat.rows, tmpResMat.cols, tmpResMat.type());
     memcpy(ldrDurand->data, tmpResMat.data, tmpResMat.step * tmpResMat.rows);
 
-    LOGD("generateImgAbsPath");
     return 1;
 }

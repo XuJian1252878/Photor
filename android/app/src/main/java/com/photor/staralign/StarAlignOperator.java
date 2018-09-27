@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.photor.base.activity.PhotoOperateResultActivity;
+
+import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_OPERATE_RESULT_PATH;
+
 /**
  * Created by xujian on 2018/3/1.
  */
@@ -11,10 +15,6 @@ import android.os.Bundle;
 public class StarAlignOperator {
 
     public static final int REQUEST_RESULT_CODE = 123; // 用于启动StarAlignResultActivity的Request Code。
-
-    // 用于启动StarAlignResultActivity
-    public static final String EXTRA_ALIGN_RESULT_PATH = "extra_align_result_path"; // 对齐结果的图片路径
-
 
     public static StarAlignResultBuilder resultBuilder() {
         return new StarAlignResultBuilder();
@@ -29,12 +29,12 @@ public class StarAlignOperator {
         }
 
         public StarAlignResultBuilder setAlignResultPath(String alignResultPath) {
-            bundle.putString(EXTRA_ALIGN_RESULT_PATH, alignResultPath);
+            bundle.putString(EXTRA_PHOTO_OPERATE_RESULT_PATH, alignResultPath);
             return this;
         }
 
         public void start(Activity activity) {
-            intent.setClass(activity, StarAlignResultActivity.class);
+            intent.setClass(activity, PhotoOperateResultActivity.class);
             intent.putExtras(bundle);
             activity.startActivityForResult(intent, REQUEST_RESULT_CODE);
         }

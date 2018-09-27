@@ -106,6 +106,9 @@ public class ExposureBaseActivity extends PhotoOperateBaseActivity {
                             // 查看曝光合成操作是否成功
                             if (expResCode == ExposureEnum.EXPOSURE_MERGE_SUCCESS.getCode()) {
                                 System.out.println(resImgPath);
+                                ExposureOperator.resultBuilder()
+                                        .setExposureResPath(resImgPath)
+                                        .start(ExposureBaseActivity.this);
                             } else {
                                 Toast.makeText(ExposureBaseActivity.this,
                                         ExposureEnum.EXPOSURE_MERGE_FAILED.getMessage(),

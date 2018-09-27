@@ -54,7 +54,7 @@
 
         <!-- 星野图片对齐界面 -->
         <activity android:name=".staralign.StarAlignBaseActivity" />
-        <activity android:name=".staralign.StarAlignResultActivity" />
+        <activity android:name=".base.activity.PhotoOperateResultActivity" />
         <activity android:name=".staralign.StarAlignSplitActivity" />
         <activity android:name=".staralign.GrabCutActivity" />
 
