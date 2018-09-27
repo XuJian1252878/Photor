@@ -1,4 +1,4 @@
-package com.photor.staralign.event;
+package com.photor.base.adapters.event;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -10,12 +10,12 @@ import android.view.View;
  * Created by xujian on 2018/2/28.
  */
 
-public class StarPhotoItemClickListener implements RecyclerView.OnItemTouchListener {
+public class PhotoItemClickListener implements RecyclerView.OnItemTouchListener {
 
     private OnItemClickListener mItemClickListener;
     private GestureDetector mGestureDetector;
 
-    public StarPhotoItemClickListener(Context context, OnItemClickListener mItemClickListener) {
+    public PhotoItemClickListener(Context context, OnItemClickListener mItemClickListener) {
         this.mItemClickListener = mItemClickListener;
         this.mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override

@@ -159,7 +159,8 @@ android {
                     'src/main/res',
                     'src/main/res/main',
                     'src/main/res/staralign',
-                    'src/main/res/dof'
+                    'src/main/res/dof',
+                    'src/main/res/exposure'
             ]
         }
     }

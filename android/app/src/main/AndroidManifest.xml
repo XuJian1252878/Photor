@@ -63,6 +63,9 @@
         <activity android:launchMode="singleTask" android:name=".dofcalculator.activity.SensorSizeActivity" />
         <activity android:launchMode="singleTask" android:name=".dofcalculator.activity.CustomCircleOfConfusionActivity" />
 
+        <!-- 曝光合成界面 -->
+        <activity android:name=".exposure.ExposureBaseActivity" />
+
         <!-- 公共组件，图片选择器界面 -->
         <activity android:name="com.example.photopicker.PhotoPickerActivity" />
         <activity android:name="com.example.photopicker.PhotoPagerActivity" />

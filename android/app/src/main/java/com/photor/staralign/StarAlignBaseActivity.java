@@ -17,10 +17,10 @@ import android.widget.Toast;
 import com.example.photopicker.PhotoPicker;
 import com.example.photopicker.PhotoPreview;
 import com.photor.R;
-import com.photor.staralign.adapter.StarPhotoAdapter;
+import com.photor.base.adapters.PhotoAdapter;
 import com.photor.staralign.event.StarAlignEnum;
 import com.photor.staralign.event.StarAlignProgressListener;
-import com.photor.staralign.event.StarPhotoItemClickListener;
+import com.photor.base.adapters.event.PhotoItemClickListener;
 import com.photor.staralign.task.StarPhotoAlignThread;
 import com.photor.util.FileUtils;
 import com.shuhart.stepview.StepView;
@@ -37,7 +37,7 @@ public class StarAlignBaseActivity extends AppCompatActivity {
 
 //    public static final int REQUEST_SPLIT_CODE = 100;
 
-    private StarPhotoAdapter starPhotoAdapter;
+    private PhotoAdapter photoAdapter;
     private ArrayList<String> selectedPhotos = new ArrayList<>();
 
     private Button starAlignBtn;
@@ -70,19 +70,19 @@ public class StarAlignBaseActivity extends AppCompatActivity {
 
         // 1. 初始化显示选择图片的RecyclerView
         recyclerView = findViewById(R.id.star_align_rv);
-        starPhotoAdapter = new StarPhotoAdapter(selectedPhotos, this);
+        photoAdapter = new PhotoAdapter(selectedPhotos, this);
 
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL));
-        recyclerView.setAdapter(starPhotoAdapter);
+        recyclerView.setAdapter(photoAdapter);
 
-        recyclerView.addOnItemTouchListener(new StarPhotoItemClickListener(this,
-                new StarPhotoItemClickListener.OnItemClickListener() {
+        recyclerView.addOnItemTouchListener(new PhotoItemClickListener(this,
+                new PhotoItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        if (starPhotoAdapter.getItemViewType(position) == StarPhotoAdapter.TYPE_ADD) {
+                        if (photoAdapter.getItemViewType(position) == PhotoAdapter.TYPE_ADD) {
                             PhotoPicker.builder()
                                     .setSelected(selectedPhotos)
-                                    .setPhotoCount(StarPhotoAdapter.MAX_PHOTO_COUNT)
+                                    .setPhotoCount(PhotoAdapter.MAX_PHOTO_COUNT)
                                     .start(StarAlignBaseActivity.this);
                         } else {
                             PhotoPreview.builder()
@@ -105,7 +105,7 @@ public class StarAlignBaseActivity extends AppCompatActivity {
                     if (selectedPhotos.size() < 2) {
                         PhotoPicker.builder()
                                 .setGridColumnCount(4)
-                                .setPhotoCount(StarPhotoAdapter.MAX_PHOTO_COUNT)
+                                .setPhotoCount(PhotoAdapter.MAX_PHOTO_COUNT)
                                 .start(StarAlignBaseActivity.this);
                     }
                 } else if (currentStep == StarAlignEnum.STAR_ALIGN_BOUNDARY.getCode()) {  // 图片边界划分步骤
@@ -177,7 +177,7 @@ public class StarAlignBaseActivity extends AppCompatActivity {
             if (photos != null) {
                 selectedPhotos.addAll(photos);
             }
-            starPhotoAdapter.notifyDataSetChanged();
+            photoAdapter.notifyDataSetChanged();
 
             // 设定操作步骤信息
             if (selectedPhotos.size() <= 0) {
@@ -198,7 +198,7 @@ public class StarAlignBaseActivity extends AppCompatActivity {
         if (requestCode == StarAlignOperator.REQUEST_RESULT_CODE) {
             // 清空已选择的图片信息
             selectedPhotos.clear();
-            starPhotoAdapter.notifyDataSetChanged();
+            photoAdapter.notifyDataSetChanged();
             updateStepInfo(StarAlignEnum.STAR_ALIGN_SELECT_PHOTOS.getCode());
         }
 

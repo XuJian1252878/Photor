@@ -30,11 +30,4 @@
     <string name="sky_ground_align_save_failed">the image saved failed!</string>
 
 
-    <string-array name="star_align_steps">
-        <item>select photo</item>
-        <item>specific boundary</item>
-        <item>align</item>
-    </string-array>
-
-
 </resources>

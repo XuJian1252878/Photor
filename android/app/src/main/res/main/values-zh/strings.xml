@@ -29,10 +29,4 @@
 
     <string name="sky_ground_align_save_failed">图片文件保存失败！</string>
 
-    <string-array name="star_align_steps">
-        <item>选择图片</item>
-        <item>划定分界线</item>
-        <item>对齐</item>
-    </string-array>
-
 </resources>

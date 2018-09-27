@@ -1,0 +1,8 @@
+<resources>
+    <string name="exposure_enter_btn_label">曝光合成</string>
+
+    <string-array name="exposure_steps">
+        <item>选择图片</item>
+        <item>曝光合成</item>
+    </string-array>
+</resources>

@@ -1,4 +1,4 @@
-package com.photor.staralign.adapter;
+package com.photor.base.adapters;
 
 import android.content.Context;
 import android.net.Uri;
@@ -22,7 +22,7 @@ import java.util.List;
  * Created by xujian on 2018/2/28.
  */
 
-public class StarPhotoAdapter extends RecyclerView.Adapter<StarPhotoAdapter.StarPhotoViewHolder> {
+public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
 
     private List<String> photoPaths = new ArrayList<>();
     private LayoutInflater inflator;
@@ -32,14 +32,14 @@ public class StarPhotoAdapter extends RecyclerView.Adapter<StarPhotoAdapter.Star
     public final static int TYPE_PHOTO = 1;
     public final static int TYPE_ADD = 2;
 
-    public StarPhotoAdapter(List<String> photoPaths, Context mContext) {
+    public PhotoAdapter(List<String> photoPaths, Context mContext) {
         this.photoPaths = photoPaths;
         this.mContext = mContext;
         inflator = (LayoutInflater) this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
-    public StarPhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View itemView = null;
         switch(viewType) {
@@ -51,11 +51,11 @@ public class StarPhotoAdapter extends RecyclerView.Adapter<StarPhotoAdapter.Star
                 break;
         }
 
-        return new StarPhotoViewHolder(itemView);
+        return new PhotoViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(StarPhotoViewHolder holder, int position) {
+    public void onBindViewHolder(PhotoViewHolder holder, int position) {
         if (getItemViewType(position) == TYPE_PHOTO) {
             Uri uri = Uri.fromFile(new File(this.photoPaths.get(position)));
 
@@ -91,12 +91,12 @@ public class StarPhotoAdapter extends RecyclerView.Adapter<StarPhotoAdapter.Star
         return (position == this.photoPaths.size() && position != MAX_PHOTO_COUNT) ? TYPE_ADD : TYPE_PHOTO;
     }
 
-    public class StarPhotoViewHolder extends RecyclerView.ViewHolder {
+    public class PhotoViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView ivPhoto;
         private ImageView vSelected;
 
-        public StarPhotoViewHolder(View itemView) {
+        public PhotoViewHolder(View itemView) {
             super(itemView);
 
             ivPhoto = itemView.findViewById(R.id.iv_photo);

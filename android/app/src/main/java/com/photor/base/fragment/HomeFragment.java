@@ -15,11 +15,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.permissions.PermissionsUtils;
 import com.photor.R;
 import com.photor.base.activity.test.OpencvTestActivity;
 import com.photor.dofcalculator.activity.DofCalcMainActivity;
+import com.photor.exposure.ExposureBaseActivity;
 import com.photor.staralign.StarAlignBaseActivity;
-import com.photor.util.PermissionsUtils;
 
 /**
  * Created by xujian on 2018/2/26.
@@ -29,6 +30,7 @@ public class HomeFragment extends Fragment {
 
     private static final int REQUEST_PERMISSION = 233;
     private static final int REQUEST_CAMERA_PERMISSION_STAR_ALIGN = 234;
+    private static final int REQUEST_CAMERA_PERMISSION_EXPOSURE = 235;
 
     public static HomeFragment newInstance() {
         HomeFragment homeFragment = new HomeFragment();
@@ -70,6 +72,16 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 startDofCalc();
+            }
+        });
+
+        // 曝光合成
+        rootView.findViewById(R.id.exposure_enter_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (PermissionsUtils.checkCameraPermission(HomeFragment.this, REQUEST_CAMERA_PERMISSION_EXPOSURE)) {
+                    startExposure();
+                }
             }
         });
 
@@ -135,5 +147,10 @@ public class HomeFragment extends Fragment {
     // 启动景深计算器的操作
     private void startDofCalc() {
         startActivity(new Intent(getActivity(), DofCalcMainActivity.class));
+    }
+
+    // 启动曝光合成的操作
+    private void startExposure() {
+        startActivity(new Intent(getActivity(), ExposureBaseActivity.class));
     }
 }

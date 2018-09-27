@@ -3,6 +3,7 @@ package com.example.permissions;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -61,6 +62,29 @@ public class PermissionsUtils {
                     PermissionsConstant.PERMISSIONS_CAMERA,
                     fragment.getString(R.string.pick_permission_rationale),
                     PermissionsConstant.REQUEST_CAMERA);
+        }
+
+        return cameraPermissionGranted;
+    }
+
+    private static boolean checkSelfPermission(Context context, String[] permissions) {
+        boolean flag = true;
+
+        for (String permission : permissions) {
+            flag &= (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED);
+        }
+
+        return flag;
+    }
+
+    public static boolean checkCameraPermission(Fragment fragment, int requestCode) {
+        boolean cameraPermissionGranted = checkSelfPermission(fragment.getContext(), PermissionsConstant.PERMISSIONS_CAMERA);
+
+        if (!cameraPermissionGranted) {
+            requestPermission(fragment.getActivity(),
+                    PermissionsConstant.PERMISSIONS_CAMERA,
+                    fragment.getString(R.string.permission_camera),
+                    requestCode);
         }
 
         return cameraPermissionGranted;
