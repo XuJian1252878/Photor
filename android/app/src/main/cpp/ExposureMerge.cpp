@@ -2,6 +2,7 @@
 // Created by 许舰 on 2018/9/27.
 //
 #include "ExposureMerge.h"
+#include "Util.h"
 
 void readImagesAndTimes(vector<string>& imagesPath, vector<Mat>& images) {
     for (int index = 0; index < imagesPath.size(); index ++) {
@@ -14,10 +15,6 @@ int ExposureMergeProcess(vector<string>& imagesPath, vector<float>& times, Mat* 
 
     vector<Mat> images;
     readImagesAndTimes(imagesPath, images);
-
-    for (int index = 0; index < imagesPath.size(); index ++) {
-        LOGD(imagesPath[index].c_str());
-    }
 
     // 2. 图像可能由稍微的位移现象，需要对图片进行对齐操作
     Ptr<AlignMTB> alignMTB = createAlignMTB();

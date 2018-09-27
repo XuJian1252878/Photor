@@ -41,3 +41,11 @@ Mat_<Vec3b> getTransformImgByHomo(Mat_<Vec3b>& queryImg, Mat homo);
  * @return
  */
 bool adjustMaskPixel(Mat& mask);
+
+
+/**
+ * 对一组图像进行图像配准操作
+ * @param images 引用参数，函数调用后每幅图像都为配准之后的图像
+ * @param baseIndex 以images 中第 baseIndex 个图像为基准进行配准操作
+ */
+void registrationImages(vector<Mat>& images,int baseIndex);

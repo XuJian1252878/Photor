@@ -30,6 +30,76 @@ Mat_<Vec3b> addMeanImgs(std::vector<Mat_<Vec3b>>& sourceImages) {
     return resImage;
 }
 
+/**
+ * 对一组图像进行图像配准操作
+ * @param images 引用参数，函数调用后每幅图像都为配准之后的图像
+ * @param baseIndex 以images 中第 baseIndex 个图像为基准进行配准操作
+ */
+void registrationImages(vector<Mat>& images,int baseIndex = 0) {
+    int count = images.size();
+
+    // 如果images没有图像或者只有一个图像，不进行任何操作
+    if (count <= 1 || baseIndex >= images.size()) {
+        return ;
+    }
+
+    Mat trainImg = images[baseIndex];
+
+    //-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
+    int minHessian = 400;
+    Ptr<SURF> detector = SURF::create( minHessian );
+    std::vector<KeyPoint> trainKeyPoints;
+    detector->detect( trainImg, trainKeyPoints );
+
+    Ptr<SURF> extractor = SURF::create();
+    Mat trainDescriptors;
+    extractor->compute(trainImg, trainKeyPoints, trainDescriptors);
+
+    for (int index = 0; index < count; index ++) {
+
+        if (index == baseIndex) {
+            continue;
+        }
+
+        // 检测特征点以及特征点描述符
+        Mat_<Vec3b> queryImg = images[index];
+        std::vector<KeyPoint> queryKeyPoints;
+        detector->detect( queryImg, queryKeyPoints );
+
+        Mat queryDescriptors;
+        extractor->compute(queryImg, queryKeyPoints, queryDescriptors);
+
+        // 生成匹配点信息
+        FlannBasedMatcher matcher;
+        std::vector< vector<DMatch> > knnMatches;
+        matcher.knnMatch(trainDescriptors, queryDescriptors, knnMatches, 2);
+
+        // 筛选符合条件的特征点信息（最近邻次比率法）
+        std::vector<DMatch> matches;
+        vector<Point2f> queryMatchPoints, trainMatchPoints;  //  用于存储已经匹配上的特征点对
+        for (int index = 0; index < knnMatches.size(); index ++) {
+            DMatch firstMatch = knnMatches[index][0];
+            DMatch secondMatch = knnMatches[index][1];
+            if (firstMatch.distance < 0.75 * secondMatch.distance) {
+                matches.push_back(firstMatch);
+
+                trainMatchPoints.push_back(trainKeyPoints[firstMatch.queryIdx].pt);
+                queryMatchPoints.push_back(queryKeyPoints[firstMatch.trainIdx].pt);
+            }
+        }
+
+        // 计算映射关系
+        //获取图像1到图像2的投影映射矩阵 尺寸为3*3
+        Mat homo = findHomography(queryMatchPoints, trainMatchPoints, CV_RANSAC);
+
+        //图像配准
+        Mat imageTransform;
+        warpPerspective(queryImg, imageTransform, homo, Size(trainImg.cols, trainImg.rows));
+
+        images[index] = imageTransform;
+    }
+}
+
 Mat_<Vec3b> superimposedImg(vector<Mat_<Vec3b>>& images, Mat_<Vec3b>& trainImg) {
 
     int count = images.size();
