@@ -172,6 +172,7 @@ add_library( # Sets the name of the library.
              src/main/cpp/StarImageRegistBuilder.cpp
              src/main/cpp/GCApplication.cpp
              src/main/cpp/StarGrabCut.cpp
+             src/main/cpp/ExposureMerge.cpp
              src/main/cpp/Util.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a

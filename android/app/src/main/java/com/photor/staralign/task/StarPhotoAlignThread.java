@@ -47,6 +47,7 @@ public class StarPhotoAlignThread extends Thread {
 
     @Override
     public void run() {
+        super.run();
         // 进行图片对齐操作
         alignResFlag = alignStarPhotos(starPhotos, alignBasePhotoIndex, alignResMatAddr, maskImgPath, generateImgAbsPath);
         activity.runOnUiThread(new Runnable() {

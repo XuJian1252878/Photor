@@ -8,7 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+import android.widget.Toast;
 
+import com.example.file.FileUtils;
+import com.example.media.image.MediaExifHelper;
 import com.example.photopicker.PhotoPicker;
 import com.example.photopicker.PhotoPreview;
 import com.photor.R;
@@ -16,6 +19,8 @@ import com.photor.base.activity.PhotoOperateBaseActivity;
 import com.photor.base.adapters.PhotoAdapter;
 import com.photor.base.adapters.event.PhotoItemClickListener;
 import com.photor.exposure.event.ExposureEnum;
+import com.photor.exposure.event.ExposureProcessFinishListener;
+import com.photor.exposure.task.ExposureMergeThread;
 import com.photor.staralign.StarAlignBaseActivity;
 import com.photor.staralign.event.StarAlignEnum;
 
@@ -81,7 +86,34 @@ public class ExposureBaseActivity extends PhotoOperateBaseActivity {
                             .start(ExposureBaseActivity.this);
                 } else if (currentStep == ExposureEnum.EXPOSURE_RESULT.getCode()) {
                     // 开始曝光合成操作
+                    if (selectedPhotos.size() < 2) {
+                        Toast.makeText(ExposureBaseActivity.this, getResources().getString(R.string.exposure_photo_count_not_enough), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    // 获取所选择图片的曝光时间
+                    List<Double> exposureTimes = new ArrayList<>();
+                    for (String photoPath: selectedPhotos) {
+                        double exposureTime = MediaExifHelper.getExposureTime(photoPath);
+                        exposureTimes.add(exposureTime);
+                    }
 
+                    final String resImgPath = FileUtils.generateImgAbsPath();  // 曝光合成结果图片的路径
+                    ExposureMergeThread exposureMergeThread = new ExposureMergeThread(getParent(),
+                            selectedPhotos, (ArrayList<Double>) exposureTimes,
+                            new ExposureProcessFinishListener() {
+                        @Override
+                        public void onExposureProcessFinish(int expResCode) {
+                            // 查看曝光合成操作是否成功
+                            if (expResCode == ExposureEnum.EXPOSURE_MERGE_SUCCESS.getCode()) {
+                                System.out.println(resImgPath);
+                            } else {
+                                Toast.makeText(ExposureBaseActivity.this,
+                                        ExposureEnum.EXPOSURE_MERGE_FAILED.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }, resImgPath, expoResMat.getNativeObjAddr());
+                    exposureMergeThread.startExposureMerge();
                 }
             }
         });

@@ -2,11 +2,13 @@
 #include <string>
 #include <opencv2/opencv.hpp>
 #include <opencv2/xfeatures2d.hpp>
+#include <stdlib.h>
 #include <bits/stdc++.h>
 #include "StarImageRegistBuilder.h"
 #include "GCApplication.h"
 #include "StarGrabCut.h"
 #include "Util.h"
+#include "ExposureMerge.h"
 
 #include <android/log.h>
 #define  LOG_TAG    "JNI_PART"
@@ -117,6 +119,56 @@ extern "C"
 
  }
 
+
+/******************************************************************************************************
+ * 星野图片对齐操作
+ */
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_photor_staralign_GrabCutActivity_initGrabCut(JNIEnv *env, jobject instance,
+                                                      jlong oriImgMatAddr, jlong resImgMatAddr,
+                                                      jlong maskMatAddr) {
+    Mat *oriImgMat = (Mat*) oriImgMatAddr;
+    Mat *resImgMat = (Mat*) resImgMatAddr;
+    Mat *maskMat = (Mat*) maskMatAddr;
+//    GCApplication *gcapp = new GCApplication();
+
+    jclass jc = env->GetObjectClass(instance);
+    jmethodID showId = env->GetMethodID(jc, "showImage", "()V");
+
+    GCApplication::setImageAndShowId(oriImgMat, resImgMat, maskMat, showId);
+    GCApplication::showImage(env, instance);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_photor_staralign_GrabCutActivity_moveGrabCut(JNIEnv *env, jobject instance,
+                                                              jint event, jint x, jint y,
+                                                              jint flags) {
+    on_mouse(event, x, y, flags, env, instance);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_photor_staralign_GrabCutActivity_reset(JNIEnv *env, jobject instance) {
+    GCApplication::reset();
+    GCApplication::showImage(env,instance);
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_photor_staralign_GrabCutActivity_grabCut(JNIEnv *env, jobject instance) {
+    int iterCount = GCApplication::getIterCount();
+    int newIterCount = GCApplication::nextIter();
+    return (jboolean) (newIterCount > iterCount);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_photor_staralign_GrabCutActivity_grabCutOver(JNIEnv *env, jobject instance) {
+    GCApplication::showImage(env,instance);
+}
+
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env, jobject instance,
@@ -219,53 +271,6 @@ Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env,
 }
 
 
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_photor_staralign_GrabCutActivity_initGrabCut(JNIEnv *env, jobject instance,
-                                                      jlong oriImgMatAddr, jlong resImgMatAddr,
-                                                      jlong maskMatAddr) {
-    Mat *oriImgMat = (Mat*) oriImgMatAddr;
-    Mat *resImgMat = (Mat*) resImgMatAddr;
-    Mat *maskMat = (Mat*) maskMatAddr;
-//    GCApplication *gcapp = new GCApplication();
-
-    jclass jc = env->GetObjectClass(instance);
-    jmethodID showId = env->GetMethodID(jc, "showImage", "()V");
-
-    GCApplication::setImageAndShowId(oriImgMat, resImgMat, maskMat, showId);
-    GCApplication::showImage(env, instance);
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_photor_staralign_GrabCutActivity_moveGrabCut(JNIEnv *env, jobject instance,
-                                                              jint event, jint x, jint y,
-                                                              jint flags) {
-    on_mouse(event, x, y, flags, env, instance);
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_photor_staralign_GrabCutActivity_reset(JNIEnv *env, jobject instance) {
-    GCApplication::reset();
-    GCApplication::showImage(env,instance);
-}
-
-extern "C"
-JNIEXPORT jboolean JNICALL
-Java_com_photor_staralign_GrabCutActivity_grabCut(JNIEnv *env, jobject instance) {
-    int iterCount = GCApplication::getIterCount();
-    int newIterCount = GCApplication::nextIter();
-    return (jboolean) (newIterCount > iterCount);
-}
-
-extern "C"
-JNIEXPORT void JNICALL
-Java_com_photor_staralign_GrabCutActivity_grabCutOver(JNIEnv *env, jobject instance) {
-    GCApplication::showImage(env,instance);
-}
-
-
 // StarAlignSplitActivity 分割星空前景背景的方法
 extern "C"
 JNIEXPORT void JNICALL
@@ -313,4 +318,50 @@ JNIEXPORT void JNICALL
 Java_com_photor_staralign_StarAlignSplitActivity_reset(JNIEnv *env, jobject instance) {
     // 重新设置照片的前景以及背景
     StarGrabCut::reset();
+}
+
+
+/******************************************************************************************************
+ * 曝光合成操作
+ */
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_photor_exposure_task_ExposureMergeThread_exposureMergePhotos(JNIEnv *env, jobject instance,
+                                                                      jobject photos,
+                                                                      jobject exposureTimes,
+                                                                      jlong resImgAddr,
+                                                                      jstring resImgPath) {
+
+    // TODO
+    // 获取ArrayList对象的class
+    jclass arrayList = static_cast<jclass>(env->FindClass("java/util/ArrayList"));
+    jmethodID arrayListSize = env->GetMethodID(arrayList, "size", "()I");
+    jmethodID arrayListGet = env->GetMethodID(arrayList, "get", "(I)Ljava/lang/Object;");
+
+    int photoSize = env->CallIntMethod(photos, arrayListSize);
+
+    jboolean isCopyStr = JNI_FALSE;
+    vector<string> photoVec;
+    vector<double> timeVec;
+    for (int index = 0; index < photoSize; index ++) {
+        const char* sourcePhotoPathPtr = env->GetStringUTFChars(
+                static_cast<jstring>(env->CallObjectMethod(photos, arrayListGet, index)),
+                &isCopyStr);
+        photoVec.push_back(string(sourcePhotoPathPtr));
+
+        double time = atof((env->GetStringUTFChars(
+                static_cast<jstring>(env->CallObjectMethod(exposureTimes, arrayListGet, index)),
+                &isCopyStr)));
+        timeVec.push_back(time);
+
+    }
+
+    // 生成结果Mat对象
+    Mat* resMat = (Mat*) resImgAddr;
+
+    // 生成结果Mat存储路径
+    const char *generateImgAbsPath_ = env->GetStringUTFChars(resImgPath, 0); // 存储对齐图片的路径信息
+    string generateImgAbsPath = string(generateImgAbsPath_);
+
+    return ExposureMergeProcess(photoVec, timeVec, resMat, generateImgAbsPath);
 }
