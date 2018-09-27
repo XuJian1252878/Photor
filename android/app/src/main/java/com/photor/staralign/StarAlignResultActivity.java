@@ -1,6 +1,5 @@
 package com.photor.staralign;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -15,8 +14,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.file.FileUtils;
 import com.photor.R;
-import com.photor.util.FileUtils;
 import com.photor.widget.TipToast;
 
 import java.io.FileInputStream;

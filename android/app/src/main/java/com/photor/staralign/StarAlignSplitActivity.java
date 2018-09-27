@@ -22,8 +22,8 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.example.file.FileUtils;
 import com.photor.R;
-import com.photor.util.FileUtils;
 import com.photor.util.ImageUtils;
 import com.photor.widget.TipToast;
 import com.photor.widget.graffiti.ColorPickerDialog;

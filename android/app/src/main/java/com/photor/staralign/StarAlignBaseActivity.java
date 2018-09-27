@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.file.FileUtils;
 import com.example.photopicker.PhotoPicker;
 import com.example.photopicker.PhotoPreview;
 import com.photor.R;
@@ -22,7 +23,6 @@ import com.photor.staralign.event.StarAlignEnum;
 import com.photor.staralign.event.StarAlignProgressListener;
 import com.photor.base.adapters.event.PhotoItemClickListener;
 import com.photor.staralign.task.StarPhotoAlignThread;
-import com.photor.util.FileUtils;
 import com.shuhart.stepview.StepView;
 
 import org.opencv.core.Mat;
