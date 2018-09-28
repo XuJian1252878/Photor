@@ -6,7 +6,6 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +19,7 @@ import android.widget.Toast;
 
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.photor.R;
+import com.photor.base.View.MainAcitvityViewPager;
 import com.photor.base.adapters.MainViewPagerAdapter;
 import com.photor.base.fragment.util.BottomNavigationEnum;
 import com.photor.base.fragment.util.FragmentDataGenerator;
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Fragment> mMainFragments;
     private BottomNavigationViewEx mBottomNavigationView;
     private DrawerLayout mDrawerLayout;
-    private ViewPager mMainViewPager; // 主页面的ViewPager
+    private MainAcitvityViewPager mMainViewPager; // 主页面的ViewPager
     private int previousBtmNavItemId = -1; // 上一次下部导航栏所在的item的下标
 
 
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         // 4. 设置主页面的ViewPager
         mMainViewPager.setAdapter(new MainViewPagerAdapter(getSupportFragmentManager(), mMainFragments));
 
-        mMainViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mMainViewPager.addOnPageChangeListener(new MainAcitvityViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
@@ -165,6 +165,11 @@ public class MainActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 // ViewPager和BottomNavigationView联动绑定
                 mBottomNavigationView.setCurrentItem(position);
+                if (position == BottomNavigationEnum.CAMERA.getNavItemIndex()) {
+                    mMainViewPager.setCanScroll(false); // 到Camera Fragment的时候禁止ViewPager 的滑动
+                } else {
+                    mMainViewPager.setCanScroll(true);
+                }
             }
 
             @Override
