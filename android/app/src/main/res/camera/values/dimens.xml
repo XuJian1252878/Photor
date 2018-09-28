@@ -1,0 +1,23 @@
+<resources>
+    <!--PADDING & MARGIN-->
+    <dimen name="big_spacing">24dp</dimen>
+    <dimen name="sub_big_spacing">20dp</dimen>
+    <dimen name="medium_spacing">16dp</dimen>
+    <dimen name="sub_medium_spacing">10dp</dimen>
+    <dimen name="small_spacing">8dp</dimen>
+    <dimen name="sub_small_spacing">5dp</dimen>
+    <dimen name="inside_spacing">30dp</dimen>
+    <dimen name="password_spacing">16dp</dimen>
+    <dimen name="button_spacing">22dp</dimen>
+    <dimen name="inside_spacing_top">70dp</dimen>
+    <dimen name="margin_spacing_top">22dp</dimen>
+    <dimen name="alternate_margin">10dp</dimen>
+    <dimen name="alternate_half_margin">5dp</dimen>
+    <dimen name="alternate_padding">10dp</dimen>
+    <dimen name="alternate_half_padding">5dp</dimen>
+    <dimen name="zero">0dp</dimen>
+    <dimen name="display_text_min_height">32dp</dimen>
+
+
+    <dimen name="exposure_margin">30dp</dimen>
+</resources>

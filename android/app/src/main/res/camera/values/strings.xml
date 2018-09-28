@@ -1,0 +1,12 @@
+<resources>
+    <string name="exposure_compensation">曝光补偿</string>
+
+    <!-- Exposure compensation Dark/Bright -->
+    <string name="dark">暗</string>
+    <string name="bright">亮</string>
+    <string name="exposure_shutter_speed">曝光快门速度</string>
+
+    <string name="iso">ISO</string>
+    <string name="exposure">曝光</string>
+    <string name="white_balance">白平衡</string>
+</resources>

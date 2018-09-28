@@ -1,20 +1,28 @@
 package com.photor.base.fragment;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.orhanobut.logger.Logger;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraLogger;
 import com.otaliastudios.cameraview.CameraOptions;
@@ -28,14 +36,30 @@ import com.photor.camera.event.Control;
 import com.photor.camera.view.ControlView;
 
 import java.io.File;
+import java.text.DecimalFormat;
 
 public class CameraFragment extends Fragment implements View.OnClickListener, ControlView.Callback {
 
     private CameraView camera;
+    private CameraOptions cameraOptions;
+
     private ViewGroup controlPanel;
 
     private boolean mCapturingPicture;
     private boolean mCapturingVideo;
+
+    // 曝光调节控制面板
+    LinearLayout slidersContainer;
+    // 控制面板内的曝光进度条
+    SeekBar exposureSeekbar;
+    // 调出曝光调节的按钮
+    ImageButton exposureImgBtn;
+
+    private float exposureCorrectionMaxValue; // 手机相机的曝光参数上界
+    private float exposureCorrectionMinValue; // 手机相机的曝光参数下界
+    private float exposureCorrectionCurValue; // 手机相机当前的曝光值
+    private float exposureRange; // 手机相机曝光范围
+
 
     // To show stuff in the callback
     private Size mCaptureNativeSize;
@@ -56,23 +80,15 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
         getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         View rootView = inflater.inflate(R.layout.fragment_camera, container, false);
+        initUI(rootView);
+        return rootView;
+    }
 
-        CameraLogger.setLogLevel(CameraLogger.LEVEL_VERBOSE);
 
-        camera = rootView.findViewById(R.id.camera);
-        // Activity CameraView is a component bound to your activity or fragment lifecycle. This means that you must pass the lifecycle owner using setLifecycleOwner
-        // Fragment use fragment.viewLifecycleOwner instead of this!
-//        camera.setLifecycleOwner(this);
-        camera.addCameraListener(new CameraListener() {
-            public void onCameraOpened(CameraOptions options) { onOpened(); }
-            public void onPictureTaken(byte[] jpeg) { onPicture(jpeg); }
+    private void initUI(View rootView) {
 
-            @Override
-            public void onVideoTaken(File video) {
-                super.onVideoTaken(video);
-                onVideo(video);
-            }
-        });
+        // 1. 初始化相机曝光信息
+        initCameraExposureUIInfo(rootView);
 
         rootView.findViewById(R.id.edit).setOnClickListener(this);
         rootView.findViewById(R.id.capturePhoto).setOnClickListener(this);
@@ -96,7 +112,126 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
             }
         });
 
-        return rootView;
+        exposureImgBtn = rootView.findViewById(R.id.exposure);
+        exposureImgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (slidersContainer.getVisibility() == View.VISIBLE) {
+                    slidersContainer.setVisibility(View.INVISIBLE);
+                } else {
+                    slidersContainer.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    private void initCameraExposureUIInfo(View rootView) {
+
+        CameraLogger.setLogLevel(CameraLogger.LEVEL_VERBOSE);
+        // 首先曝光滑动设置为false
+        slidersContainer = rootView.findViewById(R.id.sliders_container);
+        slidersContainer.setVisibility(View.INVISIBLE);
+
+        camera = rootView.findViewById(R.id.camera);
+        camera.start();  // 启动camera参数，以便于获取手机相机参数
+        while (!camera.isStarted()) {
+            // camera 启动需要时间，不这样会导致后面取不到 曝光的范围值
+        }
+
+        camera.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // 当点击不在 slidersContainer 上的时候，隐藏 slidersContainer 界面
+                if (slidersContainer != null) {
+                    slidersContainer.setVisibility(View.INVISIBLE);
+                }
+                return false;
+            }
+        });
+
+        cameraOptions = camera.getCameraOptions();
+
+        exposureSeekbar = rootView.findViewById(R.id.exposure_seekbar);
+
+        // 获得当前相机的曝光参数
+        exposureCorrectionMaxValue = cameraOptions.getExposureCorrectionMaxValue();
+        exposureCorrectionMinValue = cameraOptions.getExposureCorrectionMinValue();
+        exposureCorrectionCurValue = camera.getExposureCorrection();
+        exposureRange = exposureCorrectionMaxValue - exposureCorrectionMinValue;
+
+        // 设置曝光进度条的初始值
+        exposureSeekbar.setMax((int)((exposureCorrectionMaxValue - exposureCorrectionMinValue) * 10));
+        exposureSeekbar.setProgress((int)((exposureCorrectionCurValue - exposureCorrectionMinValue) * 10));
+        exposureSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    int nextEv = progress / 10;
+                    if (nextEv < exposureCorrectionMinValue) {
+                        exposureCorrectionCurValue = exposureCorrectionMinValue;
+                    } else if (nextEv > exposureCorrectionMaxValue) {
+                        exposureCorrectionCurValue = exposureCorrectionMaxValue;
+                    } else {
+                        exposureCorrectionCurValue = nextEv;
+                    }
+                    camera.setExposureCorrection(exposureCorrectionCurValue);
+                }
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) { }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) { }
+        });
+
+        // 设置曝光值的按钮（位于seekbar上）
+        final DecimalFormat decimalFormat = new DecimalFormat("##0.00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
+        ImageButton increaseZoomBtn = rootView.findViewById(R.id.increase_zoom);
+        increaseZoomBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                float nextEv = exposureCorrectionCurValue + exposureRange / 10;
+                exposureCorrectionCurValue = nextEv > exposureCorrectionMaxValue ? exposureCorrectionMaxValue : nextEv;
+                // 每次增加10%的曝光
+                exposureSeekbar.setProgress((int)((exposureCorrectionCurValue - exposureCorrectionMinValue) * 10));
+                camera.setExposureCorrection(exposureCorrectionCurValue);
+                Toast.makeText(getActivity(), "当前曝光值为 " + decimalFormat.format(exposureCorrectionCurValue) + " EV", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        ImageButton decreaseZoomBtn = rootView.findViewById(R.id.decrease_zoom);
+        decreaseZoomBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                float nextEv = exposureCorrectionCurValue - exposureRange / 10;
+                exposureCorrectionCurValue = nextEv < exposureCorrectionMinValue ? exposureCorrectionMinValue : nextEv;
+                // 每次减少 10% 的曝光
+                exposureSeekbar.setProgress((int)((exposureCorrectionCurValue - exposureCorrectionMinValue) * 10));
+                camera.setExposureCorrection(exposureCorrectionCurValue);
+                Toast.makeText(getActivity(), "当前曝光值为 " + decimalFormat.format(exposureCorrectionCurValue) + "EV", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Activity CameraView is a component bound to your activity or fragment lifecycle. This means that you must pass the lifecycle owner using setLifecycleOwner
+        // Fragment use fragment.viewLifecycleOwner instead of this!
+//        camera.setLifecycleOwner(this);
+        camera.addCameraListener(new CameraListener() {
+            public void onCameraOpened(CameraOptions options) { onOpened(); }
+            public void onPictureTaken(byte[] jpeg) { onPicture(jpeg); }
+
+            @Override
+            public void onVideoTaken(File video) {
+                super.onVideoTaken(video);
+                onVideo(video);
+            }
+
+            @Override
+            public void onExposureCorrectionChanged(float newValue, float[] bounds, PointF[] fingers) {
+                super.onExposureCorrectionChanged(newValue, bounds, fingers);
+                exposureCorrectionCurValue = newValue;
+                // 设置曝光值
+                exposureSeekbar.setProgress((int)(newValue - exposureCorrectionMinValue) * 10);
+            }
+        });
     }
 
 
@@ -150,6 +285,11 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
             case R.id.capturePhoto: capturePhoto(); break;
             case R.id.captureVideo: captureVideo(); break;
             case R.id.toggleCamera: toggleCamera(); break;
+        }
+
+        // 当点击区域不在 曝光调节面板的时候，关闭曝光调节面板
+        if (slidersContainer != null) {
+            slidersContainer.setVisibility(View.INVISIBLE);
         }
     }
 
