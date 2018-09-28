@@ -14,6 +14,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -65,6 +66,10 @@
 
         <!-- 曝光合成界面 -->
         <activity android:name=".exposure.ExposureBaseActivity" />
+
+        <!-- 相机界面 -->
+        <activity android:name=".camera.activity.PicturePreviewActivity"/>
+        <activity android:name=".camera.activity.VideoPreviewActivity" />
 
         <!-- 公共组件，图片选择器界面 -->
         <activity android:name="com.example.photopicker.PhotoPickerActivity" />

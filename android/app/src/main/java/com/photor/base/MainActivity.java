@@ -173,21 +173,21 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // 5. 初始化浮动小圆点
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Snackbar.make 的view参数只要是当前界面的任意一个布局就可以，他会使用这个View自动查找最外层的布局
-                Snackbar.make(findViewById(R.id.main_coordinatorLayout), "Data Deleted", Snackbar.LENGTH_SHORT)
-                        .setAction("Undo", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Toast.makeText(MainActivity.this, "Data Restored", Toast.LENGTH_SHORT).show();
-                            }
-                        }).show();
-
-            }
-        });
+//        FloatingActionButton fab = findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // Snackbar.make 的view参数只要是当前界面的任意一个布局就可以，他会使用这个View自动查找最外层的布局
+//                Snackbar.make(findViewById(R.id.main_coordinatorLayout), "Data Deleted", Snackbar.LENGTH_SHORT)
+//                        .setAction("Undo", new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                Toast.makeText(MainActivity.this, "Data Restored", Toast.LENGTH_SHORT).show();
+//                            }
+//                        }).show();
+//
+//            }
+//        });
     }
 
 

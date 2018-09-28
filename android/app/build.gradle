@@ -198,6 +198,10 @@ dependencies {
     // 引入日志
     implementation 'com.orhanobut:logger:1.15'
 
+    // 引入camera view
+    implementation 'com.otaliastudios:cameraview:1.6.0'
+    implementation "com.android.support:exifinterface:26.1.0"
+
     implementation project(':photopicker')
     implementation project(':openCVLibrary341')
 }
