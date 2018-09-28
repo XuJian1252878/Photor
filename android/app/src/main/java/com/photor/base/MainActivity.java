@@ -134,6 +134,8 @@ public class MainActivity extends AppCompatActivity {
 
         mMainFragments = FragmentDataGenerator.getMainFragments(getSupportFragmentManager());
         mBottomNavigationView = findViewById(R.id.bottom_main_navigation);
+        // 开始或关闭子菜单位移模式。 如果为 true，除了当前选中项，其他项的文本将会隐藏。 当菜单数大于3时，默认为 true。
+        mBottomNavigationView.enableItemShiftingMode(false);
         mMainViewPager = findViewById(R.id.main_container);
 
         // 3. 初始化底部导航栏

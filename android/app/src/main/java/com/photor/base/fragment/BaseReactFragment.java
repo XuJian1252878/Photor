@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
+import com.orhanobut.logger.Logger;
 import com.photor.MainApplication;
+
 
 /**
  * Created by xujian on 2018/2/23.
@@ -41,10 +43,20 @@ public abstract class BaseReactFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mReactRootView.startReactApplication(
-                mReactInstanceManager,
-                getMainComponentName(),
-                null
-        );
+        try {
+            mReactRootView.startReactApplication(
+                    mReactInstanceManager,
+                    getMainComponentName(),
+                    null
+            );
+        } catch (AssertionError e) {
+            Logger.w(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mReactRootView.unmountReactApplication();
     }
 }

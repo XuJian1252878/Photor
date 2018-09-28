@@ -4,6 +4,7 @@
     <string name="menu_main_bottom_tab_home">首页</string>
     <string name="menu_main_bottom_tab_gallery">相册</string>
     <string name="menu_main_bottom_tab_resource">资源</string>
+    <string name="menu_main_bottom_tab_camera">相机</string>
 
     <string name="main_activity_action_menu_item_backup">返回</string>
     <string name="main_activity_action_menu_item_delete">删除</string>

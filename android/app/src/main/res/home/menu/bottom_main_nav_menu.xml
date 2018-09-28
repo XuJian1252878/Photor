@@ -9,4 +9,7 @@
     <item android:id="@+id/menu_main_bottom_tab_resource"
         android:title="@string/menu_main_bottom_tab_resource"
         android:icon="@drawable/ic_account_circle_black_24dp" />
+    <item android:id="@+id/menu_main_bottom_tab_camera"
+        android:title="@string/menu_main_bottom_tab_camera"
+        android:icon="@drawable/ic_camera" />
 </menu>

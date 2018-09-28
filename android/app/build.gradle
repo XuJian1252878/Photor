@@ -157,10 +157,12 @@ android {
         main {
             res.srcDirs = [
                     'src/main/res',
-                    'src/main/res/main',
-                    'src/main/res/staralign',
-                    'src/main/res/dof',
-                    'src/main/res/exposure'
+                    'src/main/res/home',
+                    'src/main/res/home/staralign',
+                    'src/main/res/home/dof',
+                    'src/main/res/home/exposure',
+
+                    'src/main/res/camera',
             ]
         }
     }
@@ -192,6 +194,9 @@ dependencies {
 
     // 引入步骤控件
     implementation 'com.shuhart.stepview:stepview:1.2.5'
+
+    // 引入日志
+    implementation 'com.orhanobut:logger:1.15'
 
     implementation project(':photopicker')
     implementation project(':openCVLibrary341')
