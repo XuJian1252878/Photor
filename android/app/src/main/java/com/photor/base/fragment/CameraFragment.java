@@ -1,15 +1,14 @@
 package com.photor.base.fragment;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,11 +17,12 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
-import com.orhanobut.logger.Logger;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraLogger;
 import com.otaliastudios.cameraview.CameraOptions;
@@ -33,6 +33,7 @@ import com.photor.R;
 import com.photor.camera.activity.PicturePreviewActivity;
 import com.photor.camera.activity.VideoPreviewActivity;
 import com.photor.camera.event.Control;
+import com.photor.camera.view.CameraSettingPopupView;
 import com.photor.camera.view.ControlView;
 
 import java.io.File;
@@ -59,6 +60,10 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
     private float exposureCorrectionMinValue; // 手机相机的曝光参数下界
     private float exposureCorrectionCurValue; // 手机相机当前的曝光值
     private float exposureRange; // 手机相机曝光范围
+
+    // 相机设置界面
+    private ImageView settingPopupBtn;
+    private ScrollView settingPopupContainer;
 
 
     // To show stuff in the callback
@@ -90,6 +95,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
         // 1. 初始化相机曝光信息
         initCameraExposureUIInfo(rootView);
 
+        // 2. 初始化相机的拍照录像功能
         rootView.findViewById(R.id.edit).setOnClickListener(this);
         rootView.findViewById(R.id.capturePhoto).setOnClickListener(this);
         rootView.findViewById(R.id.captureVideo).setOnClickListener(this);
@@ -123,6 +129,27 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
                 }
             }
         });
+
+        // 3. 初始化相机的浮动设置窗口信息
+        settingPopupBtn = rootView.findViewById(R.id.camera_setting_popup_btn);
+        settingPopupBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (settingPopupContainer.getVisibility() == View.VISIBLE) {
+                    settingPopupContainer.setVisibility(View.INVISIBLE);
+                } else {
+                    settingPopupContainer.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        settingPopupContainer = rootView.findViewById(R.id.camera_setting_popup_container);
+        // prevent popup being transparent
+        settingPopupContainer.setBackgroundColor(Color.BLACK);
+        settingPopupContainer.setAlpha(0.9f);
+        // 绑定Setting 模版
+        CameraSettingPopupView cameraSettingPopupView = new CameraSettingPopupView(getActivity(),
+                CameraFragment.this);
+        settingPopupContainer.addView(cameraSettingPopupView);
     }
 
     private void initCameraExposureUIInfo(View rootView) {
@@ -144,6 +171,9 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
                 // 当点击不在 slidersContainer 上的时候，隐藏 slidersContainer 界面
                 if (slidersContainer != null) {
                     slidersContainer.setVisibility(View.INVISIBLE);
+                }
+                if (settingPopupContainer != null) {
+                    settingPopupContainer.setVisibility(View.INVISIBLE);
                 }
                 return false;
             }
@@ -398,5 +428,9 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
     public void onDestroy() {
         super.onDestroy();
         camera.destroy();
+    }
+
+    public CameraView getCameraView() {
+        return this.camera;
     }
 }

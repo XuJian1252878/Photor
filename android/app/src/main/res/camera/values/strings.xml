@@ -9,4 +9,6 @@
     <string name="iso">ISO</string>
     <string name="exposure">曝光</string>
     <string name="white_balance">白平衡</string>
+
+    <string name="action_popup">相机设置</string>
 </resources>
