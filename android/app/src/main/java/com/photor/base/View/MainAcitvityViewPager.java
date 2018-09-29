@@ -9,7 +9,7 @@ import android.view.MotionEvent;
 public class MainAcitvityViewPager extends ViewPager {
 
     private static final String TAG = "MAIN_ACTIVITY_VIEW_PAGER";
-    private boolean isCanScroll = false;
+    private boolean isCanScroll = true;
 
     public MainAcitvityViewPager(Context context) {
         super(context);
