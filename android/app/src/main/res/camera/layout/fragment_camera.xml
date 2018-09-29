@@ -191,6 +191,7 @@
 
     <!-- Controls -->
     <LinearLayout
+        android:id="@+id/camera_fragment_bottom_control_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"

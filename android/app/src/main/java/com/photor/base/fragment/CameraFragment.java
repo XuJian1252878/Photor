@@ -48,6 +48,8 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
 
     private ViewGroup controlPanel;
 
+    private LinearLayout bottomControlPanel;
+
     private boolean mCapturingPicture;
     private boolean mCapturingVideo;
 
@@ -93,6 +95,8 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
 
 
     private void initUI(View rootView) {
+
+        bottomControlPanel = rootView.findViewById(R.id.camera_fragment_bottom_control_panel);
 
         // 1. 初始化相机曝光信息
         initCameraExposureUIInfo(rootView);
@@ -143,8 +147,10 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
                 // 控制 相机的浮动设置窗口 可见性
                 if (settingPopupContainer.getVisibility() == View.VISIBLE) {
                     settingPopupContainer.setVisibility(View.INVISIBLE);
+                    bottomControlPanel.setVisibility(View.VISIBLE);
                 } else {
                     settingPopupContainer.setVisibility(View.VISIBLE);
+                    bottomControlPanel.setVisibility(View.INVISIBLE);
                 }
                 // 控制 曝光调节窗口可视性
                 if (slidersContainer != null && slidersContainer.getVisibility() == View.VISIBLE) {
@@ -185,6 +191,9 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
                 }
                 if (settingPopupContainer != null) {
                     settingPopupContainer.setVisibility(View.INVISIBLE);
+                }
+                if (bottomControlPanel.getVisibility() == View.INVISIBLE) {
+                    bottomControlPanel.setVisibility(View.VISIBLE);
                 }
                 return false;
             }
