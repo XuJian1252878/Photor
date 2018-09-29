@@ -41,6 +41,8 @@ import java.text.DecimalFormat;
 
 public class CameraFragment extends Fragment implements View.OnClickListener, ControlView.Callback {
 
+    private View rootView;
+
     private CameraView camera;
     private CameraOptions cameraOptions;
 
@@ -84,7 +86,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-        View rootView = inflater.inflate(R.layout.fragment_camera, container, false);
+        rootView = inflater.inflate(R.layout.fragment_camera, container, false);
         initUI(rootView);
         return rootView;
     }
@@ -143,12 +145,13 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
             }
         });
         settingPopupContainer = rootView.findViewById(R.id.camera_setting_popup_container);
+        settingPopupContainer.setVisibility(View.INVISIBLE);
         // prevent popup being transparent
         settingPopupContainer.setBackgroundColor(Color.BLACK);
         settingPopupContainer.setAlpha(0.9f);
         // 绑定Setting 模版
         CameraSettingPopupView cameraSettingPopupView = new CameraSettingPopupView(getActivity(),
-                CameraFragment.this);
+                CameraFragment.this, rootView);
         settingPopupContainer.addView(cameraSettingPopupView);
     }
 
