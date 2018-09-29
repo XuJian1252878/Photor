@@ -202,6 +202,11 @@ dependencies {
     implementation 'com.otaliastudios:cameraview:1.6.0'
     implementation "com.android.support:exifinterface:26.1.0"
 
+    // 引入 选择器
+    implementation 'com.contrarywind:wheelview:4.0.8'
+
+    // 引入选择器信息
+    implementation 'com.roughike:swipe-selector:1.0.6'
     implementation project(':photopicker')
     implementation project(':openCVLibrary341')
 }

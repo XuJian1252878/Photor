@@ -16,4 +16,10 @@
     <string name="camera_flash_on_label">闪光灯：开</string>
     <string name="camera_flash_auto_label">闪光灯：自动</string>
     <string name="camera_flash_torch_label">闪光灯：常亮</string>
+
+    <string name="camera_grid_setting_label">网格设置</string>
+    <string name="camera_grid_off_label">无网格</string>
+    <string name="camera_grid_3_3_label">3*3</string>
+    <string name="camera_grid_4_4_label">4*4</string>
+    <string name="camera_grid_phi_label">黄金分割</string>
 </resources>
