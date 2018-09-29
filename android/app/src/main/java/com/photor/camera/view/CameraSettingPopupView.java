@@ -227,22 +227,22 @@ public class CameraSettingPopupView extends LinearLayout {
     private void cameraPlaySounds(final CameraView camera) {
         final ImageButton soundsBtn = findViewById(R.id.camera_sounds_btn);
         if (isPlaySounds) {
-            soundsBtn.setBackgroundColor(Color.argb(63, 63, 63, 63));
-        } else {
             soundsBtn.setBackgroundColor(Color.argb(180, 63, 63, 63));
+        } else {
+            soundsBtn.setBackgroundColor(Color.argb(63, 63, 63, 63));
         }
         soundsBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isPlaySounds) {
                     isPlaySounds = false;
-                    soundsBtn.setBackgroundColor(Color.argb(180, 63, 63, 63));
+                    soundsBtn.setBackgroundColor(Color.argb(63, 63, 63, 63));
                     Toast.makeText(cameraFragment.getContext(),
                             getResources().getString(R.string.camera_sounds_setting_off),
                             Toast.LENGTH_SHORT).show();
                 } else {
                     isPlaySounds = true;
-                    soundsBtn.setBackgroundColor(Color.argb(63, 63, 63, 63));
+                    soundsBtn.setBackgroundColor(Color.argb(180, 63, 63, 63));
                     Toast.makeText(cameraFragment.getContext(),
                             getResources().getString(R.string.camera_sounds_setting_on),
                             Toast.LENGTH_SHORT).show();
