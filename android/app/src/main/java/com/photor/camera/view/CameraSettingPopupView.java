@@ -12,18 +12,18 @@ import android.widget.Toast;
 import com.contrarywind.adapter.WheelAdapter;
 import com.contrarywind.listener.OnItemSelectedListener;
 import com.contrarywind.view.WheelView;
-import com.orhanobut.logger.Logger;
 import com.otaliastudios.cameraview.Audio;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.Flash;
-import com.otaliastudios.cameraview.Grid;
 import com.otaliastudios.cameraview.Hdr;
+import com.otaliastudios.cameraview.VideoCodec;
 import com.otaliastudios.cameraview.VideoQuality;
 import com.otaliastudios.cameraview.WhiteBalance;
 import com.photor.R;
 import com.photor.base.fragment.CameraFragment;
 import com.photor.camera.event.setting.FlashOnEnum;
 import com.photor.camera.event.setting.GridEnum;
+import com.photor.camera.event.setting.VideoCoderEnum;
 import com.photor.camera.event.setting.VideoQualityEnum;
 import com.photor.camera.event.setting.WhiteBalanceEnum;
 import com.shawnlin.numberpicker.NumberPicker;
@@ -85,6 +85,9 @@ public class CameraSettingPopupView extends LinearLayout {
 
         //7. 视频质量设置
         cameraVideoQualitySetting(camera);
+
+        //8. 视频编码设置
+        cameraVideoCodecSetting(camera);
     }
 
     // 设置当前相机的闪光灯按钮
@@ -266,7 +269,7 @@ public class CameraSettingPopupView extends LinearLayout {
         videoQualitySelector.setDisplayedValues(videoQualitiesArray);
 
         VideoQuality curVideQuality = camera.getVideoQuality();
-        videoQualitySelector.setValue(VideoQualityEnum.getIndexByVideoQuality(curVideQuality));
+        videoQualitySelector.setValue(VideoQualityEnum.getIndexByVideoQuality(curVideQuality) + 1);
 
         videoQualitySelector.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
@@ -274,6 +277,31 @@ public class CameraSettingPopupView extends LinearLayout {
                 VideoQuality curVideoQuality = VideoQualityEnum.getVideoQualityByIndex(newVal - 1);
                 camera.setVideoQuality(curVideoQuality);
                 videoQualitySelector.setValue(newVal);
+            }
+        });
+    }
+
+    // 视频编码设置
+    private void cameraVideoCodecSetting(final CameraView camera) {
+        final NumberPicker videoCodecSelector = findViewById(R.id.camera_video_codec_selector);
+        List<String> codecs = new ArrayList<>();
+        for (VideoCoderEnum vee: VideoCoderEnum.values()) {
+            codecs.add(getResources().getString(vee.getMessageId()));
+        }
+        String[] codecsArray = codecs.toArray(new String[codecs.size()]);
+        videoCodecSelector.setMinValue(1);
+        videoCodecSelector.setMaxValue(codecsArray.length);
+        videoCodecSelector.setDisplayedValues(codecsArray);
+
+        VideoCodec curVideoCodec = camera.getVideoCodec();
+        videoCodecSelector.setValue(VideoCoderEnum.getIndexByVideoCodec(curVideoCodec) + 1);
+
+        videoCodecSelector.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                VideoCodec curVideoCodec = VideoCoderEnum.getVideoCodecByIndex(newVal - 1);
+                camera.setVideoCodec(curVideoCodec);
+                videoCodecSelector.setValue(newVal);
             }
         });
     }

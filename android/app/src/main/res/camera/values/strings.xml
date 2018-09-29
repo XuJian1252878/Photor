@@ -50,4 +50,10 @@
     <string name="camera_video_quality_MAX_1080P">1080P</string>
     <string name="camera_video_quality_MAX_2160P">2160P</string>
 
+
+    <string name="camera_video_codec_label">视频编码</string>
+    <string name="camera_video_codec_DEVICE_DEFAULT">默认</string>
+    <string name="camera_video_codec_H_263">H_263</string>
+    <string name="camera_video_codec_H_264">H_264</string>
+
 </resources>
