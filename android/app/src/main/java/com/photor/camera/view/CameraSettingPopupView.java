@@ -16,10 +16,13 @@ import com.orhanobut.logger.Logger;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.Flash;
 import com.otaliastudios.cameraview.Grid;
+import com.otaliastudios.cameraview.WhiteBalance;
 import com.photor.R;
 import com.photor.base.fragment.CameraFragment;
 import com.photor.camera.event.setting.FlashOnEnum;
 import com.photor.camera.event.setting.GridEnum;
+import com.photor.camera.event.setting.WhiteBalanceEnum;
+import com.shawnlin.numberpicker.NumberPicker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +64,9 @@ public class CameraSettingPopupView extends LinearLayout {
 
         //2。 设置相机的网格信息
         cameraGridSetting(camera);
+
+        //3. 相机白平衡设置
+        cameraWhiteBalanceSetting(camera);
     }
 
     // 设置当前相机的闪光灯按钮
@@ -77,6 +83,7 @@ public class CameraSettingPopupView extends LinearLayout {
         }
     }
 
+    // 相机网格设置信息
     private void cameraGridSetting(final CameraView camera) {
         WheelView cameraGridSelector = findViewById(R.id.camera_grid_selector);
         final List<String> gridOptions = new ArrayList<>();
@@ -100,7 +107,7 @@ public class CameraSettingPopupView extends LinearLayout {
             }
         });
 
-        cameraGridSelector.setTextSize(12);
+        cameraGridSelector.setTextSize(13);
         cameraGridSelector.setCurrentItem(0);
         cameraGridSelector.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
@@ -109,6 +116,31 @@ public class CameraSettingPopupView extends LinearLayout {
                 Toast.makeText(cameraFragment.getContext(),
                         getResources().getString(GridEnum.getMessageIdByIndex(index)),
                         Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // 相机白平衡设置
+    private void cameraWhiteBalanceSetting(final CameraView camera) {
+        final NumberPicker whiteBalanceSelector = findViewById(R.id.camera_white_balance_selector);
+        List<String> whiteBalances = new ArrayList<>();
+        for (WhiteBalanceEnum wbe: WhiteBalanceEnum.values()) {
+            whiteBalances.add(getResources().getString(wbe.getMessageId()));
+        }
+        String[] whiteBalancesArray = whiteBalances.toArray(new String[whiteBalances.size()]);
+        whiteBalanceSelector.setMinValue(1);
+        whiteBalanceSelector.setMaxValue(whiteBalancesArray.length);
+        whiteBalanceSelector.setDisplayedValues(whiteBalancesArray);
+        // 设置当前的白平衡信息
+        WhiteBalance curWhiteBalance = camera.getWhiteBalance();
+        whiteBalanceSelector.setValue(WhiteBalanceEnum.getIndexByWhiteBalance(curWhiteBalance) + 1);
+        // 设置2白平衡变化事件
+        whiteBalanceSelector.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                WhiteBalance curWhiteBalance = WhiteBalanceEnum.getWhiteBalanceByIndex(newVal - 1);
+                camera.setWhiteBalance(curWhiteBalance);
+                whiteBalanceSelector.setValue(newVal);
             }
         });
     }

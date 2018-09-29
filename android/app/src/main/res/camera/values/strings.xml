@@ -22,4 +22,12 @@
     <string name="camera_grid_3_3_label">3*3</string>
     <string name="camera_grid_4_4_label">4*4</string>
     <string name="camera_grid_phi_label">黄金分割</string>
+
+
+    <string name="camera_white_balance_setting_label">白平衡</string>
+    <string name="camera_white_balance_auto">自动</string>
+    <string name="camera_white_balance_incandescent">白炽</string>
+    <string name="camera_white_balance_fluorescent">荧光</string>
+    <string name="camera_white_balance_daylight">日光</string>
+    <string name="camera_white_balance_cloudy">阴天</string>
 </resources>

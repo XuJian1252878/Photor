@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="10dp"
     android:layout_alignParentTop="true"
@@ -85,6 +86,37 @@
             android:id="@+id/camera_grid_selector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_marginTop="5dp"
+        android:background="#63636363"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="@string/camera_white_balance_setting_label"
+            android:textColor="#FFFFFF"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.shawnlin.numberpicker.NumberPicker
+            android:id="@+id/camera_white_balance_selector"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:np_width="180dp"
+            app:np_height="60dp"
+            app:np_dividerThickness="1dp"
+            app:np_orientation="horizontal"
+            app:np_dividerColor="#88FFFFFF"
+            app:np_selectedTextColor="#FFFFFFFF"
+            app:np_textColor="#FFFFFF"
+            app:np_dividerDistance="80dp"
+            app:np_textSize="13dp"
+            app:np_value="3" />
 
     </LinearLayout>
 
