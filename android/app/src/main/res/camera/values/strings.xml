@@ -56,4 +56,7 @@
     <string name="camera_video_codec_H_263">H_263</string>
     <string name="camera_video_codec_H_264">H_264</string>
 
+    <string name="camera_layout_width_label">宽</string>
+    <string name="camera_layout_height_label">高</string>
+
 </resources>

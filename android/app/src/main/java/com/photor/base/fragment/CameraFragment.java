@@ -68,6 +68,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
     // 相机设置界面
     private ImageView settingPopupBtn;
     private ScrollView settingPopupContainer;
+    private CameraSettingPopupView cameraSettingPopupView;
 
 
     // To show stuff in the callback
@@ -164,7 +165,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
         settingPopupContainer.setBackgroundColor(Color.BLACK);
         settingPopupContainer.setAlpha(0.9f);
         // 绑定Setting 模版
-        CameraSettingPopupView cameraSettingPopupView = new CameraSettingPopupView(getActivity(),
+        cameraSettingPopupView = new CameraSettingPopupView(getActivity(),
                 CameraFragment.this, rootView);
         settingPopupContainer.addView(cameraSettingPopupView);
     }
@@ -291,6 +292,9 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void onOpened() {
+        // 设置相机的长宽比
+        cameraSettingPopupView.cameraWidthHeightSetting(camera);
+
         ViewGroup group = (ViewGroup) controlPanel.getChildAt(0);
         for (int i = 0; i < group.getChildCount(); i++) {
             ControlView view = (ControlView) group.getChildAt(i);

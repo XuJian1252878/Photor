@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -94,6 +95,68 @@ public class CameraSettingPopupView extends LinearLayout {
         //9. 视频时长设置
         cameraVideoLengthSetting(camera);
 
+    }
+
+    //10. 设置相机的宽信息
+    public void cameraWidthHeightSetting(CameraView camera) {
+        View cameraParentView = (View)camera.getParent();
+        int cameraWidthBoundary = cameraParentView.getWidth();
+        int cameraHeightBoundary = cameraParentView.getHeight();
+        Logger.d(cameraWidthBoundary);
+        Logger.d(cameraHeightBoundary);
+        int cameraWidthStep = cameraWidthBoundary / 10;
+        int cameraHeightStep = cameraHeightBoundary / 10;
+
+        List<Integer> cameraWidthSteps = new ArrayList<>();
+        List<Integer> cameraHeightSteps = new ArrayList<>();
+
+        for (int i = cameraWidthStep; i < cameraWidthBoundary; i += cameraWidthStep) {
+            cameraWidthSteps.add(i);
+        }
+        cameraWidthSteps.add(ViewGroup.LayoutParams.MATCH_PARENT);
+
+        for (int i = cameraHeightStep; i < cameraHeightBoundary; i += cameraHeightStep) {
+            cameraHeightSteps.add(i);
+        }
+        cameraHeightSteps.add(ViewGroup.LayoutParams.MATCH_PARENT);
+
+        initCameraLayoutInfo(camera, R.id.camera_layout_width_selector, cameraWidthSteps, true);
+        initCameraLayoutInfo(camera, R.id.camera_layout_height_selector, cameraHeightSteps, false);
+    }
+
+    /**
+     *
+     * @param viewId
+     * @param steps
+     * @param widthOrHeight true: Width false: Height
+     */
+    private void initCameraLayoutInfo(final CameraView camera, int viewId, final List<Integer> steps, final boolean widthOrHeight) {
+        final NumberPicker layoutSelector = findViewById(viewId);
+        List<String> stepsList = new ArrayList<>();
+        for (int index = 0; index < steps.size() - 1; index ++) {
+            stepsList.add(steps.get(index).toString());
+        }
+        stepsList.add("最大");
+        String[] stepsArray = stepsList.toArray(new String[stepsList.size()]);
+        layoutSelector.setMinValue(1);
+        layoutSelector.setMaxValue(stepsArray.length);
+        layoutSelector.setValue(stepsArray.length);
+        layoutSelector.setDisplayedValues(stepsArray);
+
+        layoutSelector.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                int layoutValue = newVal == steps.size() ? ViewGroup.LayoutParams.MATCH_PARENT : steps.get(newVal - 1);
+                if (widthOrHeight) {
+                    // 宽度
+                    camera.getLayoutParams().width = layoutValue;
+                } else {
+                    camera.getLayoutParams().height = layoutValue;
+                }
+                camera.setLayoutParams(camera.getLayoutParams());
+                layoutSelector.setValue(newVal);
+            }
+        });
     }
 
     // 设置当前相机的闪光灯按钮

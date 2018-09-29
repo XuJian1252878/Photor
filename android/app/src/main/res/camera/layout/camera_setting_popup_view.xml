@@ -190,6 +190,76 @@
 
     <LinearLayout
         android:gravity="center"
+        android:layout_marginTop="5dp"
+        android:background="#63636363"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="@string/camera_layout_width_label"
+                android:textColor="#FFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <com.shawnlin.numberpicker.NumberPicker
+                android:id="@+id/camera_layout_width_selector"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:np_width="120dp"
+                app:np_height="60dp"
+                app:np_dividerThickness="1dp"
+                app:np_orientation="horizontal"
+                app:np_dividerColor="#88FFFFFF"
+                app:np_selectedTextColor="#FFFFFFFF"
+                app:np_textColor="#FFFFFF"
+                app:np_dividerDistance="80dp"
+                app:np_textSize="12dp"
+                app:np_value="3" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="@string/camera_layout_height_label"
+                android:textColor="#FFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <com.shawnlin.numberpicker.NumberPicker
+                android:id="@+id/camera_layout_height_selector"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:np_width="120dp"
+                app:np_height="60dp"
+                app:np_dividerThickness="1dp"
+                app:np_orientation="horizontal"
+                app:np_dividerColor="#88FFFFFF"
+                app:np_selectedTextColor="#FFFFFFFF"
+                app:np_textColor="#FFFFFF"
+                app:np_dividerDistance="80dp"
+                app:np_textSize="12dp"
+                app:np_value="3" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:gravity="center"
         android:background="#63636363"
         android:layout_marginTop="5dp"
         android:padding="5dp"
