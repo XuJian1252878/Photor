@@ -39,4 +39,15 @@
 
     <string name="camera_sounds_setting_on">提示音 开</string>
     <string name="camera_sounds_setting_off">提示音 关</string>
+
+
+    <string name="camera_video_quality_label">视频质量</string>
+    <string name="camera_video_quality_LOWEST">最低</string>
+    <string name="camera_video_quality_HIGHEST">最高</string>
+    <string name="camera_video_quality_MAX_QVGA">QVGA</string>
+    <string name="camera_video_quality_MAX_480P">480P</string>
+    <string name="camera_video_quality_MAX_720P">720P</string>
+    <string name="camera_video_quality_MAX_1080P">1080P</string>
+    <string name="camera_video_quality_MAX_2160P">2160P</string>
+
 </resources>

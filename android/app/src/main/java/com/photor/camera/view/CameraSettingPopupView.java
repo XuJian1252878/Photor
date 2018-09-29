@@ -18,11 +18,13 @@ import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.Flash;
 import com.otaliastudios.cameraview.Grid;
 import com.otaliastudios.cameraview.Hdr;
+import com.otaliastudios.cameraview.VideoQuality;
 import com.otaliastudios.cameraview.WhiteBalance;
 import com.photor.R;
 import com.photor.base.fragment.CameraFragment;
 import com.photor.camera.event.setting.FlashOnEnum;
 import com.photor.camera.event.setting.GridEnum;
+import com.photor.camera.event.setting.VideoQualityEnum;
 import com.photor.camera.event.setting.WhiteBalanceEnum;
 import com.shawnlin.numberpicker.NumberPicker;
 
@@ -80,6 +82,9 @@ public class CameraSettingPopupView extends LinearLayout {
 
         //6. 相机音效
         cameraPlaySounds(camera);
+
+        //7. 视频质量设置
+        cameraVideoQualitySetting(camera);
     }
 
     // 设置当前相机的闪光灯按钮
@@ -244,6 +249,31 @@ public class CameraSettingPopupView extends LinearLayout {
                 }
 
                 camera.setPlaySounds(isPlaySounds);
+            }
+        });
+    }
+
+    // 视频质量设置
+    private void cameraVideoQualitySetting(final CameraView camera) {
+        final NumberPicker videoQualitySelector = findViewById(R.id.camera_video_quality_selector);
+        List<String> videoQualities = new ArrayList<>();
+        for (VideoQualityEnum vqe: VideoQualityEnum.values()) {
+            videoQualities.add(getResources().getString(vqe.getMessageId()));
+        }
+        String[] videoQualitiesArray = videoQualities.toArray(new String[videoQualities.size()]);
+        videoQualitySelector.setMinValue(1);
+        videoQualitySelector.setMaxValue(videoQualitiesArray.length);
+        videoQualitySelector.setDisplayedValues(videoQualitiesArray);
+
+        VideoQuality curVideQuality = camera.getVideoQuality();
+        videoQualitySelector.setValue(VideoQualityEnum.getIndexByVideoQuality(curVideQuality));
+
+        videoQualitySelector.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                VideoQuality curVideoQuality = VideoQualityEnum.getVideoQualityByIndex(newVal - 1);
+                camera.setVideoQuality(curVideoQuality);
+                videoQualitySelector.setValue(newVal);
             }
         });
     }
