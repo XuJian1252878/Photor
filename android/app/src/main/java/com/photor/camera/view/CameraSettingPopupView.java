@@ -13,9 +13,11 @@ import com.contrarywind.adapter.WheelAdapter;
 import com.contrarywind.listener.OnItemSelectedListener;
 import com.contrarywind.view.WheelView;
 import com.orhanobut.logger.Logger;
+import com.otaliastudios.cameraview.Audio;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.Flash;
 import com.otaliastudios.cameraview.Grid;
+import com.otaliastudios.cameraview.Hdr;
 import com.otaliastudios.cameraview.WhiteBalance;
 import com.photor.R;
 import com.photor.base.fragment.CameraFragment;
@@ -31,6 +33,8 @@ public class CameraSettingPopupView extends LinearLayout {
 
     private CameraFragment cameraFragment;
     private View fragmentRootView;
+
+    private boolean isPlaySounds = true;
 
     public CameraSettingPopupView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -67,6 +71,15 @@ public class CameraSettingPopupView extends LinearLayout {
 
         //3. 相机白平衡设置
         cameraWhiteBalanceSetting(camera);
+
+        //4. 相机hdr设置
+        cameraHdrSetting(camera);
+
+        //5. 相机声音设置
+        cameraAudioSetting(camera);
+
+        //6. 相机音效
+        cameraPlaySounds(camera);
     }
 
     // 设置当前相机的闪光灯按钮
@@ -141,6 +154,96 @@ public class CameraSettingPopupView extends LinearLayout {
                 WhiteBalance curWhiteBalance = WhiteBalanceEnum.getWhiteBalanceByIndex(newVal - 1);
                 camera.setWhiteBalance(curWhiteBalance);
                 whiteBalanceSelector.setValue(newVal);
+            }
+        });
+    }
+
+    // 相机hdr设置
+    private void cameraHdrSetting(final CameraView camera) {
+        Hdr curHdr = camera.getHdr();
+        final ImageButton hdrBtn = findViewById(R.id.camera_hdr_btn);
+        if (curHdr == Hdr.ON) {
+            hdrBtn.setBackgroundColor(Color.argb(180, 63, 63, 63));
+        } else {
+            hdrBtn.setBackgroundColor(Color.argb(63, 63, 63, 63));
+        }
+        hdrBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Hdr curHdr = camera.getHdr();
+                if (curHdr == Hdr.ON) {
+                    hdrBtn.setBackgroundColor(Color.argb(63, 63, 63, 63));
+                    camera.setHdr(Hdr.OFF);
+                    Toast.makeText(cameraFragment.getContext(),
+                            getResources().getString(R.string.camera_hdr_setting_off),
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    hdrBtn.setBackgroundColor(Color.argb(180, 63, 63, 63));
+                    camera.setHdr(Hdr.ON);
+                    Toast.makeText(cameraFragment.getContext(),
+                            getResources().getString(R.string.camera_hdr_setting_on),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    // 相机音频设置
+    private void cameraAudioSetting(final CameraView camera) {
+        Audio curAudio = camera.getAudio();
+        final ImageButton audioBtn = findViewById(R.id.camera_audio_btn);
+        if (curAudio == Audio.ON) {
+            audioBtn.setBackgroundColor(Color.argb(180, 63, 63, 63));
+        } else {
+            audioBtn.setBackgroundColor(Color.argb(63, 63, 63, 63));
+        }
+        audioBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Audio curAudio = camera.getAudio();
+                if (curAudio == Audio.ON) {
+                    camera.setAudio(Audio.OFF);
+                    audioBtn.setBackgroundColor(Color.argb(63, 63, 63, 63));
+                    Toast.makeText(cameraFragment.getContext(),
+                            getResources().getString(R.string.camera_audio_setting_off),
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    camera.setAudio(Audio.ON);
+                    audioBtn.setBackgroundColor(Color.argb(180, 63, 63, 63));
+                    Toast.makeText(cameraFragment.getContext(),
+                            getResources().getString(R.string.camera_audio_setting_on),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    // 相机提示音设置
+    private void cameraPlaySounds(final CameraView camera) {
+        final ImageButton soundsBtn = findViewById(R.id.camera_sounds_btn);
+        if (isPlaySounds) {
+            soundsBtn.setBackgroundColor(Color.argb(63, 63, 63, 63));
+        } else {
+            soundsBtn.setBackgroundColor(Color.argb(180, 63, 63, 63));
+        }
+        soundsBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isPlaySounds) {
+                    isPlaySounds = false;
+                    soundsBtn.setBackgroundColor(Color.argb(180, 63, 63, 63));
+                    Toast.makeText(cameraFragment.getContext(),
+                            getResources().getString(R.string.camera_sounds_setting_off),
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    isPlaySounds = true;
+                    soundsBtn.setBackgroundColor(Color.argb(63, 63, 63, 63));
+                    Toast.makeText(cameraFragment.getContext(),
+                            getResources().getString(R.string.camera_sounds_setting_on),
+                            Toast.LENGTH_SHORT).show();
+                }
+
+                camera.setPlaySounds(isPlaySounds);
             }
         });
     }

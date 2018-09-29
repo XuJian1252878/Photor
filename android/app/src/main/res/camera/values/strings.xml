@@ -30,4 +30,13 @@
     <string name="camera_white_balance_fluorescent">荧光</string>
     <string name="camera_white_balance_daylight">日光</string>
     <string name="camera_white_balance_cloudy">阴天</string>
+
+    <string name="camera_hdr_setting_on">HDR 开</string>
+    <string name="camera_hdr_setting_off">HDR 关闭</string>
+
+    <string name="camera_audio_setting_on">音频 开</string>
+    <string name="camera_audio_setting_off">音频 关</string>
+
+    <string name="camera_sounds_setting_on">提示音 开</string>
+    <string name="camera_sounds_setting_off">提示音 关</string>
 </resources>

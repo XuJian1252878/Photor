@@ -129,6 +129,9 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
                 } else {
                     slidersContainer.setVisibility(View.VISIBLE);
                 }
+                if (settingPopupContainer != null && settingPopupContainer.getVisibility() == View.VISIBLE) {
+                    settingPopupContainer.setVisibility(View.INVISIBLE);
+                }
             }
         });
 
@@ -137,10 +140,15 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
         settingPopupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // 控制 相机的浮动设置窗口 可见性
                 if (settingPopupContainer.getVisibility() == View.VISIBLE) {
                     settingPopupContainer.setVisibility(View.INVISIBLE);
                 } else {
                     settingPopupContainer.setVisibility(View.VISIBLE);
+                }
+                // 控制 曝光调节窗口可视性
+                if (slidersContainer != null && slidersContainer.getVisibility() == View.VISIBLE) {
+                    slidersContainer.setVisibility(View.INVISIBLE);
                 }
             }
         });
