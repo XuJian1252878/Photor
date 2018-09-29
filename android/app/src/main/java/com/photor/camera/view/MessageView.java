@@ -25,19 +25,13 @@ public class MessageView extends LinearLayout {
 
     public MessageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setOrientation(VERTICAL);
-        inflate(context, R.layout.control_view, this);
-        ViewGroup content = findViewById(R.id.content);
-        inflate(context, R.layout.spinner_text, content);
-        title = findViewById(R.id.title);
-        message = (TextView) content.getChildAt(0);
     }
 
     public void setTitle(String title) {
-        this.title.setText(title);
+//        this.title.setText(title);
     }
 
     public void setMessage(String message) {
-        this.message.setText(message);
+//        this.message.setText(message);
     }
 }

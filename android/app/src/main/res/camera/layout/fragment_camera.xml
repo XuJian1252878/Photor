@@ -51,6 +51,7 @@
 
     <LinearLayout
         android:id="@+id/sliders_container"
+        android:visibility="invisible"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -200,18 +201,6 @@
         android:weightSum="3">
 
         <ImageButton
-            android:id="@+id/edit"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="@drawable/background"
-            app:srcCompat="@drawable/ic_edit" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
-
-        <ImageButton
             android:id="@+id/capturePhoto"
             android:layout_width="56dp"
             android:layout_height="56dp"
@@ -254,22 +243,12 @@
             android:contentDescription="@string/exposure"
             android:background="@drawable/background"
             android:src="@drawable/ic_switch"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
     </LinearLayout>
 
-    <!-- Edit -->
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/controls"
-        android:background="@android:color/white"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        app:behavior_hideable="true"
-        app:behavior_peekHeight="300dp"
-        app:behavior_skipCollapsed="false"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </android.support.v4.widget.NestedScrollView>
 
 </android.support.design.widget.CoordinatorLayout>

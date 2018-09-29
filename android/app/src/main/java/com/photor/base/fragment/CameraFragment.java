@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -32,21 +31,17 @@ import com.otaliastudios.cameraview.Size;
 import com.photor.R;
 import com.photor.camera.activity.PicturePreviewActivity;
 import com.photor.camera.activity.VideoPreviewActivity;
-import com.photor.camera.event.Control;
 import com.photor.camera.view.CameraSettingPopupView;
-import com.photor.camera.view.ControlView;
 
 import java.io.File;
 import java.text.DecimalFormat;
 
-public class CameraFragment extends Fragment implements View.OnClickListener, ControlView.Callback {
+public class CameraFragment extends Fragment implements View.OnClickListener {
 
     private View rootView;
 
     private CameraView camera;
     private CameraOptions cameraOptions;
-
-    private ViewGroup controlPanel;
 
     private LinearLayout bottomControlPanel;
 
@@ -90,7 +85,35 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
         getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         rootView = inflater.inflate(R.layout.fragment_camera, container, false);
-        initUI(rootView);
+
+        camera = rootView.findViewById(R.id.camera);
+        camera.start();  // 启动camera参数，以便于获取手机相机参数
+
+        // Activity CameraView is a component bound to your activity or fragment lifecycle. This means that you must pass the lifecycle owner using setLifecycleOwner
+        // Fragment use fragment.viewLifecycleOwner instead of this!
+//        camera.setLifecycleOwner(this);
+        camera.addCameraListener(new CameraListener() {
+            public void onCameraOpened(CameraOptions options) {
+                // 因为许多关于相机的设置要等到相机启动完成之后才能生效，所以将initUI的操作全部放在了 onCameraOpened 回调函数中
+                onOpened(rootView);
+            }
+            public void onPictureTaken(byte[] jpeg) { onPicture(jpeg); }
+
+            @Override
+            public void onVideoTaken(File video) {
+                super.onVideoTaken(video);
+                onVideo(video);
+            }
+
+            @Override
+            public void onExposureCorrectionChanged(float newValue, float[] bounds, PointF[] fingers) {
+                super.onExposureCorrectionChanged(newValue, bounds, fingers);
+                exposureCorrectionCurValue = newValue;
+                // 设置曝光值
+                exposureSeekbar.setProgress((int)(newValue - exposureCorrectionMinValue) * 10);
+            }
+        });
+
         return rootView;
     }
 
@@ -103,27 +126,10 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
         initCameraExposureUIInfo(rootView);
 
         // 2. 初始化相机的拍照录像功能
-        rootView.findViewById(R.id.edit).setOnClickListener(this);
+//        rootView.findViewById(R.id.edit).setOnClickListener(this);
         rootView.findViewById(R.id.capturePhoto).setOnClickListener(this);
         rootView.findViewById(R.id.captureVideo).setOnClickListener(this);
         rootView.findViewById(R.id.toggleCamera).setOnClickListener(this);
-
-        controlPanel = rootView.findViewById(R.id.controls);
-        ViewGroup group = (ViewGroup) controlPanel.getChildAt(0);
-        Control[] controls = Control.values();
-        for (Control control : controls) {
-            ControlView view = new ControlView(this.getContext(), control, this);
-            group.addView(view, ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-        }
-
-        controlPanel.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                BottomSheetBehavior b = BottomSheetBehavior.from(controlPanel);
-                b.setState(BottomSheetBehavior.STATE_HIDDEN);
-            }
-        });
 
         exposureImgBtn = rootView.findViewById(R.id.exposure);
         exposureImgBtn.setOnClickListener(new View.OnClickListener() {
@@ -167,7 +173,11 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
         // 绑定Setting 模版
         cameraSettingPopupView = new CameraSettingPopupView(getActivity(),
                 CameraFragment.this, rootView);
-        settingPopupContainer.addView(cameraSettingPopupView);
+        if (settingPopupContainer.getChildCount() <= 0) {
+            // ScrollerView 只能包含一个子View，在屏幕旋转或者由其他Activity跳转回来的时候，
+            // Fragment的View重建过程可能会导致 ScrollerView 添加超过一个的子View
+            settingPopupContainer.addView(cameraSettingPopupView);
+        }
     }
 
     private void initCameraExposureUIInfo(View rootView) {
@@ -177,11 +187,9 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
         slidersContainer = rootView.findViewById(R.id.sliders_container);
         slidersContainer.setVisibility(View.INVISIBLE);
 
-        camera = rootView.findViewById(R.id.camera);
-        camera.start();  // 启动camera参数，以便于获取手机相机参数
-        while (!camera.isStarted()) {
-            // camera 启动需要时间，不这样会导致后面取不到 曝光的范围值
-        }
+//        while (!camera.isStarted()) {
+//            // camera 启动需要时间，不这样会导致后面取不到 曝光的范围值
+//        }
 
         camera.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -261,28 +269,6 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
                 Toast.makeText(getActivity(), "当前曝光值为 " + decimalFormat.format(exposureCorrectionCurValue) + "EV", Toast.LENGTH_SHORT).show();
             }
         });
-
-        // Activity CameraView is a component bound to your activity or fragment lifecycle. This means that you must pass the lifecycle owner using setLifecycleOwner
-        // Fragment use fragment.viewLifecycleOwner instead of this!
-//        camera.setLifecycleOwner(this);
-        camera.addCameraListener(new CameraListener() {
-            public void onCameraOpened(CameraOptions options) { onOpened(); }
-            public void onPictureTaken(byte[] jpeg) { onPicture(jpeg); }
-
-            @Override
-            public void onVideoTaken(File video) {
-                super.onVideoTaken(video);
-                onVideo(video);
-            }
-
-            @Override
-            public void onExposureCorrectionChanged(float newValue, float[] bounds, PointF[] fingers) {
-                super.onExposureCorrectionChanged(newValue, bounds, fingers);
-                exposureCorrectionCurValue = newValue;
-                // 设置曝光值
-                exposureSeekbar.setProgress((int)(newValue - exposureCorrectionMinValue) * 10);
-            }
-        });
     }
 
 
@@ -291,15 +277,8 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
         Toast.makeText(this.getContext(), content, length).show();
     }
 
-    private void onOpened() {
-        // 设置相机的长宽比
-        cameraSettingPopupView.cameraWidthHeightSetting(camera);
-
-        ViewGroup group = (ViewGroup) controlPanel.getChildAt(0);
-        for (int i = 0; i < group.getChildCount(); i++) {
-            ControlView view = (ControlView) group.getChildAt(i);
-            view.onCameraOpened(camera);
-        }
+    private void onOpened(View rootView) {
+        initUI(rootView);
     }
 
     private void onPicture(byte[] jpeg) {
@@ -335,7 +314,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.edit: edit(); break;
+//            case R.id.edit: edit(); break;
             case R.id.capturePhoto: capturePhoto(); break;
             case R.id.captureVideo: captureVideo(); break;
             case R.id.toggleCamera: toggleCamera(); break;
@@ -350,27 +329,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
 
     @Override
     public void onDestroyView() {
-        BottomSheetBehavior b = BottomSheetBehavior.from(controlPanel);
-        if (b.getState() != BottomSheetBehavior.STATE_HIDDEN) {
-            b.setState(BottomSheetBehavior.STATE_HIDDEN);
-            return;
-        }
         super.onDestroyView();
-    }
-
-//    @Override
-//    public void onBackPressed() {
-//        BottomSheetBehavior b = BottomSheetBehavior.from(controlPanel);
-//        if (b.getState() != BottomSheetBehavior.STATE_HIDDEN) {
-//            b.setState(BottomSheetBehavior.STATE_HIDDEN);
-//            return;
-//        }
-//        super.onBackPressed();
-//    }
-
-    private void edit() {
-        BottomSheetBehavior b = BottomSheetBehavior.from(controlPanel);
-        b.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     private void capturePhoto() {
@@ -404,23 +363,6 @@ public class CameraFragment extends Fragment implements View.OnClickListener, Co
                 message("Switched to front camera!", false);
                 break;
         }
-    }
-
-    @Override
-    public boolean onValueChanged(Control control, Object value, String name) {
-        if (!camera.isHardwareAccelerated() && (control == Control.WIDTH || control == Control.HEIGHT)) {
-            if ((Integer) value > 0) {
-                message("This device does not support hardware acceleration. " +
-                        "In this case you can not change width or height. " +
-                        "The view will act as WRAP_CONTENT by default.", true);
-                return false;
-            }
-        }
-        control.applyValue(camera, value);
-        BottomSheetBehavior b = BottomSheetBehavior.from(controlPanel);
-        b.setState(BottomSheetBehavior.STATE_HIDDEN);
-        message("Changed " + control.getName() + " to " + name, false);
-        return true;
     }
 
     //region Permissions

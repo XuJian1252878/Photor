@@ -95,6 +95,9 @@ public class CameraSettingPopupView extends LinearLayout {
         //9. 视频时长设置
         cameraVideoLengthSetting(camera);
 
+        //10. 设置相机的长宽比
+        cameraWidthHeightSetting(camera);
+
     }
 
     //10. 设置相机的宽信息
@@ -102,8 +105,6 @@ public class CameraSettingPopupView extends LinearLayout {
         View cameraParentView = (View)camera.getParent();
         int cameraWidthBoundary = cameraParentView.getWidth();
         int cameraHeightBoundary = cameraParentView.getHeight();
-        Logger.d(cameraWidthBoundary);
-        Logger.d(cameraHeightBoundary);
         int cameraWidthStep = cameraWidthBoundary / 10;
         int cameraHeightStep = cameraHeightBoundary / 10;
 
