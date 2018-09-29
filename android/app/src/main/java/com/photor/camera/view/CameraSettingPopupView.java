@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.contrarywind.adapter.WheelAdapter;
 import com.contrarywind.listener.OnItemSelectedListener;
 import com.contrarywind.view.WheelView;
+import com.orhanobut.logger.Logger;
 import com.otaliastudios.cameraview.Audio;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.Flash;
@@ -24,6 +25,7 @@ import com.photor.base.fragment.CameraFragment;
 import com.photor.camera.event.setting.FlashOnEnum;
 import com.photor.camera.event.setting.GridEnum;
 import com.photor.camera.event.setting.VideoCoderEnum;
+import com.photor.camera.event.setting.VideoLengthEnum;
 import com.photor.camera.event.setting.VideoQualityEnum;
 import com.photor.camera.event.setting.WhiteBalanceEnum;
 import com.shawnlin.numberpicker.NumberPicker;
@@ -88,6 +90,10 @@ public class CameraSettingPopupView extends LinearLayout {
 
         //8. 视频编码设置
         cameraVideoCodecSetting(camera);
+
+        //9. 视频时长设置
+        cameraVideoLengthSetting(camera);
+
     }
 
     // 设置当前相机的闪光灯按钮
@@ -302,6 +308,70 @@ public class CameraSettingPopupView extends LinearLayout {
                 VideoCodec curVideoCodec = VideoCoderEnum.getVideoCodecByIndex(newVal - 1);
                 camera.setVideoCodec(curVideoCodec);
                 videoCodecSelector.setValue(newVal);
+            }
+        });
+    }
+
+    // 视频时长设置
+    private void cameraVideoLengthSetting(final CameraView camera) {
+        final ImageButton videoLengthBtn = findViewById(R.id.camera_video_length_btn);
+        final NumberPicker videoLengthSelector = findViewById(R.id.camera_video_length_selector);
+
+        List<String> lengths = new ArrayList<>();
+        for (VideoLengthEnum vle: VideoLengthEnum.values()) {
+            lengths.add(vle.getTimeInfo());
+        }
+        String[] lengthsArray = lengths.toArray(new String[lengths.size()]);
+        videoLengthSelector.setMinValue(1);
+        videoLengthSelector.setMaxValue(lengthsArray.length);
+        videoLengthSelector.setDisplayedValues(lengthsArray);
+
+        int curVideoLength = camera.getVideoMaxDuration();
+        // 设置当前视频限制时长的刻度
+        videoLengthSelector.setValue(
+                VideoLengthEnum.getIndexByMilliseconds(
+                        VideoLengthEnum.getMillisecondsAround(curVideoLength)
+                ) + 1
+        );
+
+        if (curVideoLength <= 0) {
+            videoLengthBtn.setBackgroundColor(Color.argb(63, 63, 63, 63));
+            videoLengthSelector.setVisibility(GONE);
+        } else {
+            videoLengthBtn.setBackgroundColor(Color.argb(180, 63, 63, 63));
+            videoLengthSelector.setVisibility(VISIBLE);
+        }
+
+        videoLengthBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int curVideoLength = VideoLengthEnum.getMillisecondsAround(camera.getVideoMaxDuration());
+                if (curVideoLength <= 0) {
+                    videoLengthBtn.setBackgroundColor(Color.argb(180, 63, 63, 63));
+                    camera.setVideoMaxDuration(VideoLengthEnum.MINUTE_1.getMilliseconds());
+                    videoLengthSelector.setValue(VideoLengthEnum.MINUTE_1.getIndex() + 1);
+                    videoLengthSelector.setVisibility(VISIBLE);
+                } else {
+                    videoLengthBtn.setBackgroundColor(Color.argb(63, 63, 63, 63));
+                    camera.setVideoMaxDuration(VideoLengthEnum.INFINITE.getMilliseconds());
+                    videoLengthSelector.setValue(VideoLengthEnum.INFINITE.getIndex() + 1);
+                    videoLengthSelector.setVisibility(GONE);
+                }
+            }
+        });
+
+        videoLengthSelector.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                int curVideoLength = VideoLengthEnum.getMillisecondsByIndex(newVal - 1);
+                if (curVideoLength <= 0) {
+                    videoLengthBtn.setBackgroundColor(Color.argb(63, 63, 63, 63));
+                    videoLengthSelector.setVisibility(GONE);
+                } else {
+                    videoLengthBtn.setBackgroundColor(Color.argb(180, 63, 63, 63));
+                    videoLengthSelector.setVisibility(VISIBLE);
+                }
+                camera.setVideoMaxDuration(curVideoLength);
             }
         });
     }
