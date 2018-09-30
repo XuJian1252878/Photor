@@ -32,7 +32,7 @@ public class FragmentDataGenerator {
      * @return
      */
     public static Fragment createFragmentForViewPagerGetItem(FragmentManager fragmentManager, int position) {
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         // 利用tag首先查找fragment，利于后来fragment的状态保存。tag相当于fragment的id信息。
         if (position == BottomNavigationEnum.HOME.getNavItemIndex()) {
@@ -40,6 +40,8 @@ public class FragmentDataGenerator {
             if (homeFragment == null) {
                 homeFragment = HomeFragment.newInstance();
                 // 添加fragmentmanager信息
+                // FragmentPagerAdapter 会自动给之中的fragment加 tag，把fragment加入到 FragmentManager中
+                // 所以开发者没有必要自己去做 fragmentTransaction.add tag的操作
 //                fragmentTransaction.add(homeFragment, BottomNavigationEnum.HOME.getTag()).commit();
             }
 //            fragmentManager.executePendingTransactions();

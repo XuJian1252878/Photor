@@ -33,7 +33,6 @@ import q.rorbin.badgeview.QBadgeView;
 
 public class MainActivity extends AppCompatActivity {
 
-//    private List<Fragment> mMainFragments;
     private BottomNavigationViewEx mBottomNavigationView;
     private DrawerLayout mDrawerLayout;
     private MainAcitvityViewPager mMainViewPager; // 主页面的ViewPager
@@ -132,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        mMainFragments = FragmentDataGenerator.getMainFragments(getSupportFragmentManager());
         mBottomNavigationView = findViewById(R.id.bottom_main_navigation);
         // 开始或关闭子菜单位移模式。 如果为 true，除了当前选中项，其他项的文本将会隐藏。 当菜单数大于3时，默认为 true。
         mBottomNavigationView.enableItemShiftingMode(false);
