@@ -14,10 +14,13 @@ import com.contrarywind.adapter.WheelAdapter;
 import com.contrarywind.listener.OnItemSelectedListener;
 import com.contrarywind.view.WheelView;
 import com.orhanobut.logger.Logger;
+import com.otaliastudios.cameraview.AspectRatio;
 import com.otaliastudios.cameraview.Audio;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.Flash;
 import com.otaliastudios.cameraview.Hdr;
+import com.otaliastudios.cameraview.SizeSelector;
+import com.otaliastudios.cameraview.SizeSelectors;
 import com.otaliastudios.cameraview.VideoCodec;
 import com.otaliastudios.cameraview.VideoQuality;
 import com.otaliastudios.cameraview.WhiteBalance;
@@ -41,6 +44,9 @@ public class CameraSettingPopupView extends LinearLayout {
 
     private boolean isPlaySounds = true;
 
+    private int cameraLayoutFullWidth;
+    private int cameraLayoutFullHeight;
+
     public CameraSettingPopupView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
@@ -54,6 +60,9 @@ public class CameraSettingPopupView extends LinearLayout {
         this.cameraFragment = cameraFragment;
         this.fragmentRootView = fragmentRootView;
         final CameraView camera = cameraFragment.getCameraView();
+
+        cameraLayoutFullWidth = camera.getPictureSize().getWidth();
+        cameraLayoutFullHeight = camera.getPictureSize().getHeight();
 
         cameraFlashOnSetting(camera);
         //1。 设置 闪光灯按钮信息
@@ -98,6 +107,9 @@ public class CameraSettingPopupView extends LinearLayout {
         //10. 设置相机的长宽比
         cameraWidthHeightSetting(camera);
 
+        //11. 设置照片的分辨率信息
+        
+
     }
 
     //10. 设置相机的宽信息
@@ -105,6 +117,7 @@ public class CameraSettingPopupView extends LinearLayout {
         View cameraParentView = (View)camera.getParent();
         int cameraWidthBoundary = cameraParentView.getWidth();
         int cameraHeightBoundary = cameraParentView.getHeight();
+
         int cameraWidthStep = cameraWidthBoundary / 10;
         int cameraHeightStep = cameraHeightBoundary / 10;
 

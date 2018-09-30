@@ -96,6 +96,19 @@ public class ImageCaptureManager {
         mContext.sendBroadcast(mediaScanIntent);
     }
 
+    public static void galleryAddPic(Context mContext, String mCurrentPhotoPath) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+
+        if (TextUtils.isEmpty(mCurrentPhotoPath)) {
+            return;
+        }
+
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        mContext.sendBroadcast(mediaScanIntent);
+    }
+
 
     public String getCurrentPhotoPath() {
         return mCurrentPhotoPath;

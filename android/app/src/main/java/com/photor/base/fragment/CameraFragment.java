@@ -2,6 +2,7 @@ package com.photor.base.fragment;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.net.Uri;
@@ -22,19 +23,25 @@ import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.example.file.FileUtils;
+import com.orhanobut.logger.Logger;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraLogger;
 import com.otaliastudios.cameraview.CameraOptions;
+import com.otaliastudios.cameraview.CameraUtils;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.SessionType;
 import com.otaliastudios.cameraview.Size;
+import com.otaliastudios.cameraview.SizeSelector;
 import com.photor.R;
 import com.photor.camera.activity.PicturePreviewActivity;
 import com.photor.camera.activity.VideoPreviewActivity;
+import com.photor.camera.event.CameraOperator;
 import com.photor.camera.view.CameraSettingPopupView;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.List;
 
 public class CameraFragment extends Fragment implements View.OnClickListener {
 
@@ -45,8 +52,8 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
 
     private LinearLayout bottomControlPanel;
 
-    private boolean mCapturingPicture;
-    private boolean mCapturingVideo;
+    private boolean mCapturingPicture;  // 表示正在拍照过程中
+    private boolean mCapturingVideo;  // 表示正在视频录制过程中
 
     // 曝光调节控制面板
     LinearLayout slidersContainer;
@@ -126,7 +133,6 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         initCameraExposureUIInfo(rootView);
 
         // 2. 初始化相机的拍照录像功能
-//        rootView.findViewById(R.id.edit).setOnClickListener(this);
         rootView.findViewById(R.id.capturePhoto).setOnClickListener(this);
         rootView.findViewById(R.id.captureVideo).setOnClickListener(this);
         rootView.findViewById(R.id.toggleCamera).setOnClickListener(this);
@@ -186,10 +192,6 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         // 首先曝光滑动设置为false
         slidersContainer = rootView.findViewById(R.id.sliders_container);
         slidersContainer.setVisibility(View.INVISIBLE);
-
-//        while (!camera.isStarted()) {
-//            // camera 启动需要时间，不这样会导致后面取不到 曝光的范围值
-//        }
 
         camera.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -285,7 +287,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         mCapturingPicture = false;
         long callbackTime = System.currentTimeMillis();
         if (mCapturingVideo) {
-            message("Captured while taking video. Size="+mCaptureNativeSize, false);
+            message("Captured while taking video. Size=" + mCaptureNativeSize, false);
             return;
         }
 
@@ -293,15 +295,24 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         if (mCaptureTime == 0) mCaptureTime = callbackTime - 300;
         if (mCaptureNativeSize == null) mCaptureNativeSize = camera.getPictureSize();
 
-        PicturePreviewActivity.setImage(jpeg);
-        Intent intent = new Intent(getActivity(), PicturePreviewActivity.class);
-        intent.putExtra("delay", callbackTime - mCaptureTime);
-        intent.putExtra("nativeWidth", mCaptureNativeSize.getWidth());
-        intent.putExtra("nativeHeight", mCaptureNativeSize.getHeight());
-        startActivity(intent);
+        int nativeWidth = mCaptureNativeSize != null ? mCaptureNativeSize.getWidth() : 1000;
+        int nativeHeight = mCaptureNativeSize != null ?  mCaptureNativeSize.getHeight() : 1000;
 
         mCaptureTime = 0;
         mCaptureNativeSize = null;
+
+        // 存储获得的照片信息
+        final String resImgPath = FileUtils.generateImgAbsPath();
+        CameraUtils.decodeBitmap(jpeg, nativeWidth, nativeHeight, new CameraUtils.BitmapCallback() {
+            @Override
+            public void onBitmapReady(Bitmap bitmap) {
+                // 存储Bitmap信息到手机内存
+                FileUtils.saveImgBitmap(resImgPath, bitmap);
+                CameraOperator.builder()
+                        .setCameraResImgPath(resImgPath)
+                        .start(CameraFragment.this.getActivity());
+            }
+        });
     }
 
     private void onVideo(File video) {
@@ -314,7 +325,6 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-//            case R.id.edit: edit(); break;
             case R.id.capturePhoto: capturePhoto(); break;
             case R.id.captureVideo: captureVideo(); break;
             case R.id.toggleCamera: toggleCamera(); break;
@@ -338,6 +348,10 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         mCaptureTime = System.currentTimeMillis();
         mCaptureNativeSize = camera.getPictureSize();
         message("Capturing picture...", false);
+
+        // 根据当前相机界面的大小设置照片的大小
+
+
         camera.capturePicture();
     }
 

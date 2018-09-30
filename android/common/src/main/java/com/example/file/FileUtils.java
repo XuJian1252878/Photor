@@ -246,7 +246,7 @@ public class FileUtils {
     }
 
 
-    public static boolean delteFileByPath(String filePath) {
+    public static boolean deleteFileByPath(String filePath) {
         File deleteFile = new File(filePath);
         if (deleteFile.exists()) {
             return deleteFile.delete();

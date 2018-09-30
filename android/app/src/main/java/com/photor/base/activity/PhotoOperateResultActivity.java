@@ -15,8 +15,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.file.FileUtils;
+import com.example.media.image.imagecapture.ImageCaptureManager;
 import com.photor.R;
-import com.photor.staralign.StarAlignOperator;
 import com.photor.widget.TipToast;
 
 import java.io.FileInputStream;
@@ -51,7 +51,7 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                FileUtils.delteFileByPath(resImgPath);
+                FileUtils.deleteFileByPath(resImgPath);
                 Toast.makeText(this, getText(R.string.sky_ground_align_save_failed), Toast.LENGTH_SHORT).show();
                 finish();
                 return true;
@@ -64,7 +64,7 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
         super.onBackPressed();
         // 返回按键按下的时候，如果用户没有进行 对齐结果图片的操作，那么删除图片
         if (!isSavedOperateRes) {
-            FileUtils.delteFileByPath(resImgPath);
+            FileUtils.deleteFileByPath(resImgPath);
         }
     }
 
@@ -93,6 +93,8 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 isSavedOperateRes = true;
+                // 将图片添加入MediaStore的索引中
+                ImageCaptureManager.galleryAddPic(PhotoOperateResultActivity.this, resImgPath);
 //                Toast.makeText(PhotoOperateResultActivity.this, "图片已保存", Toast.LENGTH_SHORT).show();
                 final TipToast tipToast = new TipToast.Builder(PhotoOperateResultActivity.this)
                         .setMessage("保存")
@@ -124,7 +126,7 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        FileUtils.delteFileByPath(resImgPath);
+                        FileUtils.deleteFileByPath(resImgPath);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
