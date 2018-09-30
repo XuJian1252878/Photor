@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.orhanobut.logger.Logger;
+
 import java.util.List;
 
 /**
@@ -26,6 +28,10 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+
+        Logger.d("MainViewPagerAdapter: " + position);
+
         return fragments.get(position);
     }
+
 }

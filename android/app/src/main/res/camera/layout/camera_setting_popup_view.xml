@@ -192,7 +192,39 @@
         android:gravity="center"
         android:layout_marginTop="5dp"
         android:background="#63636363"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="@string/camera_resolution_setting_label"
+            android:textColor="#FFFFFF"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.shawnlin.numberpicker.NumberPicker
+            android:id="@+id/camera_resolution_selector"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:np_width="60dp"
+            app:np_height="180dp"
+            app:np_dividerThickness="1dp"
+            app:np_orientation="vertical"
+            app:np_dividerColor="#88FFFFFF"
+            app:np_selectedTextColor="#FFFFFFFF"
+            app:np_textColor="#FFFFFF"
+            app:np_dividerDistance="60dp"
+            app:np_textSize="13dp"
+            app:np_value="3" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_marginTop="5dp"
+        android:background="#63636363"
         android:orientation="horizontal"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -213,15 +245,15 @@
                 android:id="@+id/camera_layout_width_selector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:np_width="120dp"
-                app:np_height="60dp"
+                app:np_width="100dp"
+                app:np_height="40dp"
                 app:np_dividerThickness="1dp"
                 app:np_orientation="horizontal"
                 app:np_dividerColor="#88FFFFFF"
                 app:np_selectedTextColor="#FFFFFFFF"
                 app:np_textColor="#FFFFFF"
-                app:np_dividerDistance="80dp"
-                app:np_textSize="12dp"
+                app:np_dividerDistance="60dp"
+                app:np_textSize="10dp"
                 app:np_value="3" />
 
         </LinearLayout>
@@ -281,7 +313,7 @@
             android:id="@+id/camera_video_length_selector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:np_width="100dp"
+            app:np_width="80dp"
             app:np_height="40dp"
             app:np_dividerThickness="1dp"
             app:np_orientation="horizontal"

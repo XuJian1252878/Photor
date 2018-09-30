@@ -19,6 +19,7 @@ import com.otaliastudios.cameraview.Audio;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.Flash;
 import com.otaliastudios.cameraview.Hdr;
+import com.otaliastudios.cameraview.Size;
 import com.otaliastudios.cameraview.SizeSelector;
 import com.otaliastudios.cameraview.SizeSelectors;
 import com.otaliastudios.cameraview.VideoCodec;
@@ -28,6 +29,7 @@ import com.photor.R;
 import com.photor.base.fragment.CameraFragment;
 import com.photor.camera.event.setting.FlashOnEnum;
 import com.photor.camera.event.setting.GridEnum;
+import com.photor.camera.event.setting.ResolutionEnum;
 import com.photor.camera.event.setting.VideoCoderEnum;
 import com.photor.camera.event.setting.VideoLengthEnum;
 import com.photor.camera.event.setting.VideoQualityEnum;
@@ -42,10 +44,12 @@ public class CameraSettingPopupView extends LinearLayout {
     private CameraFragment cameraFragment;
     private View fragmentRootView;
 
-    private boolean isPlaySounds = true;
+    private static int CAMERA_PICTURE_INIT_SIZE = -100;
 
-    private int cameraLayoutFullWidth;
-    private int cameraLayoutFullHeight;
+    private static int curCameraPictureWidth = CAMERA_PICTURE_INIT_SIZE;
+    private static int curCameraPictureHeight = CAMERA_PICTURE_INIT_SIZE;
+
+    private boolean isPlaySounds = true;
 
     public CameraSettingPopupView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -60,9 +64,6 @@ public class CameraSettingPopupView extends LinearLayout {
         this.cameraFragment = cameraFragment;
         this.fragmentRootView = fragmentRootView;
         final CameraView camera = cameraFragment.getCameraView();
-
-        cameraLayoutFullWidth = camera.getPictureSize().getWidth();
-        cameraLayoutFullHeight = camera.getPictureSize().getHeight();
 
         cameraFlashOnSetting(camera);
         //1。 设置 闪光灯按钮信息
@@ -105,11 +106,56 @@ public class CameraSettingPopupView extends LinearLayout {
         cameraVideoLengthSetting(camera);
 
         //10. 设置相机的长宽比
+//        camera.setCropOutput(true);
         cameraWidthHeightSetting(camera);
 
         //11. 设置照片的分辨率信息
-        
+        cameraResolutionSetting(camera);
+    }
 
+    //11. 设置相机的分辨率信息
+    public void cameraResolutionSetting(final CameraView camera) {
+
+//        if (curCameraPictureWidth == CAMERA_PICTURE_INIT_SIZE ||
+//                curCameraPictureHeight == CAMERA_PICTURE_INIT_SIZE) {
+//            Size curSize =
+//        }
+
+        NumberPicker cameraResolutionSelector = findViewById(R.id.camera_resolution_selector);
+        List<String> resolutions = new ArrayList<>();
+        for (ResolutionEnum re: ResolutionEnum.values()) {
+            resolutions.add(re.getMessage());
+            // 同时设置允许输出的照片的尺寸信息
+        }
+
+        String[] resolutionsArray = resolutions.toArray(new String[resolutions.size()]);
+
+        cameraResolutionSelector.setMinValue(1);
+        cameraResolutionSelector.setMaxValue(resolutionsArray.length);
+        cameraResolutionSelector.setDisplayedValues(resolutionsArray);
+
+        cameraResolutionSelector.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                ResolutionEnum resolution = ResolutionEnum.getResolutionEnumByIndex(newVal - 1);
+                setCameraPictureOutputSize(camera, resolution);
+            }
+        });
+    }
+
+    // 设置当前相机输出的照片分辨率
+    private void setCameraPictureOutputSize(CameraView camera, ResolutionEnum resolutionEnum) {
+        SizeSelector width = SizeSelectors.minWidth(resolutionEnum.getWidth() - 10);
+        SizeSelector height = SizeSelectors.minHeight(resolutionEnum.getHeight() - 10);
+        SizeSelector dimensions = SizeSelectors.and(width, height); // Matches sizes bigger than 1000x2000.
+
+        SizeSelector result = SizeSelectors.or(
+                dimensions, // Try to match both constraints
+                SizeSelectors.biggest() // If none is found, take the biggest
+        );
+        camera.setPictureSize(result);
+        Size size = camera.getPictureSize();
+        Logger.d("setCameraPicture OutputSizeWidth: " + size.getWidth() + " -- " + "Height: " + size.getHeight());
     }
 
     //10. 设置相机的宽信息

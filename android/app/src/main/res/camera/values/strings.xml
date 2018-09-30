@@ -59,4 +59,7 @@
     <string name="camera_layout_width_label">宽</string>
     <string name="camera_layout_height_label">高</string>
 
+    <string name="camera_resolution_setting_label">分辨率</string>
+
+
 </resources>

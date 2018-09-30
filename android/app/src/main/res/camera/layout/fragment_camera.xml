@@ -12,7 +12,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/camera"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:keepScreenOn="true"
         app:cameraPlaySounds="true"
@@ -21,6 +21,7 @@
         app:cameraFacing="back"
         app:cameraFlash="off"
         app:cameraAudio="on"
+        app:cameraPictureSizeBiggest="true"
         app:cameraGestureTap="focusWithMarker"
         app:cameraGestureLongTap="none"
         app:cameraGesturePinch="zoom"
@@ -203,10 +204,11 @@
 
         <ImageButton
             android:id="@+id/capturePhoto"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="@drawable/background"
-            app:srcCompat="@drawable/ic_photo" />
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:scaleType="fitCenter"
+            android:background="#00000000"
+            android:src="@drawable/ic_photo" />
 
         <Space
             android:layout_width="0dp"
@@ -215,10 +217,11 @@
 
         <ImageButton
             android:id="@+id/captureVideo"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="@drawable/background"
-            app:srcCompat="@drawable/ic_video" />
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:scaleType="fitCenter"
+            android:background="#00000000"
+            android:src="@drawable/ic_video" />
 
         <Space
             android:layout_width="0dp"
@@ -227,10 +230,11 @@
 
         <ImageButton
             android:id="@+id/toggleCamera"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="@drawable/background"
-            app:srcCompat="@drawable/ic_switch" />
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:scaleType="fitCenter"
+            android:background="#00000000"
+            android:src="@drawable/ic_switch" />
 
         <Space
             android:layout_width="0dp"

@@ -94,6 +94,26 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         rootView = inflater.inflate(R.layout.fragment_camera, container, false);
 
         camera = rootView.findViewById(R.id.camera);
+        cameraSettingPopupView = new CameraSettingPopupView(getActivity(),
+                CameraFragment.this, rootView);
+
+        Logger.d("onCreateView");
+        camera.setLifecycleOwner(this.getActivity());
+
+        // 初始化相机的输出照片信息（不知道为什么，只有在 onCreateView 中调用才有效）
+        camera.setPictureSize(new SizeSelector() {
+            @Override
+            public List<Size> select(List<Size> source) {
+                // Receives a list of available sizes.
+                // Must return a list of acceptable sizes.
+                Logger.d("source size: " + source.size());
+                for (Size size: source) {
+                    Logger.d("source size: " + size.getWidth() + " --- " + size.getHeight());
+                }
+                return source;
+            }
+        });
+
         camera.start();  // 启动camera参数，以便于获取手机相机参数
 
         // Activity CameraView is a component bound to your activity or fragment lifecycle. This means that you must pass the lifecycle owner using setLifecycleOwner
@@ -298,6 +318,9 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         int nativeWidth = mCaptureNativeSize != null ? mCaptureNativeSize.getWidth() : 1000;
         int nativeHeight = mCaptureNativeSize != null ?  mCaptureNativeSize.getHeight() : 1000;
 
+        Size size = camera.getPictureSize();
+        Logger.d("onCreateView OutputSizeWidth: " + size.getWidth() + " -- " + "Height: " + size.getHeight());
+
         mCaptureTime = 0;
         mCaptureNativeSize = null;
 
@@ -350,8 +373,6 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         message("Capturing picture...", false);
 
         // 根据当前相机界面的大小设置照片的大小
-
-
         camera.capturePicture();
     }
 
@@ -392,23 +413,26 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        camera.start();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        camera.stop();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        camera.destroy();
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        Logger.d("onResume");
+//        camera.start();
+//    }
+//
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        Logger.d("onPause");
+//        camera.stop();
+//    }
+//
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//        Logger.d("onDestroy");
+//        camera.destroy();
+//    }
 
     public CameraView getCameraView() {
         return this.camera;
