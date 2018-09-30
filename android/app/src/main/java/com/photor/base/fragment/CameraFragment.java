@@ -97,8 +97,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         cameraSettingPopupView = new CameraSettingPopupView(getActivity(),
                 CameraFragment.this, rootView);
 
-        Logger.d("onCreateView");
-        camera.setLifecycleOwner(this.getActivity());
+        camera.setLifecycleOwner(this);
         camera.start();  // 启动camera参数，以便于获取手机相机参数
 
         // 初始化相机的输出照片信息（不知道为什么，只有在 onCreateView 中调用才有效）
@@ -107,10 +106,6 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
             public List<Size> select(List<Size> source) {
                 // Receives a list of available sizes.
                 // Must return a list of acceptable sizes.
-                Logger.d("source size: " + source.size());
-                for (Size size: source) {
-                    Logger.d("source size: " + size.getWidth() + " --- " + size.getHeight());
-                }
                 return source;
             }
         });
@@ -316,9 +311,6 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
 
         int nativeWidth = mCaptureNativeSize != null ? mCaptureNativeSize.getWidth() : 1000;
         int nativeHeight = mCaptureNativeSize != null ?  mCaptureNativeSize.getHeight() : 1000;
-
-        Size size = camera.getPictureSize();
-        Logger.d("onCreateView OutputSizeWidth: " + size.getWidth() + " -- " + "Height: " + size.getHeight());
 
         mCaptureTime = 0;
         mCaptureNativeSize = null;

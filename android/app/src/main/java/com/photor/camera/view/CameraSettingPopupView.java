@@ -14,7 +14,6 @@ import com.contrarywind.adapter.WheelAdapter;
 import com.contrarywind.listener.OnItemSelectedListener;
 import com.contrarywind.view.WheelView;
 import com.orhanobut.logger.Logger;
-import com.otaliastudios.cameraview.AspectRatio;
 import com.otaliastudios.cameraview.Audio;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.Flash;
@@ -43,11 +42,6 @@ public class CameraSettingPopupView extends LinearLayout {
 
     private CameraFragment cameraFragment;
     private View fragmentRootView;
-
-    private static int CAMERA_PICTURE_INIT_SIZE = -100;
-
-    private static int curCameraPictureWidth = CAMERA_PICTURE_INIT_SIZE;
-    private static int curCameraPictureHeight = CAMERA_PICTURE_INIT_SIZE;
 
     private boolean isPlaySounds = true;
 
@@ -81,7 +75,7 @@ public class CameraSettingPopupView extends LinearLayout {
             });
         }
 
-        //2。 设置相机的网格信息
+        //2. 设置相机的网格信息
         cameraGridSetting(camera);
 
         //3. 相机白平衡设置
@@ -116,11 +110,6 @@ public class CameraSettingPopupView extends LinearLayout {
     //11. 设置相机的分辨率信息
     public void cameraResolutionSetting(final CameraView camera) {
 
-//        if (curCameraPictureWidth == CAMERA_PICTURE_INIT_SIZE ||
-//                curCameraPictureHeight == CAMERA_PICTURE_INIT_SIZE) {
-//            Size curSize =
-//        }
-
         NumberPicker cameraResolutionSelector = findViewById(R.id.camera_resolution_selector);
         List<String> resolutions = new ArrayList<>();
         for (ResolutionEnum re: ResolutionEnum.values()) {
@@ -133,6 +122,7 @@ public class CameraSettingPopupView extends LinearLayout {
         cameraResolutionSelector.setMinValue(1);
         cameraResolutionSelector.setMaxValue(resolutionsArray.length);
         cameraResolutionSelector.setDisplayedValues(resolutionsArray);
+        cameraResolutionSelector.setValue(ResolutionEnum.MP4032_3024.getIndex() + 1);
 
         cameraResolutionSelector.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
@@ -145,8 +135,12 @@ public class CameraSettingPopupView extends LinearLayout {
 
     // 设置当前相机输出的照片分辨率
     private void setCameraPictureOutputSize(CameraView camera, ResolutionEnum resolutionEnum) {
-        SizeSelector width = SizeSelectors.minWidth(resolutionEnum.getWidth() - 10);
-        SizeSelector height = SizeSelectors.minHeight(resolutionEnum.getHeight() - 10);
+
+        int picWidth = resolutionEnum.getWidth();
+        int picHeight = resolutionEnum.getHeight();
+
+        SizeSelector width = SizeSelectors.minWidth(picWidth);
+        SizeSelector height = SizeSelectors.minHeight(picHeight);
         SizeSelector dimensions = SizeSelectors.and(width, height); // Matches sizes bigger than 1000x2000.
 
         SizeSelector result = SizeSelectors.or(
@@ -154,8 +148,13 @@ public class CameraSettingPopupView extends LinearLayout {
                 SizeSelectors.biggest() // If none is found, take the biggest
         );
         camera.setPictureSize(result);
-        Size size = camera.getPictureSize();
-        Logger.d("setCameraPicture OutputSizeWidth: " + size.getWidth() + " -- " + "Height: " + size.getHeight());
+        // https://github.com/natario1/CameraView/issues/271  设置分辨率的时候，这个CameraView有一个bug，现在只能用以下的方法解决。
+        camera.stop();
+        camera.start();
+        Size preSize = camera.getPreviewSize();
+        Size picSize = camera.getPictureSize();
+        Logger.d("setCameraPicture OutputSizeWidth: " + preSize.getWidth() + " -- " + "Height: " + preSize.getHeight());
+        Logger.d("setCameraPicture OutputSizeWidth: " + picSize.getWidth() + " -- " + "Height: " + picSize.getHeight());
     }
 
     //10. 设置相机的宽信息
