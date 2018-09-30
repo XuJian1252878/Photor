@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         addBadgeAt(2, 1);
 
         // 4. 设置主页面的ViewPager
-        mMainViewPager.setAdapter(new MainViewPagerAdapter(getSupportFragmentManager(), mMainFragments));
+        mMainViewPager.setAdapter(new MainViewPagerAdapter(getSupportFragmentManager()));
 
         mMainViewPager.addOnPageChangeListener(new MainAcitvityViewPager.OnPageChangeListener() {
             @Override

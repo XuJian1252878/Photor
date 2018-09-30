@@ -19,52 +19,66 @@ import java.util.List;
 
 public class FragmentDataGenerator {
 
-    private static final int MAIN_FRAGMENT_PARTS = 4;
+    public static final int MAIN_FRAGMENT_PARTS = 4;
+
+    private static Fragment[] FRAGMENTS = new Fragment[MAIN_FRAGMENT_PARTS];
+
+    public static void collectFragmentForViewPager(Fragment fragment, int position) {
+        FRAGMENTS[position] = fragment;
+    }
 
     /**
      * 获取主页面底部导航栏的fragment
      * @return
      */
-    public static List<Fragment> getMainFragments(FragmentManager fragmentManager) {
-        Fragment[] fragments = new Fragment[MAIN_FRAGMENT_PARTS];
-
+    public static Fragment createFragmentForViewPagerGetItem(FragmentManager fragmentManager, int position) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         // 利用tag首先查找fragment，利于后来fragment的状态保存。tag相当于fragment的id信息。
-        HomeFragment homeFragment = (HomeFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.HOME.getTag());
-        if (homeFragment == null) {
-            homeFragment = HomeFragment.newInstance();
-            // 添加fragmentmanager信息
-            fragmentTransaction.add(homeFragment, BottomNavigationEnum.HOME.getTag());
+        if (position == BottomNavigationEnum.HOME.getNavItemIndex()) {
+            HomeFragment homeFragment = (HomeFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.HOME.getTag());
+            if (homeFragment == null) {
+                homeFragment = HomeFragment.newInstance();
+                // 添加fragmentmanager信息
+//                fragmentTransaction.add(homeFragment, BottomNavigationEnum.HOME.getTag()).commit();
+            }
+//            fragmentManager.executePendingTransactions();
+            return homeFragment;
         }
 
-        GalleryFragment galleryFragment = (GalleryFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.GALLERY.getTag());
-        if (galleryFragment == null) {
-            galleryFragment = GalleryFragment.newInstance();
-            fragmentTransaction.add(galleryFragment, BottomNavigationEnum.GALLERY.getTag());
+
+        if (position == BottomNavigationEnum.GALLERY.getNavItemIndex()) {
+            GalleryFragment galleryFragment = (GalleryFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.GALLERY.getTag());
+            if (galleryFragment == null) {
+                galleryFragment = GalleryFragment.newInstance();
+//                fragmentTransaction.add(galleryFragment, BottomNavigationEnum.GALLERY.getTag()).commit();
+            }
+//            fragmentManager.executePendingTransactions();
+            return galleryFragment;
         }
 
-        ResourceFragment resourceFragment = (ResourceFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.RESOURCE.getTag());
-        if (resourceFragment == null) {
-            resourceFragment = ResourceFragment.newInstance();
-            fragmentTransaction.add(resourceFragment, BottomNavigationEnum.RESOURCE.getTag());
+
+        if (position == BottomNavigationEnum.RESOURCE.getNavItemIndex()) {
+            ResourceFragment resourceFragment = (ResourceFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.RESOURCE.getTag());
+            if (resourceFragment == null) {
+                resourceFragment = ResourceFragment.newInstance();
+//                fragmentTransaction.add(resourceFragment, BottomNavigationEnum.RESOURCE.getTag()).commit();
+            }
+//            fragmentManager.executePendingTransactions();
+            return resourceFragment;
         }
 
-        CameraFragment cameraFragment = (CameraFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.CAMERA.getTag());
-        if (cameraFragment == null) {
-            cameraFragment = CameraFragment.newInstance();
-            fragmentTransaction.add(cameraFragment, BottomNavigationEnum.CAMERA.getTag());
+        if (position == BottomNavigationEnum.CAMERA.getNavItemIndex()) {
+            CameraFragment cameraFragment = (CameraFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.CAMERA.getTag());
+            if (cameraFragment == null) {
+                cameraFragment = CameraFragment.newInstance();
+//                fragmentTransaction.add(cameraFragment, BottomNavigationEnum.CAMERA.getTag()).commit();
+            }
+//            fragmentManager.executePendingTransactions();
+            return cameraFragment;
         }
 
-        fragmentManager.executePendingTransactions();
-
-        fragments[BottomNavigationEnum.HOME.getNavItemIndex()] = homeFragment;
-        fragments[BottomNavigationEnum.GALLERY.getNavItemIndex()] = galleryFragment;
-        fragments[BottomNavigationEnum.RESOURCE.getNavItemIndex()] = resourceFragment;
-        fragments[BottomNavigationEnum.CAMERA.getNavItemIndex()] = cameraFragment;
-
-        List<Fragment> fragmentList = Arrays.asList(fragments);
-        return fragmentList;
+        return null;
     }
 
 

@@ -99,6 +99,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
 
         Logger.d("onCreateView");
         camera.setLifecycleOwner(this.getActivity());
+        camera.start();  // 启动camera参数，以便于获取手机相机参数
 
         // 初始化相机的输出照片信息（不知道为什么，只有在 onCreateView 中调用才有效）
         camera.setPictureSize(new SizeSelector() {
@@ -113,8 +114,6 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
                 return source;
             }
         });
-
-        camera.start();  // 启动camera参数，以便于获取手机相机参数
 
         // Activity CameraView is a component bound to your activity or fragment lifecycle. This means that you must pass the lifecycle owner using setLifecycleOwner
         // Fragment use fragment.viewLifecycleOwner instead of this!
@@ -413,26 +412,26 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        Logger.d("onResume");
-//        camera.start();
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        Logger.d("onPause");
-//        camera.stop();
-//    }
-//
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        Logger.d("onDestroy");
-//        camera.destroy();
-//    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        Logger.d("onResume");
+        camera.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Logger.d("onPause");
+        camera.stop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Logger.d("onDestroy");
+        camera.destroy();
+    }
 
     public CameraView getCameraView() {
         return this.camera;
