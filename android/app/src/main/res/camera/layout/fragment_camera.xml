@@ -196,6 +196,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:gravity="center_vertical"
         android:padding="16dp"
         android:orientation="horizontal"
         android:weightSum="3">
@@ -238,16 +239,11 @@
 
         <ImageButton
             android:id="@+id/exposure"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:contentDescription="@string/exposure"
-            android:background="@drawable/background"
-            android:src="@drawable/ic_switch"/>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:scaleType="fitCenter"
+            android:background="#00000000"
+            android:src="@drawable/ic_camera_exposure"/>
     </LinearLayout>
 
 
