@@ -56,18 +56,18 @@
         <activity android:name=".base.activity.test.OpencvTestActivity" />
 
         <!-- 星野图片对齐界面 -->
-        <activity android:name=".staralign.StarAlignBaseActivity" />
+        <activity android:name=".home.staralign.StarAlignBaseActivity" />
         <activity android:name=".base.activity.PhotoOperateResultActivity" />
-        <activity android:name=".staralign.StarAlignSplitActivity" />
-        <activity android:name=".staralign.GrabCutActivity" />
+        <activity android:name=".home.staralign.StarAlignSplitActivity" />
+        <activity android:name=".home.staralign.GrabCutActivity" />
 
         <!-- 景深计算器界面 -->
-        <activity android:launchMode="singleTask" android:name=".dofcalculator.activity.DofCalcMainActivity" />
-        <activity android:launchMode="singleTask" android:name=".dofcalculator.activity.SensorSizeActivity" />
-        <activity android:launchMode="singleTask" android:name=".dofcalculator.activity.CustomCircleOfConfusionActivity" />
+        <activity android:launchMode="singleTask" android:name=".home.dofcalculator.activity.DofCalcMainActivity" />
+        <activity android:launchMode="singleTask" android:name=".home.dofcalculator.activity.SensorSizeActivity" />
+        <activity android:launchMode="singleTask" android:name=".home.dofcalculator.activity.CustomCircleOfConfusionActivity" />
 
         <!-- 曝光合成界面 -->
-        <activity android:name=".exposure.ExposureBaseActivity" />
+        <activity android:name=".home.exposure.ExposureBaseActivity" />
 
         <!-- 相机界面 -->
         <activity

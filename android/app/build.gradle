@@ -161,7 +161,7 @@ android {
                     'src/main/res/home/staralign',
                     'src/main/res/home/dof',
                     'src/main/res/home/exposure',
-
+                    'src/main/res/home/exposure/scanner',
                     'src/main/res/camera',
             ]
         }

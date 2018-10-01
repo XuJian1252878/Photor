@@ -95,12 +95,10 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         rootView = inflater.inflate(R.layout.fragment_camera, container, false);
 
+        Logger.d("Camera Fragment onCreateView");
         camera = rootView.findViewById(R.id.camera);
         cameraSettingPopupView = new CameraSettingPopupView(getActivity(),
                 CameraFragment.this, rootView);
-
-        camera.setLifecycleOwner(this);
-        camera.start();  // 启动camera参数，以便于获取手机相机参数
 
         // 初始化相机的输出照片信息（不知道为什么，只有在 onCreateView 中调用才有效）
         camera.setPictureSize(new SizeSelector() {
@@ -456,18 +454,21 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         camera.start();
+        Logger.d("Camera Fragment onResume");
     }
 
     @Override
     public void onPause() {
         super.onPause();
         camera.stop();
+        Logger.d("Camera Fragment onPause");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         camera.destroy();
+        Logger.d("Camera Fragment onDestroy");
     }
 
     private void startVideoRecording() {

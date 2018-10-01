@@ -18,9 +18,9 @@ import android.widget.Toast;
 import com.example.permissions.PermissionsUtils;
 import com.photor.R;
 import com.photor.base.activity.test.OpencvTestActivity;
-import com.photor.dofcalculator.activity.DofCalcMainActivity;
-import com.photor.exposure.ExposureBaseActivity;
-import com.photor.staralign.StarAlignBaseActivity;
+import com.photor.home.dofcalculator.activity.DofCalcMainActivity;
+import com.photor.home.exposure.ExposureBaseActivity;
+import com.photor.home.staralign.StarAlignBaseActivity;
 
 /**
  * Created by xujian on 2018/2/26.

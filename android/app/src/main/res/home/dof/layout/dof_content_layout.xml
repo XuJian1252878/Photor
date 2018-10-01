@@ -10,11 +10,11 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.photor.dofcalculator.activity.DofCalcMainActivity"
+    tools:context=".home.dofcalculator.activity.DofCalcMainActivity"
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <com.photor.dofcalculator.view.DepthOfFieldView
+    <com.photor.home.dofcalculator.view.DepthOfFieldView
         android:id="@+id/depth_view"
         android:layout_width="match_parent"
         android:layout_height="120sp"
@@ -23,7 +23,7 @@
         custom:targetPosition="0.5"
         custom:textSize="20sp">
 
-    </com.photor.dofcalculator.view.DepthOfFieldView>
+    </com.photor.home.dofcalculator.view.DepthOfFieldView>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -220,7 +220,7 @@
             android:textAlignment="center"
             android:translationZ="3dp"/>
 
-        <com.photor.dofcalculator.view.Wheel
+        <com.photor.home.dofcalculator.view.Wheel
             android:id="@+id/focal_wheel"
             android:layout_width="match_parent"
             android:layout_height="70sp"
@@ -254,7 +254,7 @@
             android:translationZ="3dp"/>
 
 
-        <com.photor.dofcalculator.view.Wheel
+        <com.photor.home.dofcalculator.view.Wheel
             android:id="@+id/aperture_wheel"
             android:layout_width="match_parent"
             android:layout_height="70sp"
@@ -288,7 +288,7 @@
             android:textSize="@dimen/main_activity_text_size"
             android:textAlignment="center" />
 
-        <com.photor.dofcalculator.view.Wheel
+        <com.photor.home.dofcalculator.view.Wheel
             android:id="@+id/distance_wheel"
             android:layout_width="match_parent"
             android:layout_height="70sp"
