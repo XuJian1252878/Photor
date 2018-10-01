@@ -30,5 +30,7 @@
 
     <string name="sky_ground_align_save_failed">the image saved failed!</string>
 
+    <string name="image_scanner_label">image scanner</string>
+
 
 </resources>

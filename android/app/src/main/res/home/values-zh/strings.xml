@@ -29,5 +29,6 @@
     <string name="sky_ground_split_btn_label">分割</string>
 
     <string name="sky_ground_align_save_failed">图片文件保存失败！</string>
+    <string name="image_scanner_label">图片信息扫描</string>
 
 </resources>

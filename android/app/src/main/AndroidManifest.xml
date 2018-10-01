@@ -76,6 +76,9 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait"
             android:name=".camera.activity.VideoPreviewActivity" />
+        
+        <!-- 打开相机扫描界面 -->
+        <activity android:name=".home.scanner.ImageScannerActivity" />
 
         <!-- 公共组件，图片选择器界面 -->
         <activity android:name="com.example.photopicker.PhotoPickerActivity" />

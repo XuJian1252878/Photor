@@ -20,6 +20,7 @@ import com.photor.R;
 import com.photor.base.activity.test.OpencvTestActivity;
 import com.photor.home.dofcalculator.activity.DofCalcMainActivity;
 import com.photor.home.exposure.ExposureBaseActivity;
+import com.photor.home.scanner.ImageScannerActivity;
 import com.photor.home.staralign.StarAlignBaseActivity;
 
 /**
@@ -82,6 +83,14 @@ public class HomeFragment extends Fragment {
                 if (PermissionsUtils.checkCameraPermission(HomeFragment.this, REQUEST_CAMERA_PERMISSION_EXPOSURE)) {
                     startExposure();
                 }
+            }
+        });
+
+        // 图片信息扫描
+        rootView.findViewById(R.id.image_scanner).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startImageScanner();
             }
         });
 
@@ -152,5 +161,10 @@ public class HomeFragment extends Fragment {
     // 启动曝光合成的操作
     private void startExposure() {
         startActivity(new Intent(getActivity(), ExposureBaseActivity.class));
+    }
+
+    // 启动图片扫描器操作
+    private void startImageScanner() {
+        startActivity(new Intent(getActivity(), ImageScannerActivity.class));
     }
 }
