@@ -7,15 +7,16 @@ import android.graphics.Color;
 import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,6 +25,7 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.example.file.FileUtils;
+import com.example.media.MediaManager;
 import com.orhanobut.logger.Logger;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraLogger;
@@ -330,7 +332,16 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
     }
 
     private void onVideo(File video) {
-        mCapturingVideo = false;
+        mCapturingVideo = false;  // 说明视频已经录制完成
+        MediaManager.galleryAddMedia(getContext(), video.getAbsolutePath());
+
+        // android 录像按钮设置
+        ImageButton videoIbv = rootView.findViewById(R.id.captureVideo);
+        videoIbv.setImageResource(R.drawable.ic_video_on_white);
+
+        // 计时器设置
+        stopVideoRecording();
+
         Intent intent = new Intent(getActivity(), VideoPreviewActivity.class);
         intent.putExtra("video", Uri.fromFile(video));
         startActivity(intent);
@@ -368,14 +379,36 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
     }
 
     private void captureVideo() {
-        if (camera.getSessionType() != SessionType.VIDEO) {
-            message("Can't record video while session type is 'picture'.", false);
+
+        if (mCapturingPicture) {
+            // 当前正处于拍照流程，正在处理照片
+            message(getResources().getString(R.string.camera_video_on_pic), false);
             return;
         }
-        if (mCapturingPicture || mCapturingVideo) return;
-        mCapturingVideo = true;
-        message("Recording for 8 seconds...", true);
-        camera.startCapturingVideo(null, 8000);
+
+        // 设置为视频录制状态
+        if (camera.getSessionType() != SessionType.VIDEO) {
+            camera.setSessionType(SessionType.VIDEO);
+        }
+
+        ImageButton videoIbv = rootView.findViewById(R.id.captureVideo);
+        if (mCapturingVideo) {
+            // 说明正在录制视频，再次点击的时候应该关闭录制
+            message(getResources().getString(R.string.camera_stop_record_video), false);
+            camera.stopCapturingVideo();
+        } else {
+            // 说明正要开始录制视频
+            mCapturingVideo = true;
+            // 显示计时控件
+
+            // 为什么这样子转化就不行
+//            (ImageButton)(rootView.findViewById(R.id.captureVideo)).setImageResource(R.drawable.ic_video_on_red);
+            videoIbv.setImageResource(R.drawable.ic_video_on_red);
+            message(getResources().getString(R.string.camera_start_record_video), false);
+            File file = FileUtils.generateVideoFile();
+            startVideoRecording(); // 计时器设置
+            camera.startCapturingVideo(file);
+        }
     }
 
     private void toggleCamera() {
@@ -423,6 +456,20 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         super.onDestroy();
         Logger.d("onDestroy");
         camera.destroy();
+    }
+
+    private void startVideoRecording() {
+        rootView.findViewById(R.id.video_record_timer_container).setVisibility(View.VISIBLE);
+        Chronometer timer = rootView.findViewById(R.id.video_record_timer);
+        // 计时器清零
+        timer.setBase(SystemClock.elapsedRealtime());
+        timer.start();
+    }
+
+    private void stopVideoRecording() {
+        rootView.findViewById(R.id.video_record_timer_container).setVisibility(View.GONE);
+        Chronometer timer = rootView.findViewById(R.id.video_record_timer);
+        timer.stop();
     }
 
     public CameraView getCameraView() {

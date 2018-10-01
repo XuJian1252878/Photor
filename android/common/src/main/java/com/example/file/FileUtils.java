@@ -211,6 +211,30 @@ public class FileUtils {
     }
 
 
+    /**
+     * 创建录制视频的存储路径
+     * @return
+     */
+    public static File generateVideoFile() {
+        if (TextUtils.equals(Environment.getExternalStorageState(), Environment.MEDIA_MOUNTED)) {
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+            String videoFileName = "VIDEO_" + timeStamp + ".mp4";
+
+            File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+
+            if (!storageDir.exists()) {
+                if (!storageDir.mkdirs()) {
+                    Log.e("TAG", "Throwing Errors....");
+                }
+            }
+
+            File video = new File(storageDir, videoFileName);
+            return video;
+        }
+        return null;
+    }
+
+
     public static String generateTempImgAbsPath(Context context) {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
         String imgFileName = "JPEG_" + timeStamp + ".jpg";

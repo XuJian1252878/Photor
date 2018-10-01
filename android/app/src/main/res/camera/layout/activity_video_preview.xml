@@ -6,18 +6,14 @@
     android:background="@android:color/white">
     <LinearLayout
         android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_gravity="center"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <VideoView
-            android:id="@+id/video"
+        <com.photor.camera.view.JzvdStdAutoCompleteAfterFullscreen
+            android:id="@+id/video_record_preview"
             android:layout_width="match_parent"
-            android:layout_height="200dp"/>
-
-        <com.photor.camera.view.MessageView
-            android:id="@+id/actualResolution"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
+            android:layout_height="250dp"/>
     </LinearLayout>
 </ScrollView>

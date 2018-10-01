@@ -208,6 +208,9 @@ dependencies {
     // 引入选择器
     implementation 'com.shawnlin:number-picker:2.4.6'
 
+    // 引入视频播放器
+    implementation 'cn.jzvd:jiaozivideoplayer:6.3.1'
+
     implementation project(':photopicker')
     implementation project(':openCVLibrary341')
 

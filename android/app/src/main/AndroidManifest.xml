@@ -70,8 +70,12 @@
         <activity android:name=".exposure.ExposureBaseActivity" />
 
         <!-- 相机界面 -->
-        <activity android:name=".camera.activity.PicturePreviewActivity"/>
-        <activity android:name=".camera.activity.VideoPreviewActivity" />
+        <activity
+            android:name=".camera.activity.PicturePreviewActivity"/>
+        <activity
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:name=".camera.activity.VideoPreviewActivity" />
 
         <!-- 公共组件，图片选择器界面 -->
         <activity android:name="com.example.photopicker.PhotoPickerActivity" />

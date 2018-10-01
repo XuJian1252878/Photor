@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.file.FileUtils;
+import com.example.media.MediaManager;
 import com.example.media.image.imagecapture.ImageCaptureManager;
 import com.photor.R;
 import com.photor.widget.TipToast;
@@ -94,7 +95,7 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
             public void onClick(View v) {
                 isSavedOperateRes = true;
                 // 将图片添加入MediaStore的索引中
-                ImageCaptureManager.galleryAddPic(PhotoOperateResultActivity.this, resImgPath);
+                MediaManager.galleryAddMedia(PhotoOperateResultActivity.this, resImgPath);
 //                Toast.makeText(PhotoOperateResultActivity.this, "图片已保存", Toast.LENGTH_SHORT).show();
                 final TipToast tipToast = new TipToast.Builder(PhotoOperateResultActivity.this)
                         .setMessage("保存")
