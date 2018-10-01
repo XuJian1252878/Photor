@@ -36,7 +36,6 @@ import com.otaliastudios.cameraview.SessionType;
 import com.otaliastudios.cameraview.Size;
 import com.otaliastudios.cameraview.SizeSelector;
 import com.photor.R;
-import com.photor.camera.activity.PicturePreviewActivity;
 import com.photor.camera.activity.VideoPreviewActivity;
 import com.photor.camera.event.CameraOperator;
 import com.photor.camera.view.CameraSettingPopupView;
@@ -78,6 +77,8 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
     // To show stuff in the callback
     private Size mCaptureNativeSize;
     private long mCaptureTime;
+
+    private DecimalFormat exposureValueFormat = new DecimalFormat("##0.00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
 
     public static CameraFragment newInstance() {
         CameraFragment cameraFragment = new CameraFragment();
@@ -132,6 +133,10 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
                 exposureCorrectionCurValue = newValue;
                 // 设置曝光值
                 exposureSeekbar.setProgress((int)(newValue - exposureCorrectionMinValue) * 10);
+                // 如果是滑动屏幕方式导致的曝光值变化，那么显示当前的曝光值信息
+                if (slidersContainer.getVisibility() == View.INVISIBLE) {
+                    message("曝光值：" + exposureValueFormat.format(newValue) + " EV", false);
+                }
             }
         });
 
@@ -259,7 +264,6 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         });
 
         // 设置曝光值的按钮（位于seekbar上）
-        final DecimalFormat decimalFormat = new DecimalFormat("##0.00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
         ImageButton increaseZoomBtn = rootView.findViewById(R.id.increase_zoom);
         increaseZoomBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -269,7 +273,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
                 // 每次增加10%的曝光
                 exposureSeekbar.setProgress((int)((exposureCorrectionCurValue - exposureCorrectionMinValue) * 10));
                 camera.setExposureCorrection(exposureCorrectionCurValue);
-                Toast.makeText(getActivity(), "当前曝光值为 " + decimalFormat.format(exposureCorrectionCurValue) + " EV", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "当前曝光值为 " + exposureValueFormat.format(exposureCorrectionCurValue) + " EV", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -282,7 +286,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
                 // 每次减少 10% 的曝光
                 exposureSeekbar.setProgress((int)((exposureCorrectionCurValue - exposureCorrectionMinValue) * 10));
                 camera.setExposureCorrection(exposureCorrectionCurValue);
-                Toast.makeText(getActivity(), "当前曝光值为 " + decimalFormat.format(exposureCorrectionCurValue) + "EV", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "当前曝光值为 " + exposureValueFormat.format(exposureCorrectionCurValue) + "EV", Toast.LENGTH_SHORT).show();
             }
         });
     }
