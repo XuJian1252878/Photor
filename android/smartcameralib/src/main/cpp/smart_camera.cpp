@@ -1,9 +1,8 @@
 //
 // Created by pqpo on 2018/8/16.
 //
-#include <opencv2/opencv.hpp>
 #include <android/bitmap.h>
-#include <android_utils.h>
+#include "android_utils.h"
 #include "jni.h"
 #include "opencv_utils.h"
 #include <android/log.h>

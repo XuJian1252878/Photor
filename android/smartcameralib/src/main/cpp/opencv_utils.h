@@ -5,11 +5,10 @@
 #ifndef SMARTCAMERA_OPENCV_UTILS_H
 #define SMARTCAMERA_OPENCV_UTILS_H
 
-//#include <opencv2/opencv.hpp>
-//using namespace cv;
-
-#include <opencv/cv.hpp>
+#include <opencv2/opencv.hpp>
+//#include <opencv/cv.hpp>
 #include <iostream>
+
 using namespace cv;
 using namespace std;
 

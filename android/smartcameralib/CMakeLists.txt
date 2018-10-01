@@ -9,11 +9,11 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 set(libs "${CMAKE_SOURCE_DIR}/src/main/jniLibs")
 include_directories(${CMAKE_SOURCE_DIR}/src/main/cpp/include)
 
-add_library(libopencv_imgproc STATIC IMPORTED )
-set_target_properties(libopencv_imgproc PROPERTIES IMPORTED_LOCATION "${libs}/${ANDROID_ABI}/libopencv_imgproc.a")
+add_library(opencv_imgproc STATIC IMPORTED )
+set_target_properties(opencv_imgproc PROPERTIES IMPORTED_LOCATION "${libs}/${ANDROID_ABI}/libopencv_imgproc.a")
 
-add_library(libopencv_core STATIC IMPORTED )
-set_target_properties(libopencv_core PROPERTIES IMPORTED_LOCATION "${libs}/${ANDROID_ABI}/libopencv_core.a")
+add_library(opencv_core STATIC IMPORTED )
+set_target_properties(opencv_core PROPERTIES IMPORTED_LOCATION "${libs}/${ANDROID_ABI}/libopencv_core.a")
 
 
 if(EXISTS ${libs}/${ANDROID_ABI}/libtbb.a)
@@ -58,8 +58,8 @@ find_library(jnigraphics-lib
 if(EXISTS ${libs}/${ANDROID_ABI}/libtbb.a)
 target_link_libraries( # Specifies the target library.
                          smart_camera
-                         libopencv_imgproc
-                         libopencv_core
+                         opencv_imgproc
+                         opencv_core
                          tbb
 
                          # Links the target library to the log library
