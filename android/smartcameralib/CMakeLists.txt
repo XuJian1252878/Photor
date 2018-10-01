@@ -16,13 +16,13 @@ add_library(libopencv_core STATIC IMPORTED )
 set_target_properties(libopencv_core PROPERTIES IMPORTED_LOCATION "${libs}/${ANDROID_ABI}/libopencv_core.a")
 
 
-if(EXISTS ${PROJECT_SOURCE_DIR}/opencv/lib/${ANDROID_ABI}/libtbb.a)
+if(EXISTS ${libs}/${ANDROID_ABI}/libtbb.a)
 add_library(tbb STATIC IMPORTED)
 endif()
 
 
-if(EXISTS ${PROJECT_SOURCE_DIR}/opencv/lib/${ANDROID_ABI}/libtbb.a)
-set_target_properties(tbb PROPERTIES IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/opencv/lib/${ANDROID_ABI}/libtbb.a)
+if(EXISTS ${libs}/${ANDROID_ABI}/libtbb.a)
+set_target_properties(tbb PROPERTIES IMPORTED_LOCATION ${libs}/${ANDROID_ABI}/libtbb.a)
 endif()
 
 
@@ -55,7 +55,7 @@ find_library(jnigraphics-lib
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
 
-if(EXISTS ${PROJECT_SOURCE_DIR}/opencv/lib/${ANDROID_ABI}/libtbb.a)
+if(EXISTS ${libs}/${ANDROID_ABI}/libtbb.a)
 target_link_libraries( # Specifies the target library.
                          smart_camera
                          libopencv_imgproc

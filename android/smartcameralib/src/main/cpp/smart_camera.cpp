@@ -5,9 +5,9 @@
 #include <android/bitmap.h>
 #include <android_utils.h>
 #include "jni.h"
+#include "opencv_utils.h"
 #include <android/log.h>
 #include <sstream>
-#include <opencv_utils.h>
 
 using namespace cv;
 
