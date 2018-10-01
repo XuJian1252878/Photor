@@ -1,4 +1,4 @@
 rootProject.name = 'Photor'
 
-include ':app', ':photopicker', ':common'
+include ':app', ':photopicker', ':common', ':smartcameralib'
 include ':openCVLibrary341'

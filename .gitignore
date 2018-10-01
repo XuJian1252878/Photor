@@ -56,3 +56,7 @@ android/app/.externalNativeBuild/
 android/app/src/main/cpp/include/
 android/app/src/main/jniLibs/
 android/openCVLibrary341/
+
+android/smartcameralib/.externalNativeBuild/
+android/smartcameralib/src/main/cpp/include/
+android/smartcameralib/src/main/jniLibs/
