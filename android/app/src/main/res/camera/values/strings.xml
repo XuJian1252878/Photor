@@ -67,4 +67,10 @@
 
     <string name="camera_video_record_preview">视频预览</string>
 
+    <string name="switch_to_back_camera">切换到后置摄像头</string>
+    <string name="switch_to_front_camera">切换到前置摄像头</string>
+
+    <string name="take_photo_while_record_video">当前处于摄像状态，不能拍照</string>
+    <string name="capturing_picture">正在处理照片</string>
+
 </resources>

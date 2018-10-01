@@ -27,7 +27,7 @@ public enum FlashOnEnum {
         this.messageId = messageId;
     }
 
-    public Flash getFalsh() {
+    public Flash getFlash() {
         return flash;
     }
 

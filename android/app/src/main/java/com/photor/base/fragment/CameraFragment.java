@@ -295,15 +295,23 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         Toast.makeText(this.getContext(), content, length).show();
     }
 
+    /**
+     * 相机初始化完成时候 -- 进行所有相关的UI操作
+     * @param rootView
+     */
     private void onOpened(View rootView) {
         initUI(rootView);
     }
 
+    /**
+     * 拍照操作结束时候的操作
+     * @param jpeg
+     */
     private void onPicture(byte[] jpeg) {
         mCapturingPicture = false;
         long callbackTime = System.currentTimeMillis();
         if (mCapturingVideo) {
-            message("Captured while taking video. Size=" + mCaptureNativeSize, false);
+            message(getResources().getString(R.string.take_photo_while_record_video), false);
             return;
         }
 
@@ -368,14 +376,21 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
     }
 
     private void capturePhoto() {
-        if (mCapturingPicture) return;
+        if (mCapturingPicture) return;  // 当前拍照操作正在处理的情况
+
+        // 如果正在录视频，那么无法进行拍照操作
+        if (mCapturingVideo) {
+            message(getResources().getString(R.string.take_photo_while_record_video), false);
+            return;
+        }
+
         mCapturingPicture = true;
         mCaptureTime = System.currentTimeMillis();
         mCaptureNativeSize = camera.getPictureSize();
-        message("Capturing picture...", false);
 
         // 根据当前相机界面的大小设置照片的大小
         camera.capturePicture();
+        message(getResources().getString(R.string.capturing_picture), false);
     }
 
     private void captureVideo() {
@@ -415,11 +430,11 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         if (mCapturingPicture) return;
         switch (camera.toggleFacing()) {
             case BACK:
-                message("Switched to back camera!", false);
+                message(getResources().getString(R.string.switch_to_back_camera), false);
                 break;
 
             case FRONT:
-                message("Switched to front camera!", false);
+                message(getResources().getString(R.string.switch_to_front_camera), false);
                 break;
         }
     }
@@ -440,21 +455,18 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        Logger.d("onResume");
         camera.start();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Logger.d("onPause");
         camera.stop();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Logger.d("onDestroy");
         camera.destroy();
     }
 

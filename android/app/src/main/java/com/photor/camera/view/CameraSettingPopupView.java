@@ -67,7 +67,7 @@ public class CameraSettingPopupView extends LinearLayout {
             ib.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Flash curFlash = foe.getFalsh();
+                    Flash curFlash = foe.getFlash();
                     Toast.makeText(cameraFragment.getContext(), getResources().getString(foe.getMessageId()), Toast.LENGTH_SHORT).show();
                     camera.setFlash(curFlash);
                     cameraFlashOnSetting(camera);
@@ -224,7 +224,7 @@ public class CameraSettingPopupView extends LinearLayout {
         Flash curFlash = cameraView.getFlash();
         for (FlashOnEnum foe: FlashOnEnum.values()) {
             ib = findViewById(foe.getRid());
-            if (foe.getFalsh() == curFlash) {
+            if (foe.getFlash() == curFlash) {
                 ib.setBackgroundColor(Color.argb(180, 63, 63, 63));
             } else {
                 ib.setBackgroundColor(Color.argb(63, 63, 63, 63));
