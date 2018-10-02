@@ -122,7 +122,6 @@ public class CameraSettingPopupView extends LinearLayout {
         cameraResolutionSelector.setMinValue(1);
         cameraResolutionSelector.setMaxValue(resolutionsArray.length);
         cameraResolutionSelector.setDisplayedValues(resolutionsArray);
-        cameraResolutionSelector.setValue(ResolutionEnum.MP4032_3024.getIndex() + 1);
 
         cameraResolutionSelector.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
@@ -131,6 +130,8 @@ public class CameraSettingPopupView extends LinearLayout {
                 setCameraPictureOutputSize(camera, resolution);
             }
         });
+
+        cameraResolutionSelector.setValue(ResolutionEnum.MP4032_3024.getIndex() + 1);
     }
 
     // 设置当前相机输出的照片分辨率
