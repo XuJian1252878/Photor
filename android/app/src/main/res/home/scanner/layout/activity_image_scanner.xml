@@ -8,12 +8,12 @@
     tools:context="com.photor.home.scanner.ImageScannerActivity">
 
     <me.pqpo.smartcameralib.SmartCameraView
-        android:id="@+id/camera_view"
+        android:id="@+id/scanner_camera_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
     <ImageView
-        android:id="@+id/image"
+        android:id="@+id/scanner_mask_view"
         android:layout_width="117dp"
         android:layout_height="180dp"
         android:scaleType="fitCenter"

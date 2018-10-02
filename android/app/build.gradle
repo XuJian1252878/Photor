@@ -113,7 +113,8 @@ android {
                 // https://stackoverflow.com/questions/50677231/linking-errors-on-android-with-opencv-3-4-0-and-ndk
                 // Recently, NDK switched to libc++ as default STL, but OpenCV is built with gnustl.
                 // 上次更新NDK之后一堆报错，估计就是和设置下面的这个参数有关
-                 arguments  '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=gnustl_static'
+//                 arguments  '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=gnustl_static'
+                arguments '-DANDROID_STL=gnustl_static'
                 //设置 C++ flag，可选配置，-frtti 表示项目支持RTTI；-fexceptions 表示当前项目支持C++异常处理
                 cppFlags "-std=c++11", "-frtti", "-fexceptions"
             }
@@ -217,6 +218,7 @@ dependencies {
 
     // 引入图拍呢扫描器的依赖
     api project(':smartcameralib')
+    api project(':smartcropperlib')
     api project(':openCVLibrary341')
 
     // 引入rxjava

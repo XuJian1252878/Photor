@@ -27,7 +27,16 @@
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
-            android:text="@string/save_align_res_btn_label"/>
+            android:text="@string/photo_res_save_btn_label"/>
+
+        <Button
+            android:id="@+id/operate_crop_btn"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:text="@string/photo_crop_btn_label"
+            android:layout_height="match_parent" />
 
         <Button
             android:id="@+id/delete_operate_res_btn"
@@ -36,7 +45,7 @@
             android:layout_height="match_parent"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
-            android:text="@string/delete_align_res_btn_label"/>
+            android:text="@string/photo_res_delete_btn_label"/>
 
     </LinearLayout>
 

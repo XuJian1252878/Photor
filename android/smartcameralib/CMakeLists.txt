@@ -32,7 +32,17 @@ endif()
 # Gradle automatically packages shared libraries with your APK.
 
 aux_source_directory(src/main/cpp/ DIR_LIB_SOURCE)
-add_library (smart_camera SHARED ${DIR_LIB_SOURCE})
+
+add_library( # Sets the name of the library.
+             smart_camera
+
+             # Sets the library as a shared library.
+             SHARED
+
+             # Provides a relative path to your source file(s).
+             src/main/cpp/smart_camera.cpp
+             src/main/cpp/opencv_utils.cpp
+             src/main/cpp/android_utils.cpp )
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by

@@ -48,8 +48,8 @@ public class ImageScannerActivity extends AppCompatActivity {
             window.setStatusBarColor(Color.TRANSPARENT);
         }
 
-        mCameraView = findViewById(R.id.camera_view);
-        ivPreview = findViewById(R.id.image);
+        mCameraView = findViewById(R.id.scanner_camera_view);
+        ivPreview = findViewById(R.id.scanner_mask_view);
 
         ivPreview.setOnClickListener(new View.OnClickListener() {
             @Override

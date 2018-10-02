@@ -1,5 +1,6 @@
 package com.photor.base.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -20,6 +21,7 @@ import com.example.media.image.imagecapture.ImageCaptureManager;
 import com.photor.R;
 import com.photor.widget.TipToast;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
@@ -27,10 +29,18 @@ import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_OPERATE_RE
 
 public class PhotoOperateResultActivity extends AppCompatActivity {
 
+    public final static int REQUEST_IMAGE_CROP_FILE_PATH = 789;
+
+    public final static String EXTRA_CROP_IMG_RES_PATH = "EXTRA_CROP_IMG_RES_PATH";
+    public String cropImgResPath = null;
+
+    public static final String EXTRA_ORI_IMG_PATH = "EXTRA_ORI_IMG_PATH";
     private String resImgPath = null;
     private ImageView resImageView;
 
+
     private volatile boolean isSavedOperateRes = false;  // 表示用户是否已经存储了 图片对齐的结果
+    private volatile boolean isSavedCropRes = false; // 表示用户是否已经成功进行了图片裁剪操作
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +79,18 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
         }
     }
 
+    private void displayPhotoInImageView(int ivId, String imgPath) {
+        ImageView iv = findViewById(ivId);
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(resImgPath);
+            Bitmap bitmap = BitmapFactory.decodeStream(fis);
+            iv.setImageBitmap(bitmap);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void initUI() {
         // 1. 初始化 toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -79,31 +101,34 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
         }
 
         // 2. 加载结果图片
-        resImageView = findViewById(R.id.operate_result_iv);
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(resImgPath);
-            Bitmap bitmap = BitmapFactory.decodeStream(fis);
-            resImageView.setImageBitmap(bitmap);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        displayPhotoInImageView(R.id.operate_result_iv, resImgPath);
 
         // 3. 绑定 保存 和 删除图片按钮的事件
         findViewById(R.id.operate_res_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 isSavedOperateRes = true;
-                // 将图片添加入MediaStore的索引中
-                MediaManager.galleryAddMedia(PhotoOperateResultActivity.this, resImgPath);
 //                Toast.makeText(PhotoOperateResultActivity.this, "图片已保存", Toast.LENGTH_SHORT).show();
                 final TipToast tipToast = new TipToast.Builder(PhotoOperateResultActivity.this)
                         .setMessage("保存")
                         .create();
                 tipToast.show();
-                new Handler().postDelayed(new Runnable() {
+                new Handler().post(new Runnable() {
                     @Override
                     public void run() {
+
+                        if (!isSavedCropRes) {
+                            // 将原始图片添加入MediaStore的索引中
+                            // 没有进行图片裁剪的情况下
+                            MediaManager.galleryAddMedia(PhotoOperateResultActivity.this, resImgPath);
+                        } else {
+                            // 进行图片裁剪的情况下（裁剪的图片在裁剪的activity中已经保存）
+                            // 原始的结果图片在上一个activity中也已经保存，所以需要删除原始图片文件
+                            FileUtils.deleteFileByPath(resImgPath);
+                            // 将裁剪之后图片添加入MediaStore的索引中
+                            MediaManager.galleryAddMedia(PhotoOperateResultActivity.this, cropImgResPath);
+                        }
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -112,7 +137,7 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
                             }
                         });
                     }
-                }, 2000);
+                });
             }
         });
 
@@ -124,10 +149,13 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
                         .setMessage("删除")
                         .create();
                 tipToast.show();
-                new Handler().postDelayed(new Runnable() {
+                new Handler().post(new Runnable() {
                     @Override
                     public void run() {
+
                         FileUtils.deleteFileByPath(resImgPath);
+                        FileUtils.deleteFileByPath(cropImgResPath);
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -136,11 +164,47 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
                             }
                         });
                     }
-                }, 2000);
+                });
 //                Toast.makeText(PhotoOperateResultActivity.this, "图片已删除", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // 4. 绑定裁剪按钮的响应事件
+        findViewById(R.id.operate_crop_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cropImgResPath = FileUtils.generateImgAbsPath();
+                Intent intent = new Intent();
+                intent.putExtra(EXTRA_CROP_IMG_RES_PATH, cropImgResPath);
+                intent.putExtra(EXTRA_ORI_IMG_PATH, resImgPath);
+                intent.setClass(PhotoOperateResultActivity.this, PhotoCropActivity.class);
+                startActivityForResult(intent, REQUEST_IMAGE_CROP_FILE_PATH);
             }
         });
     }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        switch (requestCode) {
+            case REQUEST_IMAGE_CROP_FILE_PATH:
+                if (resultCode == RESULT_CANCELED) {
+                    isSavedCropRes = false;
+                    resImgPath = data.getStringExtra(EXTRA_ORI_IMG_PATH);
+                    displayPhotoInImageView(R.id.operate_result_iv, resImgPath);
+                    return;  // 说明取消了裁剪操作
+                } else if (resultCode == RESULT_OK) {
+                    cropImgResPath = data.getStringExtra(EXTRA_CROP_IMG_RES_PATH);
+                    isSavedCropRes = true;
+                    // 说明已经进行了裁剪操作，将要在界面上显示裁剪之后的图片信息
+                    displayPhotoInImageView(R.id.operate_result_iv, cropImgResPath);
+                }
+                break;
+            default:
+                break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }
