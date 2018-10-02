@@ -271,7 +271,14 @@ public class FileUtils {
 
 
     public static boolean deleteFileByPath(String filePath) {
+
+        if (filePath == null) {
+            return false;
+        }
+
         File deleteFile = new File(filePath);
+
+
         if (deleteFile.exists()) {
             return deleteFile.delete();
         }
