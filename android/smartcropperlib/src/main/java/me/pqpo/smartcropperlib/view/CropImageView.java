@@ -11,6 +11,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -25,7 +26,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
-import com.example.smartcameralib.R;
+import com.example.smartcropperlib.R;
+
+import java.util.Arrays;
 
 import me.pqpo.smartcropperlib.SmartCropper;
 import me.pqpo.smartcropperlib.utils.CropUtils;

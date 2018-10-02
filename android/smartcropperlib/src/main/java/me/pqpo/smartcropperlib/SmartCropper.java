@@ -3,6 +3,8 @@ package me.pqpo.smartcropperlib;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 
+import java.util.ArrayList;
+
 import me.pqpo.smartcropperlib.utils.CropUtils;
 
 /**

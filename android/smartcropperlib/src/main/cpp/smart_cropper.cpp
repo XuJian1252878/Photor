@@ -3,8 +3,8 @@
 //
 #include <jni.h>
 #include <string>
-#include <android_utils.h>
-#include <Scanner.h>
+#include "android_utils.h"
+#include "Scanner.h"
 
 static const char* const kClassDocScanner = "me/pqpo/smartcropperlib/SmartCropper";
 
