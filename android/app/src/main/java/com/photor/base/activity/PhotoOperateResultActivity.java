@@ -83,7 +83,7 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
         ImageView iv = findViewById(ivId);
         FileInputStream fis = null;
         try {
-            fis = new FileInputStream(resImgPath);
+            fis = new FileInputStream(imgPath);
             Bitmap bitmap = BitmapFactory.decodeStream(fis);
             iv.setImageBitmap(bitmap);
         } catch (FileNotFoundException e) {
