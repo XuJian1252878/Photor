@@ -19,11 +19,15 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.photor.R;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 import com.xinlan.imageeditlibrary.editimage.utils.BitmapUtils;
 import com.xinlan.imageeditlibrary.picchooser.SelectPictureActivity;
 
 import java.io.File;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 public class ImageEditActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -59,7 +63,7 @@ public class ImageEditActivity extends AppCompatActivity implements View.OnClick
         imageWidth = metrics.widthPixels;
         imageHeight = metrics.heightPixels;
 
-        imgView = (ImageView) findViewById(R.id.img);
+        imgView = (ImageView) findViewById(R.id.img_edit_preview);
         openAblum = findViewById(R.id.select_ablum);
         editImage = findViewById(R.id.edit_image);
         openAblum.setOnClickListener(this);
@@ -99,14 +103,28 @@ public class ImageEditActivity extends AppCompatActivity implements View.OnClick
      * 请求拍照权限
      */
     private void requestTakePhotoPermissions() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA,Manifest.permission.READ_EXTERNAL_STORAGE},
-                    REQUEST_PERMISSON_CAMERA);
-            return;
-        }
-        doTakePhoto();
+        new RxPermissions(this).request(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE)
+                .subscribe(new Observer<Boolean>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+                        doTakePhoto();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     /**

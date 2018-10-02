@@ -35,5 +35,6 @@ typedef struct {
 int doTransforms(Bitmap* bitmap, int doRed, int doGreen, int doBlue);
 void flipHorizontally(Bitmap* bitmap, int doRed, int doGreen, int doBlue);
 int rotate90(Bitmap* bitmap, int doRed, int doGreen, int doBlue);
+void rotate180(Bitmap* bitmap, int doRed, int doGreen, int doBlue);
 
 #endif
