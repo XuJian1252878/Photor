@@ -17,11 +17,9 @@ import android.widget.Toast;
 
 import com.example.file.FileUtils;
 import com.example.media.MediaManager;
-import com.example.media.image.imagecapture.ImageCaptureManager;
 import com.photor.R;
 import com.photor.widget.TipToast;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
@@ -104,7 +102,7 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
         displayPhotoInImageView(R.id.operate_result_iv, resImgPath);
 
         // 3. 绑定 保存 和 删除图片按钮的事件
-        findViewById(R.id.operate_res_btn).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.save_operate_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 isSavedOperateRes = true;

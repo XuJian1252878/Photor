@@ -17,35 +17,65 @@
 
     <LinearLayout
         android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="@dimen/sub_medium_spacing"
+        android:background="@color/bottom_navigation_tabs_77"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
+        android:layout_height="@dimen/height_bottombar">
 
-        <Button
-            android:id="@+id/operate_res_btn"
+        <Space
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:text="@string/photo_res_save_btn_label"/>
-
-        <Button
-            android:id="@+id/operate_crop_btn"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:text="@string/photo_crop_btn_label"
             android:layout_height="match_parent" />
 
-        <Button
-            android:id="@+id/delete_operate_res_btn"
+        <ImageButton
+            android:id="@+id/save_operate_btn"
+            android:src="@drawable/ic_save"
+            android:scaleType="fitCenter"
+            android:background="#00000000"
+            android:layout_width="30dp"
+            android:layout_height="30dp"/>
+        <Space
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:text="@string/photo_res_delete_btn_label"/>
+            android:layout_height="match_parent" />
+
+        <ImageButton
+            android:id="@+id/operate_crop_btn"
+            android:src="@drawable/ic_crop"
+            android:scaleType="fitCenter"
+            android:background="#00000000"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+        <Space
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <ImageButton
+            android:id="@+id/image_exif_btn"
+            android:src="@drawable/ic_information"
+            android:scaleType="fitCenter"
+            android:background="#00000000"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+        <Space
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <ImageButton
+            android:id="@+id/delete_operate_res_btn"
+            android:src="@drawable/ic_delete"
+            android:scaleType="fitCenter"
+            android:background="#00000000"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+
+        <Space
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
