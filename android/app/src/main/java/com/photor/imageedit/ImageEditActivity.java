@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.file.FileUtils;
 import com.photor.R;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;

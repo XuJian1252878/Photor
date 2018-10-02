@@ -21,7 +21,7 @@
         android:padding="@dimen/sub_medium_spacing"
         android:background="@color/bottom_navigation_tabs_77"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_bottombar">
+        android:layout_height="?attr/actionBarSize">
 
         <Space
             android:layout_weight="1"
