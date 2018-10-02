@@ -32,4 +32,6 @@
     <string name="sky_ground_align_save_failed">图片文件保存失败！</string>
     <string name="image_scanner_label">图片信息扫描</string>
 
+    <string name="image_edit_enter_label">图片编辑</string>
+
 </resources>

@@ -22,6 +22,7 @@ import com.photor.home.dofcalculator.activity.DofCalcMainActivity;
 import com.photor.home.exposure.ExposureBaseActivity;
 import com.photor.home.scanner.ImageScannerActivity;
 import com.photor.home.staralign.StarAlignBaseActivity;
+import com.photor.imageedit.ImageEditActivity;
 
 /**
  * Created by xujian on 2018/2/26.
@@ -91,6 +92,14 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 startImageScanner();
+            }
+        });
+
+        // 测试图片编辑功能
+        rootView.findViewById(R.id.image_edit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startImageEdit();
             }
         });
 
@@ -166,5 +175,10 @@ public class HomeFragment extends Fragment {
     // 启动图片扫描器操作
     private void startImageScanner() {
         startActivity(new Intent(getActivity(), ImageScannerActivity.class));
+    }
+
+    // 启动图片编辑器操作
+    private void startImageEdit() {
+        startActivity(new Intent(getActivity(), ImageEditActivity.class));
     }
 }

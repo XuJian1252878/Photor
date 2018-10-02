@@ -166,6 +166,7 @@ android {
                     'src/main/res/home/exposure',
                     'src/main/res/home/scanner',
                     'src/main/res/camera',
+                    'src/main/res/imageedit',
             ]
         }
     }
@@ -219,6 +220,7 @@ dependencies {
     // 引入图拍呢扫描器的依赖
     api project(':smartcameralib')
     api project(':smartcropperlib')
+    api project(':imageeditlibrary')
     api project(':openCVLibrary341')
 
     // 引入rxjava
