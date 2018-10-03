@@ -6,6 +6,7 @@ import com.example.media.GpsUtil;
 import com.orhanobut.logger.Logger;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 public class MediaExifHelper {
 
@@ -72,13 +73,22 @@ public class MediaExifHelper {
         return null;
     }
 
-    public static void getExifInfo(String imagePath) {
+    public static String getExifInfo(String imagePath) {
+
+        DecimalFormat decimalFormat = new DecimalFormat("##0.000");
+
+        String nullValue = "无";
+
+        StringBuilder stringBuilder = new StringBuilder();
         try {
             ExifInterface exifInterface = new ExifInterface(imagePath);
 
             String guangquan = exifInterface.getAttribute(ExifInterface.TAG_APERTURE);
             String shijian = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
+
             String baoguangshijian = exifInterface.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
+            baoguangshijian = decimalFormat.format(Double.valueOf(baoguangshijian));
+
             String jiaoju = exifInterface.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
             String chang = exifInterface.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
             String kuan = exifInterface.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
@@ -104,26 +114,26 @@ public class MediaExifHelper {
             double lat = score2dimensionality(latitude);
             double lon = score2dimensionality(longitude);
 
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("光圈 = " + guangquan+"\n")
-                    .append("时间 = " + shijian+"\n")
-                    .append("曝光时长 = " + baoguangshijian+"\n")
-                    .append("焦距 = " + jiaoju+"\n")
-                    .append("长 = " + chang+"\n")
-                    .append("宽 = " + kuan+"\n")
-                    .append("型号 = " + moshi+"\n")
-                    .append("制造商 = " + zhizaoshang+"\n")
-                    .append("ISO = " + iso+"\n")
-                    .append("角度 = " + jiaodu+"\n")
-                    .append("白平衡 = " + baiph+"\n")
-                    .append("海拔高度 = " + altitude_ref+"\n")
-                    .append("GPS参考高度 = " + altitude+"\n")
-                    .append("GPS时间戳 = " + timestamp+"\n")
-                    .append("GPS定位类型 = " + processing_method+"\n")
-                    .append("GPS参考经度 = " + latitude_ref+"\n")
-                    .append("GPS参考纬度 = " + longitude_ref+"\n")
-                    .append("GPS经度 = " + lat+"\n")
-                    .append("GPS经度 = " + lon+"\n");
+            stringBuilder.append("光圈 = " + (guangquan == null ? nullValue : guangquan) + "\n")
+                    .append("时间 = " + (shijian == null ? nullValue : shijian) + "\n")
+                    .append("曝光时长 = " + (baoguangshijian == null ? nullValue : baoguangshijian) + "\n")
+                    .append("焦距 = " + (jiaoju == null ? nullValue : jiaoju) + "\n")
+                    .append("长 = " + (chang == null ? nullValue : chang) + "\n")
+                    .append("宽 = " + (kuan == null ? nullValue : kuan) + "\n")
+                    .append("型号 = " + (moshi == null ? nullValue :moshi) + "\n")
+                    .append("制造商 = " + (zhizaoshang == null ? nullValue : zhizaoshang) + "\n")
+                    .append("ISO = " + (iso == null ? nullValue : iso) + "\n")
+                    .append("角度 = " + (jiaodu == null ? nullValue : jiaodu) + "\n")
+                    .append("白平衡 = " + (baiph == null ? nullValue : baiph) + "\n")
+                    .append("海拔高度 = " + (altitude_ref == null ? nullValue : altitude_ref) + "\n")
+                    .append("GPS参考高度 = " + (altitude == null ? nullValue : altitude) + "\n")
+                    .append("GPS时间戳 = " + (timestamp == null ? nullValue : timestamp) + "\n")
+                    .append("GPS定位类型 = " + (processing_method == null ? nullValue : processing_method) + "\n")
+                    .append("GPS参考经度 = " + (latitude_ref == null ? nullValue : latitude_ref) + "\n")
+                    .append("GPS参考纬度 = " + (longitude_ref == null ? nullValue : longitude_ref) + "\n")
+//                    .append("GPS经度 = " + (lat == null ? nullValue : lat) + "\n")
+//                    .append("GPS经度 = " + (lon == null ? nullValue : lon) +"\n")
+            ;
 
             /**
              * 将wgs坐标转换成百度坐标
@@ -134,6 +144,8 @@ public class MediaExifHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return stringBuilder.toString();
 
     }
 

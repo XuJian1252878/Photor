@@ -84,7 +84,7 @@
 
 
                 <LinearLayout
-                    android:gravity="center"
+                    android:gravity="center_horizontal"
                     android:orientation="horizontal"
                     android:background="@color/transparent_background"
                     android:layout_width="match_parent"
@@ -107,8 +107,9 @@
                         <com.allen.library.SuperTextView
                             android:id="@+id/image_exif_detail_tv"
                             android:layout_width="match_parent"
-                            android:layout_height="80dp"
+                            android:layout_height="wrap_content"
                             android:padding="@dimen/alternate_half_margin"
+                            android:lineSpacingMultiplier="1.5"
                             stv:sLeftTopTextSize="@dimen/sub_big_text"
                             stv:sUseRipple="true"
                             stv:sDividerLineType="none"
