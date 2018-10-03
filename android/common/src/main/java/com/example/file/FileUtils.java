@@ -9,9 +9,13 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -254,6 +258,29 @@ public class FileUtils {
         return tempImgPath;
     }
 
+    public static boolean saveFileByByte(String path, byte[] data) {
+        // Bitmaps do not include metadata, so if you use Bitmap you will lose it.
+        // You can save to file the byte[] array directly
+        try {
+            OutputStream os = new FileOutputStream(path);
+            InputStream is = new ByteArrayInputStream(data);
+
+            byte[] buff = new byte[1024];
+            int len = 0;
+
+            while ((len = is.read(buff)) != -1) {
+                os.write(buff, 0, len);
+            }
+            is.close();
+            os.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
 
     public static boolean saveImgBitmap(String path, Bitmap bitmap) {
         File file = new File(path);

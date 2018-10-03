@@ -3,6 +3,7 @@ package com.example.media.image;
 import android.media.ExifInterface;
 
 import com.example.media.GpsUtil;
+import com.orhanobut.logger.Logger;
 
 import java.io.IOException;
 
@@ -19,6 +20,57 @@ public class MediaExifHelper {
         return 0;
     }
 
+    public static String getPhotoTokenDate(String imagePath) {
+        try {
+            ExifInterface exifInterface = new ExifInterface(imagePath);
+            String photoTokenTime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
+            return photoTokenTime == null ? "无" : photoTokenTime;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 返回原始的exif信息
+     * @param imagePath
+     * @return
+     */
+    public static ExifInterface getOriExifInfo(String imagePath) {
+        ExifInterface exifInterface = null;
+        try {
+            exifInterface = new ExifInterface(imagePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Logger.d(e.getMessage());
+        }
+        return exifInterface;
+    }
+
+    public static String getExifLocation(String imagePath) {
+        try {
+            ExifInterface exifInterface = new ExifInterface(imagePath);
+            String latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+            String longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+
+            if (latitude == null || longitude == null) {
+                return "无";
+            }
+
+            //转换经纬度格式
+            double lat = score2dimensionality(latitude);
+            double lon = score2dimensionality(longitude);
+            /**
+             * 将wgs坐标转换成百度坐标
+             * 就可以用这个坐标通过百度SDK 去获取该经纬度的地址描述
+             */
+            double[] wgs2bd = GpsUtil.wgs2bd(lat, lon);
+            return String.valueOf(wgs2bd[0]) + "," + String.valueOf(wgs2bd[1]);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public static void getExifInfo(String imagePath) {
         try {

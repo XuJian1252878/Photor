@@ -309,7 +309,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
      * 拍照操作结束时候的操作
      * @param jpeg
      */
-    private void onPicture(byte[] jpeg) {
+    private void onPicture(final byte[] jpeg) {
         mCapturingPicture = false;
         long callbackTime = System.currentTimeMillis();
         if (mCapturingVideo) {
@@ -333,7 +333,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onBitmapReady(Bitmap bitmap) {
                 // 存储Bitmap信息到手机内存
-                FileUtils.saveImgBitmap(resImgPath, bitmap);
+                FileUtils.saveFileByByte(resImgPath, jpeg);
                 CameraOperator.builder()
                         .setCameraResImgPath(resImgPath)
                         .start(CameraFragment.this.getActivity());

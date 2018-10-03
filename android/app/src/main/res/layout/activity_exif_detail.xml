@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CoordinatorLayout 监听其所有子控件的各种事件，然后自动帮我们做出最合理的响应 -->
+<android.support.design.widget.CoordinatorLayout
+    app:layout_insetEdge="bottom"
+    xmlns:stv="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <include layout="@layout/toolbar_main" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:scaleType="fitCenter"
+                        android:background="@color/transparent_background"
+                        android:src="@drawable/ic_exif_date"
+                        android:layout_margin="@dimen/alternate_half_margin"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp" />
+
+                    <!-- 照片日期相关信息 -->
+                    <com.allen.library.SuperTextView
+                        android:id="@+id/image_exif_date_tv"
+                        android:layout_width="match_parent"
+                        android:padding="@dimen/alternate_half_margin"
+                        android:layout_height="80dp"
+                        stv:sLeftTopTextSize="@dimen/sub_big_text"
+                        stv:sUseRipple="true"
+                        stv:sDividerLineType="none"
+                        stv:sLeftTopTextString="@string/image_exif_date_label"
+                        stv:sLeftViewGravity="left_center"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:scaleType="fitCenter"
+                        android:background="@color/transparent_background"
+                        android:src="@drawable/ic_exif_location"
+                        android:layout_margin="@dimen/alternate_half_margin"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp" />
+
+                    <!-- 位置相关信息 -->
+                    <com.allen.library.SuperTextView
+                        android:id="@+id/image_exif_location_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:padding="@dimen/alternate_half_margin"
+                        stv:sDividerLineType="none"
+                        stv:sUseRipple="true"
+                        stv:sLeftTopTextString="@string/image_exif_location_label"
+                        stv:sLeftTopTextSize="@dimen/sub_big_text"
+                        stv:sLeftViewGravity="left_center" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:background="@color/transparent_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:scaleType="fitCenter"
+                        android:background="@color/transparent_background"
+                        android:src="@drawable/ic_exif_detail"
+                        android:layout_margin="@dimen/alternate_half_margin"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <com.allen.library.SuperTextView
+                            android:id="@+id/image_exif_detail_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="80dp"
+                            android:padding="@dimen/alternate_half_margin"
+                            stv:sLeftTopTextSize="@dimen/sub_big_text"
+                            stv:sUseRipple="true"
+                            stv:sDividerLineType="none"
+                            stv:sLeftTopTextString="@string/image_exif_detail_label"
+                            stv:sLeftViewGravity="left_center" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

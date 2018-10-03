@@ -435,4 +435,6 @@
     <color name="bottom_navigation_tabs">#70ffffff</color>
 
     <color name="bottom_navigation_tabs_77">#77AAAAAA</color>
+
+    <color name="transparent_background">#00000000</color>
 </resources>

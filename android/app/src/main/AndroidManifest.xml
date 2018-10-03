@@ -93,6 +93,9 @@
             android:windowSoftInputMode="adjustPan">
         </activity>
 
+        <!-- 显示照片 exif 信息 -->
+        <activity android:name=".base.activity.PhotoExifDetailActivity" />
+
         <!-- 公共组件，图片选择器界面 -->
         <activity android:name="com.example.photopicker.PhotoPickerActivity" />
         <activity android:name="com.example.photopicker.PhotoPagerActivity" />

@@ -28,6 +28,7 @@ import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_OPERATE_RE
 public class PhotoOperateResultActivity extends AppCompatActivity {
 
     public final static int REQUEST_IMAGE_CROP_FILE_PATH = 789;
+    public final static int REQUEST_IMAGE_EXIF_INFO = 1011;
 
     public final static String EXTRA_CROP_IMG_RES_PATH = "EXTRA_CROP_IMG_RES_PATH";
     public String cropImgResPath = null;
@@ -36,8 +37,9 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
     private String resImgPath = null;
     private ImageView resImageView;
 
+    public final static String EXTRA_IS_SAVED_CROP_RES = "EXTRA_IS_SAVED_CROP_RES";
 
-    private volatile boolean isSavedOperateRes = false;  // 表示用户是否已经存储了 图片对齐的结果
+    private volatile boolean isSavedOperateRes = false;  // 表示用户是否已经存储了 图片对齐的结果(用户意图角度来说的，实际上在上一个Activity中已经存储了图片信息)
     private volatile boolean isSavedCropRes = false; // 表示用户是否已经成功进行了图片裁剪操作
 
     @Override
@@ -179,6 +181,19 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_IMAGE_CROP_FILE_PATH);
             }
         });
+
+        // 5. 图片详情的响应事件
+        findViewById(R.id.image_exif_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.putExtra(EXTRA_CROP_IMG_RES_PATH, cropImgResPath);
+                intent.putExtra(EXTRA_ORI_IMG_PATH, resImgPath);
+                intent.putExtra(EXTRA_IS_SAVED_CROP_RES, isSavedCropRes);
+                intent.setClass(PhotoOperateResultActivity.this, PhotoExifDetailActivity.class);
+                startActivityForResult(intent, REQUEST_IMAGE_EXIF_INFO);
+            }
+        });
     }
 
 
@@ -197,6 +212,15 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
                     isSavedCropRes = true;
                     // 说明已经进行了裁剪操作，将要在界面上显示裁剪之后的图片信息
                     displayPhotoInImageView(R.id.operate_result_iv, cropImgResPath);
+                }
+                break;
+            case REQUEST_IMAGE_EXIF_INFO:
+                resImgPath = data.getStringExtra(EXTRA_ORI_IMG_PATH);
+                cropImgResPath = data.getStringExtra(EXTRA_CROP_IMG_RES_PATH);
+                if (isSavedCropRes) {
+                    displayPhotoInImageView(R.id.operate_result_iv, cropImgResPath);
+                } else {
+                    displayPhotoInImageView(R.id.operate_result_iv, resImgPath);
                 }
                 break;
             default:

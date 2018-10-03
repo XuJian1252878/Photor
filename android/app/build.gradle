@@ -215,6 +215,9 @@ dependencies {
     // 引入视频播放器
     implementation 'cn.jzvd:jiaozivideoplayer:6.3.1'
 
+    // 引入富文本框信息
+    implementation 'com.github.lygttpod:SuperTextView:2.1.8'
+
     implementation project(':photopicker')
 
     // 引入图拍呢扫描器的依赖
