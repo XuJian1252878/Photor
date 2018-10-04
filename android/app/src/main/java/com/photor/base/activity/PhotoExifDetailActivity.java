@@ -1,22 +1,15 @@
 package com.photor.base.activity;
 
 import android.content.Intent;
-import android.media.ExifInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.TextView;
 
 import com.allen.library.SuperTextView;
 import com.example.media.image.MediaExifHelper;
-import com.orhanobut.logger.Logger;
 import com.photor.R;
-
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_CROP_IMG_RES_PATH;
 import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_IS_SAVED_CROP_RES;
@@ -53,7 +46,6 @@ public class PhotoExifDetailActivity extends AppCompatActivity {
         isSavedCropRes = data.getBooleanExtra(EXTRA_IS_SAVED_CROP_RES, false);
         targetImgPath = !isSavedCropRes ? oriImgPath : cropImgResPath;
 
-        MediaExifHelper.getExifInfo(targetImgPath);
 
         // 设置时间
         exifDateTv = findViewById(R.id.image_exif_date_tv);
