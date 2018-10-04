@@ -13,21 +13,21 @@ import com.photor.R;
  * Created by xujian on 2018/2/26.
  */
 
-public class ResourceFragment extends Fragment {
+public class AlbumFragment extends Fragment {
 
-    public static ResourceFragment newInstance() {
-        ResourceFragment resourceFragment = new ResourceFragment();
+    public static AlbumFragment newInstance() {
+        AlbumFragment albumFragment = new AlbumFragment();
 
         Bundle args = new Bundle();
-        resourceFragment.setArguments(args);
+        albumFragment.setArguments(args);
 
-        return resourceFragment;
+        return albumFragment;
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_resource, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_album, container, false);
         return rootView;
     }
 }

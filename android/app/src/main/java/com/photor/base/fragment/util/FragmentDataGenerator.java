@@ -2,16 +2,11 @@ package com.photor.base.fragment.util;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 
-import com.orhanobut.logger.Logger;
+import com.photor.base.fragment.AlbumFragment;
 import com.photor.base.fragment.CameraFragment;
 import com.photor.base.fragment.GalleryFragment;
 import com.photor.base.fragment.HomeFragment;
-import com.photor.base.fragment.ResourceFragment;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by xujian on 2018/2/26.
@@ -61,13 +56,13 @@ public class FragmentDataGenerator {
 
 
         if (position == BottomNavigationEnum.RESOURCE.getNavItemIndex()) {
-            ResourceFragment resourceFragment = (ResourceFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.RESOURCE.getTag());
-            if (resourceFragment == null) {
-                resourceFragment = ResourceFragment.newInstance();
-//                fragmentTransaction.add(resourceFragment, BottomNavigationEnum.RESOURCE.getTag()).commit();
+            AlbumFragment albumFragment = (AlbumFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.RESOURCE.getTag());
+            if (albumFragment == null) {
+                albumFragment = AlbumFragment.newInstance();
+//                fragmentTransaction.add(albumFragment, BottomNavigationEnum.RESOURCE.getTag()).commit();
             }
 //            fragmentManager.executePendingTransactions();
-            return resourceFragment;
+            return albumFragment;
         }
 
         if (position == BottomNavigationEnum.CAMERA.getNavItemIndex()) {

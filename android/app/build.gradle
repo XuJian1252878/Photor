@@ -160,6 +160,7 @@ android {
         main {
             res.srcDirs = [
                     'src/main/res',
+                    'src/main/res/album',
                     'src/main/res/home',
                     'src/main/res/home/staralign',
                     'src/main/res/home/dof',
@@ -220,7 +221,7 @@ dependencies {
 
     implementation project(':photopicker')
 
-    // 引入图拍呢扫描器的依赖
+    // 引入依赖android模块信息
     api project(':smartcameralib')
     api project(':smartcropperlib')
     api project(':imageeditlibrary')
@@ -231,6 +232,15 @@ dependencies {
 
     // This library allows the usage of RxJava with the new Android M permission model.
     implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
+
+    // 引入 android 图标信息
+    //the core iconcis library (without any widgets)
+    implementation "com.mikepenz:iconics-core:2.8.4"
+    //this adds all ui view widgets (IconicsButton, IconicsImageView, ...)
+    implementation 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
+    implementation 'com.mikepenz:community-material-typeface:1.5.54.2@aar'
+    implementation 'com.mikepenz:fontawesome-typeface:4.6.0.1@aar'
+    implementation 'com.mikepenz:ionicons-typeface:+@aar'
 }
 
 // Run this once to be able to run the application with BUCK

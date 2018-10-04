@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.photor.R;
 import com.photor.base.View.MainAcitvityViewPager;
+import com.photor.base.activity.BaseActivity;
 import com.photor.base.adapters.MainViewPagerAdapter;
 import com.photor.base.fragment.util.BottomNavigationEnum;
 import com.photor.base.fragment.util.FragmentDataGenerator;
@@ -31,7 +32,7 @@ import java.util.List;
 import q.rorbin.badgeview.Badge;
 import q.rorbin.badgeview.QBadgeView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private BottomNavigationViewEx mBottomNavigationView;
     private DrawerLayout mDrawerLayout;

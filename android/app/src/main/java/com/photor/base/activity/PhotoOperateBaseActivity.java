@@ -24,7 +24,7 @@ import java.util.List;
  * 作为图像分割、曝光合成、景深合成的公共Activity父类
  */
 
-public class PhotoOperateBaseActivity extends AppCompatActivity {
+public class PhotoOperateBaseActivity extends BaseActivity {
 
 
     protected PhotoAdapter photoAdapter;
