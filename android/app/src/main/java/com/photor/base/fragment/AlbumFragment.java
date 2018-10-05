@@ -28,8 +28,10 @@ import com.photor.album.entity.Media;
 import com.photor.album.entity.SortingMode;
 import com.photor.album.entity.comparator.MediaComparators;
 import com.photor.album.provider.StorageProvider;
+import com.photor.album.utils.Measure;
 import com.photor.album.utils.PreferenceUtil;
 import com.photor.album.views.CustomScrollBarRecyclerView;
+import com.photor.album.views.GridSpacingItemDecoration;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.lang.ref.WeakReference;
@@ -59,6 +61,9 @@ public class AlbumFragment extends Fragment {
     private AlbumFragment albumFragment;
 
     private boolean firstLaunch = true; // 记录当前是否第一次加载
+
+    private GridSpacingItemDecoration rvAlbumsDecoration;
+    private GridSpacingItemDecoration rvMediaDecoration;
 
     // 以全部模式显示照片时
     public boolean all_photos = false;  // true 以照片模式显示当前的图片
@@ -212,10 +217,14 @@ public class AlbumFragment extends Fragment {
 
         // 设置相册显示的网格信息
         int spanCount = columnsCount();
+        rvAlbumsDecoration = new GridSpacingItemDecoration(spanCount, Measure.pxToDp(3, getActivity().getApplicationContext()), true);
+        rvAlbums.addItemDecoration(rvAlbumsDecoration);
         rvAlbums.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
 
         // 设置照片显示的网格信息
         spanCount = mediaCount();
+        rvMediaDecoration = new GridSpacingItemDecoration(spanCount, Measure.pxToDp(3, getActivity().getApplicationContext()), true);
+        rvMedia.addItemDecoration(rvMediaDecoration);
         rvMedia.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
     }
 

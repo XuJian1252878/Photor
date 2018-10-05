@@ -18,10 +18,10 @@ import static com.photor.album.entity.FilterMode.ALL;
 
 public class Album {
 
-    private String name = null;
-    private String path = null;
+    private String name = null;  // 相册的名称
+    private String path = null;  // 相册的路径名称
     private long id = -1;
-    private int count = -1;
+    private int count = -1;  // 相册内文件的个数
     private int currentMediaIndex = 0;
 
     private boolean selected = false;
