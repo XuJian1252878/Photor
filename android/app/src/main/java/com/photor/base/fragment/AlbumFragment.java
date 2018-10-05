@@ -196,10 +196,22 @@ public class AlbumFragment extends Fragment {
         rvMedia.setHasFixedSize(true);
         rvMedia.setItemAnimator(new DefaultItemAnimator());
 
+        // 设置相册显示的网格信息
+        int spanCount = columnsCount();
+        rvAlbumsDecoration = new GridSpacingItemDecoration(spanCount, Measure.pxToDp(3, getActivity().getApplicationContext()), true);
+        rvAlbums.addItemDecoration(rvAlbumsDecoration);
+        rvAlbums.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
+
         albumsAdapter = new AlbumsAdapter(getAlbums().dispAlbums, AlbumFragment.this.getContext());
         rvAlbums.setAdapter(albumsAdapter);
 
         // 初始化相片显示信息
+        // 设置照片显示的网格信息
+        spanCount = mediaCount();
+        rvMediaDecoration = new GridSpacingItemDecoration(spanCount, Measure.pxToDp(3, getActivity().getApplicationContext()), true);
+        rvMedia.addItemDecoration(rvMediaDecoration);
+        rvMedia.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
+
         mediaAdapter = new MediaAdapter(getAlbum().getMedia(), AlbumFragment.this.getContext());
         rvMedia.setAdapter(mediaAdapter);
 
@@ -214,18 +226,6 @@ public class AlbumFragment extends Fragment {
             }
         };
         swipeRefreshLayout.setOnRefreshListener(refreshListener);
-
-        // 设置相册显示的网格信息
-        int spanCount = columnsCount();
-        rvAlbumsDecoration = new GridSpacingItemDecoration(spanCount, Measure.pxToDp(3, getActivity().getApplicationContext()), true);
-        rvAlbums.addItemDecoration(rvAlbumsDecoration);
-        rvAlbums.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
-
-        // 设置照片显示的网格信息
-        spanCount = mediaCount();
-        rvMediaDecoration = new GridSpacingItemDecoration(spanCount, Measure.pxToDp(3, getActivity().getApplicationContext()), true);
-        rvMedia.addItemDecoration(rvMediaDecoration);
-        rvMedia.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
     }
 
     /**
