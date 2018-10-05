@@ -14,6 +14,10 @@ import java.util.ArrayList;
 
 public class MediaStoreProvider {
 
+    public static ArrayList<Album> getAlbums(Context context, boolean hidden) {
+        return getAlbums(context);
+    }
+
     // 获得相册列表信息（每一个相册当前只包含一个作为封皮的相册文件）
     public static ArrayList<Album> getAlbums(Context context) {
 

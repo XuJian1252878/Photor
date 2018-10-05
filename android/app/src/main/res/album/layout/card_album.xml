@@ -32,7 +32,7 @@
                 app:iiv_icon="gmd-check"
                 tools:targetApi="lollipop" />
 
-            <org.fossasia.phimpme.gallery.views.SquareImageView
+            <com.photor.album.views.SquareImageView
                 android:id="@+id/album_preview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

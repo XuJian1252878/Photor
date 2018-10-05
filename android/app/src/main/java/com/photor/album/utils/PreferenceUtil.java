@@ -7,6 +7,8 @@ import android.preference.PreferenceManager;
 public class PreferenceUtil {
 
     private static PreferenceUtil instance;
+    // 在一个进程中 SharedPreferences 是单实例
+    // apply 没有返回结果，异步；commit 有返回结果，同步
     private SharedPreferences SP;
 
     private PreferenceUtil(Context mContext) {

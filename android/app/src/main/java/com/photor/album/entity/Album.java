@@ -237,6 +237,10 @@ public class Album {
         return new Media();
     }
 
+    /**
+     * 获得按date 降序排列的 空 album信息
+     * @return
+     */
     public static Album getEmptyAlbum() {
         Album album = new Album();
         album.settings = AlbumSettings.getDefaults();

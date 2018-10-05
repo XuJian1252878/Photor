@@ -1,7 +1,12 @@
 package com.photor.album.adapter;
 
+import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -9,14 +14,32 @@ import android.widget.TextView;
 
 import com.mikepenz.iconics.view.IconicsImageView;
 import com.photor.R;
+import com.photor.album.entity.Album;
+
+import java.util.ArrayList;
 
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder> {
 
+    private ArrayList<Album> albums;
+    private BitmapDrawable placeholder;
+    Context context;
+
+    public AlbumsAdapter(ArrayList<Album> albums, Context context) {
+        this.albums = albums;
+        this.context = context;
+        updateTheme();
+    }
+
+    public void updateTheme() {
+        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.placeholder);
+        this.placeholder = (BitmapDrawable) drawable;
+    }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_album, parent, false);
+        return new ViewHolder(v);
     }
 
     @Override
