@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import com.example.file.FileUtils;
 import com.example.media.MediaManager;
-import com.orhanobut.logger.Logger;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraLogger;
 import com.otaliastudios.cameraview.CameraOptions;
@@ -96,7 +95,6 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         rootView = inflater.inflate(R.layout.fragment_camera, container, false);
 
-        Logger.d("Camera Fragment onCreateView");
         camera = rootView.findViewById(R.id.camera);
         cameraSettingPopupView = new CameraSettingPopupView(getActivity(),
                 CameraFragment.this, rootView);
@@ -458,21 +456,18 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         camera.start();
-        Logger.d("Camera Fragment onResume");
     }
 
     @Override
     public void onPause() {
         super.onPause();
         camera.stop();
-        Logger.d("Camera Fragment onPause");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         camera.destroy();
-        Logger.d("Camera Fragment onDestroy");
     }
 
     private void startVideoRecording() {

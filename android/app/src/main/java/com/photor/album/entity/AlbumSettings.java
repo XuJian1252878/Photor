@@ -18,6 +18,7 @@ public class AlbumSettings {
 
     public static AlbumSettings getSettings(Context context, Album album) {
         CustomAlbumsHelper h = CustomAlbumsHelper.getInstance(context);
+        // 从数据库获得对应album的封面图片路径，排序模式、升序降序等信息
         return h.getSettings(album.getPath());
     }
 

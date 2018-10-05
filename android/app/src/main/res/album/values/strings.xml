@@ -2,4 +2,5 @@
 <resources>
     <string name="there_is_nothing_to_show">There\'s nothing to show!</string>
     <string name="preference_use_alternative_provider">alternative_provider</string>
+    <string name="album_photo_count_html_media">Media</string>
 </resources>

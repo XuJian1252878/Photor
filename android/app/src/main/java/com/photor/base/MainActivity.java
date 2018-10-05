@@ -29,6 +29,7 @@ import org.opencv.android.OpenCVLoader;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
 import q.rorbin.badgeview.Badge;
 import q.rorbin.badgeview.QBadgeView;
 

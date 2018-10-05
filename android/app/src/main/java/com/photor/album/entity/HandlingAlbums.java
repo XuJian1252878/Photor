@@ -59,5 +59,12 @@ public class HandlingAlbums {
     public Album getCurrentAlbum() {
         return dispAlbums.get(current);
     }
+    
+    public void clearSelectedAlbums() {
+        for (Album dispAlbum : dispAlbums)
+            dispAlbum.setSelected(false);
+
+        selectedAlbums.clear();
+    }
 
 }

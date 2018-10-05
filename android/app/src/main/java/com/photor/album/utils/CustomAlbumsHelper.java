@@ -14,6 +14,10 @@ import com.photor.album.entity.SortingOrder;
 import java.io.File;
 import java.util.ArrayList;
 
+
+/**
+ * 存储相册界面相关的配置信息
+ */
 public class CustomAlbumsHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 16;

@@ -238,7 +238,7 @@ public class Album {
     }
 
     /**
-     * 获得按date 降序排列的 空 album信息
+     * 获得按date 降序排列的 空 album信息，并且相册Album的Setting排序信息时默认的
      * @return
      */
     public static Album getEmptyAlbum() {
