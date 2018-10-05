@@ -3,12 +3,16 @@ package com.photor.album.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,20 +75,20 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
         holder.storage.setVisibility(View.INVISIBLE);
         holder.pin.setVisibility(View.INVISIBLE);
 
-        String hexAccentColor = "0x000000";
+        String hexAccentColor = "0xFFFFFF";
 
         RequestOptions requestOptions = new RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .priority(Priority.HIGH)
                 .centerCrop()
                 .error(R.drawable.ic_error)
                 .placeholder(placeholder);
 
-        Glide.with(holder.picture.getContext())
+        Glide.with(context)
                 .asBitmap()
                 .load(f.getUri())
                 .apply(requestOptions)
-                .transition(withCrossFade(R.anim.fade_in))
+//                .transition(withCrossFade(R.anim.fade_in))
                 .into(holder.picture);
 
         holder.name.setTag(a);
@@ -93,14 +97,25 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             holder.selectedIcon.setColor(Color.WHITE);
             holder.selectedIcon.setIcon(CommunityMaterial.Icon.cmd_check);
             holder.selectedIcon.setVisibility(View.VISIBLE);
+            holder.layout.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            holder.picture.setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
         } else {
             holder.picture.clearColorFilter();
             holder.selectedIcon.setVisibility(View.GONE);
+            holder.layout.setBackgroundColor(ColorUtils.setAlphaComponent(Color.rgb(200, 200, 200), 200));
         }
 
         String albumNameHtml = "<i><font color='" + textColor + "'>" + a.getName() + "</font></i>";
         String albumPhotoCountHtml = "<b><font color='" + hexAccentColor + "'>" + a.getCount() + "</font></b>" + "<font " +
                 "color='" + textColor + "'> " + holder.nPhotos.getContext().getString(R.string.album_photo_count_html_media) + "</font>";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            holder.name.setText(Html.fromHtml(albumNameHtml, Html.FROM_HTML_MODE_LEGACY));
+            holder.nPhotos.setText(Html.fromHtml(albumPhotoCountHtml, Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            holder.name.setText(Html.fromHtml(albumNameHtml));
+            holder.nPhotos.setText(Html.fromHtml(albumPhotoCountHtml));
+        }
 
     }
 
@@ -146,5 +161,4 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             storage = (ImageView) itemView.findViewById(R.id.storage_icon);
         }
     }
-
 }

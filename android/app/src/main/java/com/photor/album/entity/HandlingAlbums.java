@@ -7,6 +7,13 @@ import com.photor.album.entity.comparator.AlbumsComparators;
 import com.photor.album.provider.MediaStoreProvider;
 import com.photor.album.utils.PreferenceUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -44,6 +51,16 @@ public class HandlingAlbums {
         sortAlbums();
     }
 
+    public void addAlbum(int position, Album album) {
+        dispAlbums.add(position, album);
+        setCurrentAlbum(album);
+
+    }
+
+    public void setCurrentAlbum(Album album) {
+        current = dispAlbums.indexOf(album);
+    }
+
     public void sortAlbums() {
         Collections.sort(dispAlbums, AlbumsComparators.getComparator(getSortingMode(), getSortingOrder()));
     }
@@ -65,6 +82,52 @@ public class HandlingAlbums {
             dispAlbum.setSelected(false);
 
         selectedAlbums.clear();
+    }
+
+    /**
+     * 从缓存文件中读取手机相册的信息，相册界面刚打开的时候就从之前本地缓存的数据读取相册信息
+     * @param context
+     */
+    public void restoreBackup(Context context) {
+        FileInputStream inStream;
+        try {
+            File f = new File(context.getCacheDir(), backupFile);
+            inStream = new FileInputStream(f);
+            ObjectInputStream objectInputStream = new ObjectInputStream(inStream);
+            // 从缓存文件中获得 dispAlbums
+            dispAlbums = (ArrayList<Album>) objectInputStream.readObject();
+            objectInputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 将相册信息写入本地文件
+     * @param context
+     */
+    public void saveBackup(final Context context) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FileOutputStream outStream;
+                try {
+                    File f = new File(context.getCacheDir(), backupFile);
+                    outStream = new FileOutputStream(f);
+                    ObjectOutputStream objectOutStream = new ObjectOutputStream(outStream);
+                    objectOutStream.writeObject(dispAlbums);
+                    objectOutStream.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 }

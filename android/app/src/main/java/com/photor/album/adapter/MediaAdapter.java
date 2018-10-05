@@ -68,7 +68,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
 
         RequestOptions myOptions = new RequestOptions()
                 .centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .placeholder(placeholder);
         Glide.with(holder.imageView.getContext())
                 .asBitmap()

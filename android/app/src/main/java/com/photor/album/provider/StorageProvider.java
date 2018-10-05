@@ -12,6 +12,11 @@ import java.util.ArrayList;
 
 public class StorageProvider {
 
+    /**
+     * 获得所有的照片文件信息
+     * @param activity
+     * @return
+     */
     public static ArrayList<Media> getAllShownImages(Activity activity) {
         Uri uri;
         Cursor cursor;

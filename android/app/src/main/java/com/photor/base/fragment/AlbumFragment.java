@@ -1,17 +1,23 @@
 package com.photor.base.fragment;
 
+import android.Manifest;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.photor.MainApplication;
 import com.photor.R;
 import com.photor.album.adapter.AlbumsAdapter;
@@ -22,7 +28,9 @@ import com.photor.album.entity.Media;
 import com.photor.album.entity.SortingMode;
 import com.photor.album.entity.comparator.MediaComparators;
 import com.photor.album.provider.StorageProvider;
+import com.photor.album.utils.PreferenceUtil;
 import com.photor.album.views.CustomScrollBarRecyclerView;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -39,6 +47,7 @@ import static com.photor.album.entity.SortingMode.DATE;
 
 public class AlbumFragment extends Fragment {
 
+    private PreferenceUtil SP;
 
     private CustomScrollBarRecyclerView rvAlbums;
     private CustomScrollBarRecyclerView rvMedia;
@@ -47,10 +56,12 @@ public class AlbumFragment extends Fragment {
     private SwipeRefreshLayout.OnRefreshListener refreshListener;
     private boolean albumsMode = true;  // 当前是以 相册模式来显示
     private MediaAdapter mediaAdapter;
-    private AlbumFragment fragmentContext;
+    private AlbumFragment albumFragment;
 
+    private boolean firstLaunch = true; // 记录当前是否第一次加载
 
-    // 以全部的模式显示照片时
+    // 以全部模式显示照片时
+    public boolean all_photos = false;  // true 以照片模式显示当前的图片
     public static ArrayList<Media> listAll;
     public int size;
     private ArrayList<Media> media;
@@ -82,21 +93,59 @@ public class AlbumFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_album, container, false);
         ButterKnife.bind(this, rootView);
 
-        fragmentContext = this;
+        SP = PreferenceUtil.getInstance(this.getContext().getApplicationContext());
+
+        albumFragment = this;
         rvAlbums = rootView.findViewById(R.id.grid_albums);
         rvMedia  = rootView.findViewById(R.id.grid_photos);
 
         initUI();
-        // 加载在纯照片模式下的所有照片信息
+        // 加载在纯照片模式下的所有照片信息（需要存储权限看能读取数据库中的照片信息）
         new InitAllPhotos().execute();
         // 设置每一个相册的默认排序方式
-        new SortModeSet(fragmentContext).execute(DATE);
+        new SortModeSet(albumFragment).execute(DATE);
+        // 进行相册数据的预加载
+        displayData(savedInstanceState);
         // 检查当前可显示的album信息是否为空
         checkNothing();
         // 填充当前已有的album信息
         populateAlbum();
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (all_photos) {
+            // 照片模式下
+            new PrepareAllPhotos(albumFragment).execute();
+            mediaAdapter.notifyDataSetChanged();
+        }
+
+        if (albumsMode) {
+            // 相册模式下
+            new PrepareAlbumTask(albumFragment).execute();
+            albumsAdapter.notifyDataSetChanged();
+        }
+
+        firstLaunch = false;
+    }
+
+    private boolean displayData(Bundle data) {
+        // 初始化加载Album信息
+        displayAlbums(true);
+        return false;
+    }
+
+    private void displayAlbums(boolean reload) {
+        albumsAdapter.swapDataSet(getAlbums().dispAlbums);
+        if (reload) new PrepareAlbumTask(albumFragment).execute();
+        albumsMode = true;
+
+        mediaAdapter.swapDataSet(new ArrayList<Media>(), false);
+        rvMedia.scrollToPosition(0);
     }
 
     /**
@@ -145,17 +194,49 @@ public class AlbumFragment extends Fragment {
         albumsAdapter = new AlbumsAdapter(getAlbums().dispAlbums, AlbumFragment.this.getContext());
         rvAlbums.setAdapter(albumsAdapter);
 
+        // 初始化相片显示信息
+        mediaAdapter = new MediaAdapter(getAlbum().getMedia(), AlbumFragment.this.getContext());
+        rvMedia.setAdapter(mediaAdapter);
+
         //2. 设置下拉刷新事件
         refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 if (albumsMode) {
                     getAlbums().clearSelectedAlbums();
-                    new PrepareAlbumTask(fragmentContext).execute();
+                    new PrepareAlbumTask(albumFragment).execute();
                 }
             }
         };
         swipeRefreshLayout.setOnRefreshListener(refreshListener);
+
+        // 设置相册显示的网格信息
+        int spanCount = columnsCount();
+        rvAlbums.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
+
+        // 设置照片显示的网格信息
+        spanCount = mediaCount();
+        rvMedia.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
+    }
+
+    /**
+     * 显示相册的时候，相册显示的列数（横屏和竖屏的状态下）
+     * @return
+     */
+    public int columnsCount() {
+        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT
+                ? SP.getInt("n_columns_folders", 2)
+                : SP.getInt("n_columns_folders_landscape", 3);
+    }
+
+    /**
+     * 以照片的模式显示的时候，照片显示的列数（横屏和竖屏状态下）
+     * @return
+     */
+    public int mediaCount() {
+        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT
+                ? SP.getInt("n_columns_media", 3)
+                : SP.getInt("n_columns_media_landscape", 4);
     }
 
     private void checkNothing() {
@@ -205,7 +286,9 @@ public class AlbumFragment extends Fragment {
         }
     }
 
-
+    /**
+     * 后台加载全部的相册信息
+     */
     private static class PrepareAlbumTask extends AsyncTask<Void, Integer, Void> {
 
         // 被弱引用关联的对象只能生存到下一次垃圾回收发生之前
@@ -222,7 +305,7 @@ public class AlbumFragment extends Fragment {
             // 开启刷新提示UI
             albumFragmentRef.swipeRefreshLayout.setRefreshing(true);
             // 处于相片浏览模式
-            albumFragmentRef.toggleRecyclersVisibility(false);
+            albumFragmentRef.toggleRecyclersVisibility(true);
             super.onPreExecute();
         }
 
@@ -243,8 +326,91 @@ public class AlbumFragment extends Fragment {
             );
             albumFragment.albList = new ArrayList<>();
             albumFragment.populateAlbum();
-
+            albumFragment.swipeRefreshLayout.setRefreshing(false);
             super.onPostExecute(aVoid);
+        }
+    }
+
+    /**
+     * 加载设备中的全部照片信息
+     */
+    private static class PrepareAllPhotos extends AsyncTask<Void, Void, Void> {
+
+        private WeakReference<AlbumFragment> reference;
+
+        public PrepareAllPhotos(AlbumFragment reference) {
+            this.reference = new WeakReference<>(reference);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            AlbumFragment albumFragment = reference.get();
+            // 设置刷新按钮处于刷新状态
+            albumFragment.swipeRefreshLayout.setRefreshing(true);
+            // 设置当前是属于相片的显示模式
+            albumFragment.toggleRecyclersVisibility(false);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            AlbumFragment albumFragment = reference.get();
+            // 更新当前album下所有的照片文件信息
+            albumFragment.getAlbum().updatePhotos(albumFragment.getContext());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            AlbumFragment albumFragment = reference.get();
+            listAll = StorageProvider.getAllShownImages(albumFragment.getActivity());
+            albumFragment.size = listAll.size();
+            Collections.sort(listAll, MediaComparators.getComparator(albumFragment.getAlbum().settings.getSortingMode(),
+                    albumFragment.getAlbum().settings.getSortingOrder()));
+            // 开始更新照片数据信息
+            albumFragment.mediaAdapter.swapDataSet(listAll, false);
+
+            albumFragment.checkNothing();
+            albumFragment.swipeRefreshLayout.setRefreshing(false);  // 刷新结束
+        }
+    }
+
+    /**
+     * 后台更新某一个文件夹下的照片信息
+     */
+    private static class PreparePhotosTask extends AsyncTask<Void, Void, Void> {
+
+        private WeakReference<AlbumFragment> reference;
+
+        public PreparePhotosTask(AlbumFragment reference) {
+            this.reference = new WeakReference<>(reference);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            AlbumFragment albumFragment = reference.get();
+            albumFragment.swipeRefreshLayout.setRefreshing(true);
+            // 当前是照片显示模式
+            albumFragment.toggleRecyclersVisibility(false);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            // 更新当前相册下的照片信息
+            reference.get().getAlbum().updatePhotos(reference.get().getContext());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            AlbumFragment albumFragment = reference.get();
+            albumFragment.mediaAdapter.swapDataSet(albumFragment.getAlbum().getMedia(), false);
+
+            albumFragment.checkNothing();
+            albumFragment.swipeRefreshLayout.setRefreshing(false);
         }
     }
 }
