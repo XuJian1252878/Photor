@@ -17,42 +17,42 @@
 
         <include layout="@layout/toolbar_main" />
 
-        <LinearLayout
+
+        <!--http://snoykuo.blogspot.com/2018/01/android-bottomnavigationview-bottombar.html -->
+        <!-- https://stackoverflow.com/questions/36332487/move-snackbar-above-the-bottom-bar -->
+        <!-- app:layout_behavior="@string/appbar_scrolling_view_behavior" 这个属性是响应 AppToolBar的滑动响应事件的，可以向外一层层的传递 -->
+        <android.support.design.widget.CoordinatorLayout
+            app:layout_insetEdge="bottom"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:id="@+id/main_coordinatorLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="?attr/actionBarSize"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <!--http://snoykuo.blogspot.com/2018/01/android-bottomnavigationview-bottombar.html -->
-            <!-- https://stackoverflow.com/questions/36332487/move-snackbar-above-the-bottom-bar -->
-            <android.support.design.widget.CoordinatorLayout
-                app:layout_insetEdge="bottom"
-                android:id="@+id/main_coordinatorLayout"
+            <!-- https://stackoverflow.com/questions/32648051/android-coordinatorlayout-appbarlayout-viewpager-always-scrolling -->
+            <com.photor.base.View.MainAcitvityViewPager
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:id="@+id/main_container"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
+                android:layout_height="match_parent">
 
-                <com.photor.base.View.MainAcitvityViewPager
-                    android:id="@+id/main_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+            </com.photor.base.View.MainAcitvityViewPager>
 
-                </com.photor.base.View.MainAcitvityViewPager>
+            <!--<android.support.design.widget.FloatingActionButton-->
+                <!--android:id="@+id/fab"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="bottom|end"-->
+                <!--android:layout_margin="16dp"-->
+                <!--android:src="@drawable/ic_done"-->
+                <!--android:elevation="8dp" />-->
+        </android.support.design.widget.CoordinatorLayout>
 
-                <!--<android.support.design.widget.FloatingActionButton-->
-                    <!--android:id="@+id/fab"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_gravity="bottom|end"-->
-                    <!--android:layout_margin="16dp"-->
-                    <!--android:src="@drawable/ic_done"-->
-                    <!--android:elevation="8dp" />-->
-            </android.support.design.widget.CoordinatorLayout>
-
-            <!--底部菜单栏-->
-            <include layout="@layout/element_bottom_nav"/>
-
-        </LinearLayout>
+        <!--底部菜单栏-->
+        <include
+            android:layout_gravity="bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/element_bottom_nav"/>
 
     </android.support.design.widget.CoordinatorLayout>
 
