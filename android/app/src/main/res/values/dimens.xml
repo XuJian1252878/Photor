@@ -9,6 +9,7 @@
     /* LeafPic dimensions */
 
     <dimen name="height_bottombar">50dp</dimen>
+    <dimen name="height_bottom_bar_2">100dp</dimen>
 
     <!--ICONS-->
     <dimen name="icon_margin">24dp</dimen>

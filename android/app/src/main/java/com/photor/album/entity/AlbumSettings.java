@@ -29,7 +29,7 @@ public class AlbumSettings {
 
     public AlbumSettings(String path, String cover, int sortingMode, int sortingOrder, int pinned) {
         this.path = path;
-        this.coverPath = cover;
+        this.coverPath = cover;  // 相册对应的相册封面信息
         this.sortingMode = sortingMode;
         this.sortingOrder = sortingOrder;
         this.pinned = pinned == 1;

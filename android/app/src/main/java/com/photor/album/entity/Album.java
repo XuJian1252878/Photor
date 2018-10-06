@@ -229,6 +229,11 @@ public class Album {
         return size;
     }
 
+    /**
+     * 如果Album中已经设置了封面信息，那么直接去封面路径
+     * 没有的话，取Album中的第一个Media作为封面路径（最近拍摄的一张照片）
+     * @return
+     */
     public Media getCoverAlbum() {
         if (hasCustomCover())
             return new Media(settings.getCoverPath());
