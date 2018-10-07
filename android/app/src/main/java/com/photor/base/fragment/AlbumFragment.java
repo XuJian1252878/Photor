@@ -29,6 +29,7 @@ import com.photor.album.entity.Album;
 import com.photor.album.entity.HandlingAlbums;
 import com.photor.album.entity.Media;
 import com.photor.album.entity.SortingMode;
+import com.photor.album.entity.SortingOrder;
 import com.photor.album.entity.comparator.MediaComparators;
 import com.photor.album.provider.StorageProvider;
 import com.photor.album.utils.Measure;
@@ -211,7 +212,7 @@ public class AlbumFragment extends Fragment {
             // 之后可以通过 album_name 这个控件取出 album 这个tag
             Album album = (Album) view.findViewById(R.id.album_name).getTag();
             // 设置当前 将要显示的 album详情信息
-            getAlbums().setCurrentAlbum(album);
+            getAlbums().setCurrentAlbum(album);  // 点击某一个相册信息的时候，就将该相册设置为当前默认选中的相册
             displayCurrentAlbumMedia(true);
         }
     };
@@ -389,6 +390,7 @@ public class AlbumFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.sort_action).setVisible(true);
         if (albumsMode) {
             menu.findItem(R.id.all_photos).setVisible(true);
         }
@@ -407,11 +409,205 @@ public class AlbumFragment extends Fragment {
                     displayAlbums();
                 }
                 return true;
+            case R.id.name_sort_action:
+                if (albumsMode) {
+                    // 对相册进行排序时，以 HandlingAlbums 中存储的照片排序信息进行存取，信息存储在SP中
+                    getAlbums().setDefaultSortingMode(SortingMode.NAME);
+                    new SortingUtilsAlbums(albumFragment).execute();
+                } else {
+                    // 设置每一个相册内的照片的排序信息，信息存储在SQL Lite数据库中
+                    new SortModeSet(albumFragment).execute(SortingMode.NAME);
+                    if (!all_photos) {
+                        // 某一个相册内的照片信息
+                        new SortingUtilsPhotos(albumFragment).execute();
+                    } else {
+                        // 全部照片之间的排序信息
+                        new SortingUtilsListAll(albumFragment).execute();
+                    }
+                }
+                item.setChecked(true);
+                return true;
+            case R.id.date_taken_sort_action:
+                if (albumsMode) {
+                    // 对相册进行排序时，以 HandlingAlbums 中存储的照片排序信息进行存取，信息存储在SP中
+                    getAlbums().setDefaultSortingMode(SortingMode.DATE);
+                    new SortingUtilsAlbums(albumFragment).execute();
+                } else {
+                    // 设置每一个相册内的照片的排序信息，信息存储在SQL Lite数据库中
+                    new SortModeSet(albumFragment).execute(SortingMode.DATE);
+                    if (!all_photos) {
+                        // 某一个相册内的照片信息
+                        new SortingUtilsPhotos(albumFragment).execute();
+                    } else {
+                        // 全部照片之间的排序信息
+                        new SortingUtilsListAll(albumFragment).execute();
+                    }
+                }
+                item.setChecked(true);
+                return true;
+            case R.id.size_sort_action:
+                if (albumsMode) {
+                    // 对相册进行排序时，以 HandlingAlbums 中存储的照片排序信息进行存取，信息存储在SP中
+                    getAlbums().setDefaultSortingMode(SortingMode.SIZE);
+                    new SortingUtilsAlbums(albumFragment).execute();
+                } else {
+                    // 设置每一个相册内的照片的排序信息，信息存储在SQL Lite数据库中
+                    new SortModeSet(albumFragment).execute(SortingMode.SIZE);
+                    if (!all_photos) {
+                        // 某一个相册内的照片信息
+                        new SortingUtilsPhotos(albumFragment).execute();
+                    } else {
+                        // 全部照片之间的排序信息
+                        new SortingUtilsListAll(albumFragment).execute();
+                    }
+                }
+                item.setChecked(true);
+                return true;
+//            case R.id.numeric_sort_action:
+//                if (albumsMode) {
+//                    // 对相册进行排序时，以 HandlingAlbums 中存储的照片排序信息进行存取，信息存储在SP中
+//                    getAlbums().setDefaultSortingMode(SortingMode.NUMERIC);
+//                    new SortingUtilsAlbums(albumFragment).execute();
+//                } else {
+//                    // 设置每一个相册内的照片的排序信息，信息存储在SQL Lite数据库中
+//                    new SortModeSet(albumFragment).execute(SortingMode.NUMERIC);
+//                    if (!all_photos) {
+//                        // 某一个相册内的照片信息
+//                        new SortingUtilsPhotos(albumFragment).execute();
+//                    } else {
+//                        // 全部照片之间的排序信息
+//                        new SortingUtilsListAll(albumFragment).execute();
+//                    }
+//                }
+//                item.setChecked(true);
+//                return true;
+            case R.id.ascending_sort_action:
+                if (albumsMode) {
+                    getAlbums().setDefaultSortingAscending(item.isChecked() ? SortingOrder.DESCENDING : SortingOrder.ASCENDING);
+                    new SortingUtilsAlbums(albumFragment).execute();
+                } else {
+                    getAlbum().setDefaultSortingAscending(albumFragment.getContext(),
+                            item.isChecked() ? SortingOrder.DESCENDING : SortingOrder.ASCENDING);
+                    if (!all_photos) {
+                        new SortingUtilsPhotos(albumFragment).execute();
+                    } else {
+                        new SortingUtilsListAll(albumFragment).execute();
+                    }
+                }
+                item.setTitle(!item.isChecked() ? R.string.descending : R.string.ascending);
+                item.setChecked(!item.isChecked());
+                return true;
             default:
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * 设置全部照片的排序信息
+     */
+    private static class SortingUtilsListAll extends AsyncTask<Void, Void, Void> {
+
+        private WeakReference<AlbumFragment> reference;
+
+        public SortingUtilsListAll(AlbumFragment reference) {
+            this.reference = new WeakReference<>(reference);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            AlbumFragment albumFragment = reference.get();
+            albumFragment.swipeRefreshLayout.setRefreshing(true);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            AlbumFragment albumFragment = reference.get();
+            Collections.sort(listAll, MediaComparators.getComparator(
+                    albumFragment.getAlbum().settings.getSortingMode(),
+                    albumFragment.getAlbum().settings.getSortingOrder()
+            ));
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            AlbumFragment albumFragment = reference.get();
+            albumFragment.swipeRefreshLayout.setRefreshing(false);
+            albumFragment.mediaAdapter.swapDataSet(listAll, false);
+            super.onPostExecute(aVoid);
+        }
+    }
+
+    /**
+     * 设置某一个相册下的照片排序信息
+     */
+    private static class SortingUtilsPhotos extends AsyncTask<Void, Void, Void> {
+
+        private WeakReference<AlbumFragment> reference;
+
+        public SortingUtilsPhotos(AlbumFragment reference) {
+            this.reference = new WeakReference<>(reference);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            AlbumFragment albumFragment = reference.get();
+            albumFragment.swipeRefreshLayout.setRefreshing(true);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            AlbumFragment albumFragment = reference.get();
+            albumFragment.getAlbum().sortPhotos();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            AlbumFragment albumFragment = reference.get();
+            albumFragment.swipeRefreshLayout.setRefreshing(false);
+            albumFragment.mediaAdapter.swapDataSet(albumFragment.getAlbum().getMedia(), false);
+            super.onPostExecute(aVoid);
+        }
+    }
+
+    /**
+     * 对全部的相册信息进行排序，相册间的排序信息是存储在SP中的
+     */
+    private static class SortingUtilsAlbums extends AsyncTask<Void, Void, Void> {
+
+        private WeakReference<AlbumFragment> reference;
+
+        public SortingUtilsAlbums(AlbumFragment reference) {
+            this.reference = new WeakReference<>(reference);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            AlbumFragment albumFragment = reference.get();
+            albumFragment.swipeRefreshLayout.setRefreshing(true);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            AlbumFragment albumFragment = reference.get();
+            // 对当前的相册信息进行排序（当前相册的排序信息从SP中读取），排序的字段以及升降序信息之前在SP中就已经设置好了
+            albumFragment.getAlbums().sortAlbums();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            AlbumFragment albumFragment = reference.get();
+            albumFragment.swipeRefreshLayout.setRefreshing(false);
+            super.onPostExecute(aVoid);
+            albumFragment.albumsAdapter.swapDataSet(albumFragment.getAlbums().dispAlbums);
+        }
     }
 
     /**

@@ -10,8 +10,8 @@ public class AlbumSettings {
 
     private String path;
     private String coverPath;
-    private int sortingMode;
-    private int sortingOrder;
+    private int sortingMode;  // 实时记录当前的sortingMode
+    private int sortingOrder;  // 实时记录当前的sortingOrder
     private boolean pinned;
 
     private FilterMode filterMode = FilterMode.ALL;

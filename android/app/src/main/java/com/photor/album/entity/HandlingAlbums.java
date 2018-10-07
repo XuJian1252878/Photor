@@ -73,6 +73,14 @@ public class HandlingAlbums {
         return SortingOrder.fromValue(SP.getInt("albums_sorting_order", SortingOrder.DESCENDING.getValue()));
     }
 
+    public void setDefaultSortingAscending(SortingOrder sortingOrder) {
+        SP.putInt("albums_sorting_order", sortingOrder.getValue());
+    }
+
+    public void setDefaultSortingMode(SortingMode sortingMode) {
+        SP.putInt("albums_sorting_mode", sortingMode.getValue());
+    }
+
     public Album getCurrentAlbum() {
         return dispAlbums.get(current);
     }

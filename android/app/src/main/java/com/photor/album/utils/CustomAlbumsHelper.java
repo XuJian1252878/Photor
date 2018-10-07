@@ -97,6 +97,7 @@ public class CustomAlbumsHelper extends SQLiteOpenHelper {
 
     public AlbumSettings getSettings(String path) {
         SQLiteDatabase db = this.getWritableDatabase();
+        // 如果当前path对应的相册在db中没有对应的消息，那么在数据库中新建一条关于该path的记录
         checkAndCreateAlbum(db, path);
 
         AlbumSettings s = null;

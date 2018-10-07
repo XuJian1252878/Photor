@@ -6,4 +6,12 @@
 
     <string name="local_folder">本地文件</string>
     <string name="all_media">全部照片</string>
+    <string name="sort_menu_title">排序</string>
+
+    <string name="name">名称</string>
+    <string name="date">拍摄时间</string>
+    <string name="size">大小</string>
+    <string name="numeric">数字</string>
+    <string name="ascending">升序</string>
+    <string name="descending">降序</string>
 </resources>

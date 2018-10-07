@@ -339,6 +339,10 @@ public class Album {
         settings.changeSortingMode(context, column);
     }
 
+    public void setDefaultSortingAscending(Context context, SortingOrder sortingOrder) {
+        settings.changeSortingOrder(context, sortingOrder);
+    }
+
 
     public void updatePhotos(Context context) {
         media = getMedia(context);
