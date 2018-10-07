@@ -3,6 +3,7 @@ package com.photor.album.entity;
 import android.content.Context;
 
 import com.photor.R;
+import com.photor.album.adapter.AlbumsAdapter;
 import com.photor.album.entity.comparator.AlbumsComparators;
 import com.photor.album.provider.MediaStoreProvider;
 import com.photor.album.utils.PreferenceUtil;
@@ -88,7 +89,6 @@ public class HandlingAlbums {
     public void clearSelectedAlbums() {
         for (Album dispAlbum : dispAlbums)
             dispAlbum.setSelected(false);
-
         selectedAlbums.clear();
     }
 
@@ -136,6 +136,69 @@ public class HandlingAlbums {
                 }
             }
         });
+    }
+
+    /**
+     * 在album被长按的模式下，记录被选择的albums信息
+     * @param album
+     * @return
+     */
+    public int toggleSelectAlbum(Album album) {
+        return toggleSelectAlbum(dispAlbums.indexOf(album));
+    }
+
+    private int toggleSelectAlbum(int index) {
+        if (dispAlbums.get(index) != null) {
+            dispAlbums.get(index).setSelected(!dispAlbums.get(index).isSelected());
+            if (dispAlbums.get(index).isSelected()) {
+                selectedAlbums.add(dispAlbums.get(index));
+            } else {
+                selectedAlbums.remove(dispAlbums.get(index));
+            }
+        }
+        return index;
+    }
+
+
+    public int getSelectedCount() {
+        return selectedAlbums.size();
+    }
+
+    public int getCurrentAlbumIndex(Album album) {
+        return dispAlbums.indexOf(album);
+    }
+
+    public void selectAllPhotosUpToAlbums(int targetIndex, AlbumsAdapter adapter) {
+        int indexRightBeforeOrAfter = -1;
+        int indexNow;
+        /**
+         * 找出离当前被点击的相册最近的 已选择相册，将最近的 已选择相册 -> targetIndex - 1 相册设置为已经被选择
+         */
+        int minStep = -1;
+        for (Album selectedAlbum: selectedAlbums) {
+            indexNow = dispAlbums.indexOf(selectedAlbum);
+            if (indexRightBeforeOrAfter == -1) {
+                indexRightBeforeOrAfter = indexNow;
+                minStep = Math.abs(indexNow - targetIndex);
+            }
+
+            if (minStep > Math.abs(indexNow - targetIndex)) {
+                indexRightBeforeOrAfter = indexNow;
+                minStep = Math.abs(indexNow - targetIndex);
+            }
+        }
+
+        if (indexRightBeforeOrAfter != -1) {
+            for (int index = Math.min(targetIndex, indexRightBeforeOrAfter) + 1;
+                 index < Math.max(targetIndex, indexRightBeforeOrAfter);
+                 index ++) {
+                if (dispAlbums.get(index) != null && !dispAlbums.get(index).isSelected()) {
+                    dispAlbums.get(index).setSelected(true);
+                    selectedAlbums.add(dispAlbums.get(index));
+                    adapter.notifyItemChanged(index);
+                }
+            }
+        }
     }
 
 }

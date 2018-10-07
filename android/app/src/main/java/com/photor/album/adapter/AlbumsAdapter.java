@@ -97,7 +97,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
             holder.selectedIcon.setColor(Color.WHITE);
             holder.selectedIcon.setIcon(CommunityMaterial.Icon.cmd_check);
             holder.selectedIcon.setVisibility(View.VISIBLE);
-            holder.layout.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            holder.layout.setBackgroundColor(Color.parseColor("#FF33B5E5"));
             holder.picture.setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
         } else {
             holder.picture.clearColorFilter();

@@ -1,10 +1,13 @@
 package com.photor.base.fragment;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -21,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.photor.MainApplication;
 import com.photor.R;
 import com.photor.album.adapter.AlbumsAdapter;
@@ -82,6 +86,11 @@ public class AlbumFragment extends Fragment {
 
     // 应用导航栏信息
     private Toolbar toolbar;
+    private BottomNavigationViewEx navigationView;
+
+    // move to, copy to 这些编辑模式
+    private boolean editMode = false;
+    private boolean hidenav = false;  // 隐藏底部的导航栏
 
 
     @BindView(R.id.swipeRefreshLayout)
@@ -120,6 +129,7 @@ public class AlbumFragment extends Fragment {
 
         toolbar = this.getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle(getResources().getString(R.string.local_folder));
+        navigationView = this.getActivity().findViewById(R.id.bottom_main_navigation);
 
         albumFragment = this;
         rvAlbums = rootView.findViewById(R.id.grid_albums);
@@ -178,6 +188,7 @@ public class AlbumFragment extends Fragment {
         if (reload) new PrepareAlbumTask(albumFragment).execute();
 
         albumsMode = true;  // 相册模式为true
+        editMode = false;
         getActivity().invalidateOptionsMenu();
         mediaAdapter.swapDataSet(new ArrayList<Media>(), false);
         rvMedia.scrollToPosition(0);
@@ -201,9 +212,13 @@ public class AlbumFragment extends Fragment {
             }
         });
         albumsMode = false; // 当前为显示某一个album下的全部照片文件信息，albumMode为false
+        editMode = false;
         getActivity().invalidateOptionsMenu();
     }
 
+    /**
+     * 相册被单击时的事件
+     */
     private View.OnClickListener albumOnClickListener = new View.OnClickListener() {
 
         @Override
@@ -211,9 +226,84 @@ public class AlbumFragment extends Fragment {
             // 在RecyclerView的holder里面 holder.name(album_name).setTag(album);
             // 之后可以通过 album_name 这个控件取出 album 这个tag
             Album album = (Album) view.findViewById(R.id.album_name).getTag();
-            // 设置当前 将要显示的 album详情信息
-            getAlbums().setCurrentAlbum(album);  // 点击某一个相册信息的时候，就将该相册设置为当前默认选中的相册
-            displayCurrentAlbumMedia(true);
+            if (editMode) {
+                albumsAdapter.notifyItemChanged(getAlbums().toggleSelectAlbum(album));
+                if (getAlbums().getSelectedCount() == 0) {
+                    getNavigationBar();
+                }
+                getActivity().invalidateOptionsMenu();
+            } else {
+                // 设置当前 将要显示的 album详情信息
+                getAlbums().setCurrentAlbum(album);  // 点击某一个相册信息的时候，就将该相册设置为当前默认选中的相册
+                displayCurrentAlbumMedia(true);
+            }
+        }
+    };
+
+    /**
+     * Animate bottom navigation bar from GONE to VISIBLE
+     */
+    public void showNavigationBar() {
+        navigationView.animate()
+                .translationY(0)  // 从上往下开始变换
+                .alpha(1.0f)  // 最后的透明度信息
+                .setDuration(400)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        super.onAnimationStart(animation);
+                        navigationView.setVisibility(View.VISIBLE);
+                    }
+                });
+    }
+
+    /**
+     * Animate bottom navigation bar from VISIBLE to GONE
+     */
+    public void hideNavigationBar() {
+        navigationView.animate()
+                .alpha(0.0f)
+                .translationYBy(navigationView.getHeight())
+                .setDuration(400)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        navigationView.setVisibility(View.GONE);
+                    }
+                });
+    }
+
+    /**
+     * 显示底部导航栏
+     */
+    public void getNavigationBar() {
+        if (editMode && hidenav) {
+            showNavigationBar();
+            hidenav = false;
+        }
+    }
+
+    private View.OnLongClickListener albumOnLongCLickListener = new View.OnLongClickListener() {
+
+        @Override
+        public boolean onLongClick(View view) {
+            Album album = (Album) view.findViewById(R.id.album_name).getTag();
+            if (editMode) {
+                // 如果处于编辑模式
+                int currentAlbum = getAlbums().getCurrentAlbumIndex(album);
+                getAlbums().selectAllPhotosUpToAlbums(currentAlbum, albumsAdapter);
+            }
+            albumsAdapter.notifyItemChanged(getAlbums().toggleSelectAlbum(album));
+            editMode = true;
+            getActivity().invalidateOptionsMenu();  // 设置选项菜单无效
+            if (getAlbums().getSelectedCount() == 0) {
+                getNavigationBar();
+            } else {
+                hideNavigationBar();
+                hidenav = true;
+            }
+            return false;
         }
     };
 
@@ -268,6 +358,7 @@ public class AlbumFragment extends Fragment {
 
         albumsAdapter = new AlbumsAdapter(getAlbums().dispAlbums, getActivity());
         albumsAdapter.setOnClickListener(albumOnClickListener);
+        albumsAdapter.setOnLongClickListener(albumOnLongCLickListener);
         rvAlbums.setAdapter(albumsAdapter);
 
         // 初始化相片显示信息
@@ -285,6 +376,7 @@ public class AlbumFragment extends Fragment {
             @Override
             public void onRefresh() {
                 if (albumsMode) {
+                    editMode = false;
                     // 说明是以相册模式来浏览照片
                     getAlbums().clearSelectedAlbums();
                     new PrepareAlbumTask(albumFragment).execute();
@@ -385,6 +477,7 @@ public class AlbumFragment extends Fragment {
             }
         });
         albumsMode = false;  // 当前不是以相册模式来显示照片
+        editMode = false;
         getActivity().invalidateOptionsMenu();
     }
 
@@ -392,6 +485,7 @@ public class AlbumFragment extends Fragment {
     public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.sort_action).setVisible(true);
         if (albumsMode) {
+            editMode = getAlbums().getSelectedCount() != 0;
             menu.findItem(R.id.all_photos).setVisible(true);
         }
         super.onPrepareOptionsMenu(menu);
