@@ -3,9 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/all_photos"
+        android:title="@string/all_photos"
+        android:icon="@drawable/ic_photo_24dp"
+        android:visible="false"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/backup"
         android:icon="@drawable/ic_backup"
         android:title="@string/main_activity_action_menu_item_backup"
+        android:visible="false"
         app:showAsAction="always">
     </item>
 
@@ -13,6 +21,7 @@
         android:id="@+id/delete"
         android:icon="@drawable/ic_delete"
         android:title="@string/main_activity_action_menu_item_backup"
+        android:visible="false"
         app:showAsAction="ifRoom">
     </item>
 
@@ -21,6 +30,7 @@
         android:id="@+id/settings"
         android:icon="@drawable/ic_settings"
         android:title="@string/main_activity_action_menu_item_settings"
+        android:visible="false"
         app:showAsAction="never">
     </item>
 

@@ -58,7 +58,7 @@ public class MediaStoreProvider {
                                 path,
                                 cursor.getLong(idColumn),
                                 cursor.getString(nameColumn),
-                                getMediaCountByParent(context, idColumn));
+                                getMediaCountByParent(context, cursor.getLong(idColumn)));
 
                         if (album.addMedia(media)) {
                             list.add(album);

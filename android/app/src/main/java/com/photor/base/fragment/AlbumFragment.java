@@ -11,7 +11,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -30,6 +33,7 @@ import com.photor.album.entity.comparator.MediaComparators;
 import com.photor.album.provider.StorageProvider;
 import com.photor.album.utils.Measure;
 import com.photor.album.utils.PreferenceUtil;
+import com.photor.album.utils.ThemeHelper;
 import com.photor.album.views.CustomScrollBarRecyclerView;
 import com.photor.album.views.GridSpacingItemDecoration;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -72,6 +76,12 @@ public class AlbumFragment extends Fragment {
     private ArrayList<Media> media;
     private ArrayList<Album> albList;
 
+    // 跟图标设置相关的信息
+    private ThemeHelper themeHelper;
+
+    // 应用导航栏信息
+    private Toolbar toolbar;
+
 
     @BindView(R.id.swipeRefreshLayout)
     protected SwipeRefreshLayout swipeRefreshLayout;
@@ -92,20 +102,30 @@ public class AlbumFragment extends Fragment {
         return albumFragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);  // 在 fragment中也能使用 onOptionsItemSelected
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_album, container, false);
         ButterKnife.bind(this, rootView);
+        themeHelper = new ThemeHelper(this.getContext());
 
         SP = PreferenceUtil.getInstance(this.getContext().getApplicationContext());
+
+        toolbar = this.getActivity().findViewById(R.id.toolbar);
+        toolbar.setTitle(getResources().getString(R.string.local_folder));
 
         albumFragment = this;
         rvAlbums = rootView.findViewById(R.id.grid_albums);
         rvMedia  = rootView.findViewById(R.id.grid_photos);
 
         initUI();
-        // 加载在纯照片模式下的所有照片信息（需要存储权限看能读取数据库中的照片信息）
+        // 加载在纯照片模式下的所有照片信息（需要存储权限看能读取数据库中的照片信息）[切换全部照片的模式时使用到]
         new InitAllPhotos().execute();
         // 设置每一个相册的默认排序方式
         new SortModeSet(albumFragment).execute(DATE);
@@ -136,6 +156,7 @@ public class AlbumFragment extends Fragment {
         }
 
         firstLaunch = false;
+        getActivity().invalidateOptionsMenu();
     }
 
     private boolean displayData(Bundle data) {
@@ -144,14 +165,56 @@ public class AlbumFragment extends Fragment {
         return false;
     }
 
+    private void displayAlbums() {
+        all_photos = false;  // 显示某一个相册下的所有文件信息
+        displayAlbums(true);
+    }
+
     private void displayAlbums(boolean reload) {
+        toolbar.setTitle(getResources().getString(R.string.local_folder));
+        toolbar.setNavigationIcon(themeHelper.getToolbarIcon(GoogleMaterial.Icon.gmd_menu));
         albumsAdapter.swapDataSet(getAlbums().dispAlbums);
         if (reload) new PrepareAlbumTask(albumFragment).execute();
-        albumsMode = true;
 
+        albumsMode = true;  // 相册模式为true
+        getActivity().invalidateOptionsMenu();
         mediaAdapter.swapDataSet(new ArrayList<Media>(), false);
         rvMedia.scrollToPosition(0);
     }
+
+    private void displayCurrentAlbumMedia(boolean reload) {
+        // 获得当前正在显示的 album，并显示出来
+        toolbar.setTitle(getAlbum().getName());
+        toolbar.setNavigationIcon(themeHelper.getToolbarIcon(GoogleMaterial.Icon.gmd_arrow_back));
+
+        mediaAdapter.swapDataSet(getAlbum().getMedia(), false);
+        if (reload) {
+            // 初始加载相册的时候，每个Album中只有一张照片，现在不要将album中的照片全部加载出来
+            // 同时两个RecyclerView的交替显示也是在 Task 里面控制的
+            new PreparePhotosTask(this).execute();
+        }
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                displayAlbums();
+            }
+        });
+        albumsMode = false; // 当前为显示某一个album下的全部照片文件信息，albumMode为false
+        getActivity().invalidateOptionsMenu();
+    }
+
+    private View.OnClickListener albumOnClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View view) {
+            // 在RecyclerView的holder里面 holder.name(album_name).setTag(album);
+            // 之后可以通过 album_name 这个控件取出 album 这个tag
+            Album album = (Album) view.findViewById(R.id.album_name).getTag();
+            // 设置当前 将要显示的 album详情信息
+            getAlbums().setCurrentAlbum(album);
+            displayCurrentAlbumMedia(true);
+        }
+    };
 
     /**
      * 调整当前Album的排序方式
@@ -202,7 +265,8 @@ public class AlbumFragment extends Fragment {
         rvAlbums.addItemDecoration(rvAlbumsDecoration);
         rvAlbums.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
 
-        albumsAdapter = new AlbumsAdapter(getAlbums().dispAlbums, AlbumFragment.this.getContext());
+        albumsAdapter = new AlbumsAdapter(getAlbums().dispAlbums, getActivity());
+        albumsAdapter.setOnClickListener(albumOnClickListener);
         rvAlbums.setAdapter(albumsAdapter);
 
         // 初始化相片显示信息
@@ -212,7 +276,7 @@ public class AlbumFragment extends Fragment {
         rvMedia.addItemDecoration(rvMediaDecoration);
         rvMedia.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
 
-        mediaAdapter = new MediaAdapter(getAlbum().getMedia(), AlbumFragment.this.getContext());
+        mediaAdapter = new MediaAdapter(getAlbum().getMedia(), getActivity());
         rvMedia.setAdapter(mediaAdapter);
 
         //2. 设置下拉刷新事件
@@ -220,8 +284,17 @@ public class AlbumFragment extends Fragment {
             @Override
             public void onRefresh() {
                 if (albumsMode) {
+                    // 说明是以相册模式来浏览照片
                     getAlbums().clearSelectedAlbums();
                     new PrepareAlbumTask(albumFragment).execute();
+                } else {
+                    if (!all_photos) {
+                        // 说明是 在浏览某个相册下的 照片文件信息
+                        new PreparePhotosTask(AlbumFragment.this).execute();
+                    } else {
+                        // all_photos == true
+                        new PrepareAllPhotos(AlbumFragment.this).execute();
+                    }
                 }
             }
         };
@@ -293,6 +366,52 @@ public class AlbumFragment extends Fragment {
         for (Album album : getAlbums().dispAlbums) {
             albList.add(album);
         }
+    }
+
+    private void displayAllMedia(boolean reload) {
+        toolbar.setTitle(getString(R.string.all_media));
+        toolbar.setNavigationIcon(themeHelper.getToolbarIcon(GoogleMaterial.Icon.gmd_arrow_back));
+
+        mediaAdapter.swapDataSet(listAll, false);
+        if (reload) {
+            new PrepareAllPhotos(albumFragment).execute();
+        }
+        // 点击返回按钮的时候，按照相册模式显示照片
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                displayAlbums();  // 这里面会设置albumsMode为true  all_photos 为false
+            }
+        });
+        albumsMode = false;  // 当前不是以相册模式来显示照片
+        getActivity().invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if (albumsMode) {
+            menu.findItem(R.id.all_photos).setVisible(true);
+        }
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.all_photos:
+                if (!all_photos) {
+                    all_photos = true;
+                    displayAllMedia(true);
+                } else {
+                    displayAlbums();
+                }
+                return true;
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -422,4 +541,6 @@ public class AlbumFragment extends Fragment {
             albumFragment.swipeRefreshLayout.setRefreshing(false);
         }
     }
+
+
 }

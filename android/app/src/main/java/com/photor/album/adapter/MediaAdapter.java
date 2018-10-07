@@ -73,7 +73,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
         Glide.with(holder.imageView.getContext())
                 .asBitmap()
                 .load(f.getUri())
-                .transition(withCrossFade(R.anim.fade_in))
+//                .transition(withCrossFade(R.anim.fade_in))
                 .apply(myOptions)
                 .thumbnail(0.5f)
                 .into(holder.imageView);

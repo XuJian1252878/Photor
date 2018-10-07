@@ -119,20 +119,20 @@ public class MainActivity extends BaseActivity {
                 // mDrawerLayout.openDrawer(GravityCompat.START);
                 // openDrawer 将滑动菜单显示出来，GravityCompat.START指明滑动菜单的滑动形式
                 mDrawerLayout.openDrawer(GravityCompat.START);
-                break;
+                return true;
             case R.id.backup:
                 Toast.makeText(this, "You click backup menu item", Toast.LENGTH_SHORT).show();
-                break;
+                return true;
             case R.id.delete:
                 Toast.makeText(this, "You click delete menu item", Toast.LENGTH_SHORT).show();
-                break;
+                return true;
             case R.id.settings:
                 Toast.makeText(this, "You click settings menu item", Toast.LENGTH_SHORT).show();
-                break;
+                return true;
             default:
                 break;
         }
-        return true;
+        return false;
     }
 
     /**
