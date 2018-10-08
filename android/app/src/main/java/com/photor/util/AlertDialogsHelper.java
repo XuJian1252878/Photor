@@ -77,7 +77,7 @@ public class AlertDialogsHelper {
      */
     public static void setButtonTextColor(int[] buttons, int color, AlertDialog alertDialog) {
         for (int button: buttons) {
-            alertDialog.getButton(button).setText(color);
+            alertDialog.getButton(button).setTextColor(color);
         }
     }
 

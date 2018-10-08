@@ -210,4 +210,16 @@ public class HandlingAlbums {
         return selectedAlbums.get(index);
     }
 
+    /**
+     * 将所有的相册设置为已选择的状态
+     */
+    public void selectAllAlbums() {
+        for (Album dispAlbum: dispAlbums) {
+            if (!dispAlbum.isSelected()) {
+                dispAlbum.setSelected(true);
+                selectedAlbums.add(dispAlbum);
+            }
+        }
+    }
+
 }

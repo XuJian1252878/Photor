@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -21,12 +22,14 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.orhanobut.logger.Logger;
 import com.photor.MainApplication;
 import com.photor.R;
 import com.photor.album.adapter.AlbumsAdapter;
@@ -95,6 +98,12 @@ public class AlbumFragment extends Fragment {
     private boolean editMode = false;
     private boolean hidenav = false;  // 隐藏底部的导航栏
 
+    // 关于顶部导航栏的对话框信息
+    private boolean checkForReveal = true;
+
+    // 左边的拉出按钮信息
+    private DrawerLayout mDrawerLayout;
+
 
     @BindView(R.id.swipeRefreshLayout)
     protected SwipeRefreshLayout swipeRefreshLayout;
@@ -133,6 +142,8 @@ public class AlbumFragment extends Fragment {
         toolbar = this.getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle(getResources().getString(R.string.local_folder));
         navigationView = this.getActivity().findViewById(R.id.bottom_main_navigation);
+
+        mDrawerLayout = this.getActivity().findViewById(R.id.drawer_layout);
 
         albumFragment = this;
         rvAlbums = rootView.findViewById(R.id.grid_albums);
@@ -240,6 +251,7 @@ public class AlbumFragment extends Fragment {
                 getAlbums().setCurrentAlbum(album);  // 点击某一个相册信息的时候，就将该相册设置为当前默认选中的相册
                 displayCurrentAlbumMedia(true);
             }
+
         }
     };
 
@@ -287,11 +299,60 @@ public class AlbumFragment extends Fragment {
         }
     }
 
+    /**
+     * 当相册或者照片被长按的时候，导航栏的动画模式
+     */
+    private void enterReveal() {
+
+        // get the center for the clipping circle
+        int cx = toolbar.getMeasuredWidth() / 2;
+        int cy = toolbar.getMeasuredHeight() / 2;
+
+        // get the final radius for the clipping circle
+        int finalRadius = Math.max(toolbar.getWidth(), toolbar.getHeight()) / 2;
+
+        // create the animator for this view
+        Animator anim =
+                ViewAnimationUtils.createCircularReveal(toolbar, cx, cy, 5, finalRadius);
+
+        anim.start();
+    }
+
+    /**
+     * 当从编辑模式退出的时候，导航栏的动画模式
+     */
+    private void exitReveal() {
+
+        // get the center for the clipping circle
+        int cx = toolbar.getMeasuredWidth() / 2;
+        int cy = toolbar.getMeasuredHeight() / 2;
+
+        // get the final radius for the clipping circle
+        int finalRadius = Math.max(toolbar.getWidth(), toolbar.getHeight()) / 2;
+
+        // create the animator for this view
+        Animator anim =
+                ViewAnimationUtils.createCircularReveal(toolbar, cx, cy, finalRadius, 5);
+
+        anim.start();
+    }
+
+    /**
+     * 设置相册页面主要的菜单按钮的显示项
+     */
+    private void togglePrimaryToolbarOptions(final Menu menu) {
+        menu.setGroupVisible(R.id.general_action, !editMode);
+    }
+
     private View.OnLongClickListener albumOnLongCLickListener = new View.OnLongClickListener() {
 
         @Override
         public boolean onLongClick(View view) {
             Album album = (Album) view.findViewById(R.id.album_name).getTag();
+            if (checkForReveal) {
+                enterReveal();
+                checkForReveal = false;
+            }
             if (editMode) {
                 // 如果处于编辑模式
                 int currentAlbum = getAlbums().getCurrentAlbumIndex(album);
@@ -306,7 +367,7 @@ public class AlbumFragment extends Fragment {
                 hideNavigationBar();
                 hidenav = true;
             }
-            return false;
+            return true;  // onLongClickListener -> onClickListener (如果return false 会发生莫名其妙的错误)
         }
     };
 
@@ -501,9 +562,77 @@ public class AlbumFragment extends Fragment {
         getActivity().invalidateOptionsMenu();
     }
 
+    /**
+     * 设置长按状态下，toolbar的显示设置
+     */
+    private void appBarOverlay() {
+        // SCROLL_FLAG_SCROLL:以上所有的标志为都依赖于此标志方能工作。
+        // SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED:此标志位依赖SCROLL_FLAG_ENTER_ALWAYS。且会跟minHeight有关。
+        // 比如将minHeight设定为14dp。手指往上滚动时View仍然会消失。反过来，跟上面不一样的是，View在NestScrolling没有滑动到顶部的时候，
+        // View最多只会更随出现14dp也就是minHeight的高度。当到顶部的时候，方才会慢慢显示剩下的部分。
+        //SCROLL_FLAG_EXIT_UNTIL_COLLAPSED:此标志位会跟minHeight有关。手指往上滚动时，也就是View的Exit状态，
+        // View会留下minHeight的一段高度露出来，而不会向前面一样完全消失。手指往下滚动时，此标志类似于SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED的状态。
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+                | AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);  // clear all scroll flags
+    }
+
+    /**
+     * 设置在退出长按的状态下，toolbar的显示设置
+     */
+    private void clearOverlay() {
+        // SCROLL_FLAG_ENTER_ALWAYS:手指往上滚动时(即Scroll Down时)，View会消失。反之，View会跟随手指滑动慢慢出现。
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+                | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+    }
+
+    private void updateSelectedStuff() {
+        if (albumsMode) {
+            if (getAlbums().getSelectedCount() == 0) {
+                clearOverlay();
+                checkForReveal = true;
+                // 允许刷新操作
+                swipeRefreshLayout.setEnabled(true);
+            } else {
+                // 禁止刷新操作
+                appBarOverlay();
+                swipeRefreshLayout.setEnabled(false);
+            }
+
+            if (editMode) {
+                // 设置当前的被选择照片的数量，因为是在onPrepareOptionsMenu中被调用，所以每次的长按操作有变化的时候
+                // 都需要invalidateOptionsMenu进行menu的更新操作
+                toolbar.setTitle(getAlbums().getSelectedCount() + "/" + getAlbums().dispAlbums.size());
+            } else {
+                toolbar.setTitle(getString(R.string.local_folder));
+                toolbar.setNavigationIcon(themeHelper.getToolbarIcon(GoogleMaterial.Icon.gmd_menu));
+                toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mDrawerLayout.openDrawer(GravityCompat.START);
+                    }
+                });
+            }
+        } else {
+
+        }
+
+        // editmode的时候，显示已经被选择的照片或者是相册的数量
+        if (editMode) {
+            toolbar.setNavigationIcon(themeHelper.getToolbarIcon(GoogleMaterial.Icon.gmd_clear));
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    getNavigationBar();  // 显示底部的导航栏
+                    finishEditMode();  // 清空被选择的相册信息
+                }
+            });
+        }
+    }
+
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.sort_action).setVisible(true);
         if (albumsMode) {
             editMode = getAlbums().getSelectedCount() != 0;
             menu.setGroupVisible(R.id.album_options_menu, editMode);
@@ -517,6 +646,8 @@ public class AlbumFragment extends Fragment {
                 }
             }
         }
+        togglePrimaryToolbarOptions(menu);  // 控制是否显示排序菜单按钮
+        updateSelectedStuff();  // 更新顶部导航栏信息
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -525,6 +656,7 @@ public class AlbumFragment extends Fragment {
         getNavigationBar();  // 显示底部导航栏信息
         switch (item.getItemId()) {
             case R.id.all_photos:
+                // 显示全部照片
                 if (!all_photos) {
                     all_photos = true;
                     displayAllMedia(true);
@@ -533,6 +665,7 @@ public class AlbumFragment extends Fragment {
                 }
                 return true;
             case R.id.album_details:
+                // 显示相册详情信息
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialog_Light);
                 AlertDialog detailDialog = AlertDialogsHelper.getAlbumDetailsDialog(getActivity(), builder, getAlbums().getSelectedAlbum(0));
 
@@ -545,6 +678,14 @@ public class AlbumFragment extends Fragment {
                         });
                 detailDialog.show();
                 AlertDialogsHelper.setButtonTextColor(new int[] {DialogInterface.BUTTON_POSITIVE}, R.color.md_light_blue_500, detailDialog);
+                return true;
+            case R.id.select_all:
+                if (albumsMode) {
+                    // 相册模式下
+                    getAlbums().selectAllAlbums();
+                    albumsAdapter.notifyDataSetChanged();
+                }
+                getActivity().invalidateOptionsMenu();
                 return true;
             case R.id.name_sort_action:
                 if (albumsMode) {
