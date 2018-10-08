@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.orhanobut.logger.Logger;
 import com.photor.MainApplication;
 import com.photor.R;
 import com.photor.album.adapter.AlbumsAdapter;
@@ -594,9 +595,11 @@ public class AlbumFragment extends Fragment {
                 } else {
                     if (!all_photos) {
                         // 说明是 在浏览某个相册下的 照片文件信息
+                        getAlbum().clearSelectedPhotos();
                         new PreparePhotosTask(AlbumFragment.this).execute();
                     } else {
                         // all_photos == true
+                        clearSelectedPhotos();
                         new PrepareAllPhotos(AlbumFragment.this).execute();
                     }
                 }
