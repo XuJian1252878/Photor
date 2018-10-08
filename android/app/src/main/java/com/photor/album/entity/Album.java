@@ -5,6 +5,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
+import com.photor.R;
 import com.photor.album.entity.comparator.MediaComparators;
 import com.photor.album.provider.MediaStoreProvider;
 import com.photor.album.utils.PreferenceUtil;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.TreeMap;
 
 import static com.photor.album.entity.FilterMode.ALL;
 
@@ -391,6 +393,30 @@ public class Album {
 
     public FilterMode getFilterMode() {
         return settings != null ? settings.getFilterMode() : ALL;
+    }
+
+    public TreeMap<String, String> getAlbumDetails(Context context) {
+        TreeMap<String, String> details = new TreeMap<>();
+        details.put(context.getString(R.string.folder_path), getPath());
+        details.put(context.getString(R.string.folder_name), getName());
+        details.put(context.getString(R.string.total_photos),Integer.toString(getCount()));
+        details.put(context.getString(R.string.parent_path), getParentPath());
+        details.put(context.getString(R.string.modified), lastmodified());
+        details.put(context.getString(R.string.size_folder), size());
+
+        if(isReadable()){
+            details.put(context.getString(R.string.readable),  context.getString(R.string.answer_yes));
+        }
+        else{
+            details.put(context.getString(R.string.readable), context.getString(R.string.answer_no));
+        }
+        if(isWritable()){
+            details.put(context.getString(R.string.writable),  context.getString(R.string.answer_yes));
+        }
+        else{
+            details.put(context.getString(R.string.writable), context.getString(R.string.answer_no));
+        }
+        return details;
     }
 
 }

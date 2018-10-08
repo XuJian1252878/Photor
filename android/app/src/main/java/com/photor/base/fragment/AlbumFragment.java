@@ -3,6 +3,7 @@ package com.photor.base.fragment;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -41,6 +43,7 @@ import com.photor.album.utils.PreferenceUtil;
 import com.photor.album.utils.ThemeHelper;
 import com.photor.album.views.CustomScrollBarRecyclerView;
 import com.photor.album.views.GridSpacingItemDecoration;
+import com.photor.util.AlertDialogsHelper;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.lang.ref.WeakReference;
@@ -481,19 +484,45 @@ public class AlbumFragment extends Fragment {
         getActivity().invalidateOptionsMenu();
     }
 
+    /**
+     * 当退出编辑模式的时候被调用
+     * （当返回键被按下的时候调用）
+     */
+    private void finishEditMode() {
+        editMode = false;
+        if (albumsMode) {
+            // 相册模式
+            getAlbums().clearSelectedAlbums();
+            albumsAdapter.notifyDataSetChanged();
+        } else {
+            // 照片模式
+        }
+
+        getActivity().invalidateOptionsMenu();
+    }
+
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.sort_action).setVisible(true);
         if (albumsMode) {
             editMode = getAlbums().getSelectedCount() != 0;
+            menu.setGroupVisible(R.id.album_options_menu, editMode);
+            menu.setGroupVisible(R.id.photos_option_men, false);
             menu.findItem(R.id.all_photos).setVisible(true);
+            menu.findItem(R.id.select_all).setVisible(getAlbums().getSelectedCount() != albumsAdapter.getItemCount() ? true : false);
+
+            if (getAlbums().getSelectedCount() >= 1) {
+                if (getAlbums().getSelectedCount() > 1) {
+                    menu.findItem(R.id.album_details).setVisible(false);
+                }
+            }
         }
         super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        getNavigationBar();  // 显示底部导航栏信息
         switch (item.getItemId()) {
             case R.id.all_photos:
                 if (!all_photos) {
@@ -502,6 +531,20 @@ public class AlbumFragment extends Fragment {
                 } else {
                     displayAlbums();
                 }
+                return true;
+            case R.id.album_details:
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialog_Light);
+                AlertDialog detailDialog = AlertDialogsHelper.getAlbumDetailsDialog(getActivity(), builder, getAlbums().getSelectedAlbum(0));
+
+                detailDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok_action).toUpperCase(),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                finishEditMode();
+                            }
+                        });
+                detailDialog.show();
+                AlertDialogsHelper.setButtonTextColor(new int[] {DialogInterface.BUTTON_POSITIVE}, R.color.md_light_blue_500, detailDialog);
                 return true;
             case R.id.name_sort_action:
                 if (albumsMode) {
@@ -557,24 +600,6 @@ public class AlbumFragment extends Fragment {
                 }
                 item.setChecked(true);
                 return true;
-//            case R.id.numeric_sort_action:
-//                if (albumsMode) {
-//                    // 对相册进行排序时，以 HandlingAlbums 中存储的照片排序信息进行存取，信息存储在SP中
-//                    getAlbums().setDefaultSortingMode(SortingMode.NUMERIC);
-//                    new SortingUtilsAlbums(albumFragment).execute();
-//                } else {
-//                    // 设置每一个相册内的照片的排序信息，信息存储在SQL Lite数据库中
-//                    new SortModeSet(albumFragment).execute(SortingMode.NUMERIC);
-//                    if (!all_photos) {
-//                        // 某一个相册内的照片信息
-//                        new SortingUtilsPhotos(albumFragment).execute();
-//                    } else {
-//                        // 全部照片之间的排序信息
-//                        new SortingUtilsListAll(albumFragment).execute();
-//                    }
-//                }
-//                item.setChecked(true);
-//                return true;
             case R.id.ascending_sort_action:
                 if (albumsMode) {
                     getAlbums().setDefaultSortingAscending(item.isChecked() ? SortingOrder.DESCENDING : SortingOrder.ASCENDING);

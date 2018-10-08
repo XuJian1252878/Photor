@@ -201,4 +201,13 @@ public class HandlingAlbums {
         }
     }
 
+    /**
+     * 获取当前某一个被选择的图片信息
+     * @param index
+     * @return
+     */
+    public Album getSelectedAlbum(int index) {
+        return selectedAlbums.get(index);
+    }
+
 }

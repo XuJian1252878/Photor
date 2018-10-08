@@ -14,4 +14,34 @@
     <string name="numeric">数字</string>
     <string name="ascending">升序</string>
     <string name="descending">降序</string>
+
+    <string name="details">详细信息</string>
+    <string name="copy_to">复制到</string>
+    <string name="move_to">移动到</string>
+    <string name="share">分享到</string>
+
+    <string name="select_all">选择全部</string>
+
+    <!--ALBUM DETAILS-->
+    <string name="total_photos">图片数量:</string>
+    <string name="type_content">内容类型:</string>
+    <string name="folder_path">路径:</string>
+    <string name="type_folder">文件夹类型:</string>
+    <string name="folder_name">名称:</string>
+    <string name="writable">可写性:</string>
+    <string name="readable">可读性:</string>
+    <string name="size_folder">大小:</string>
+    <string name="modified">修改时间:</string>
+    <string name="parent_path">父路径:</string>
+
+
+    <string name="answer_yes">是</string>
+    <string name="answer_no">否</string>
+
+
+    <string name="folder">文件夹</string>
+
+    <!-- ACTIONS -->
+    <string name="ok_action">OK</string>
+
 </resources>
