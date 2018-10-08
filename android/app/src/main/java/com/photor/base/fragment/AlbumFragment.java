@@ -1,6 +1,5 @@
 package com.photor.base.fragment;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.DialogInterface;
@@ -9,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -29,7 +27,6 @@ import android.widget.TextView;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
-import com.orhanobut.logger.Logger;
 import com.photor.MainApplication;
 import com.photor.R;
 import com.photor.album.adapter.AlbumsAdapter;
@@ -47,7 +44,6 @@ import com.photor.album.utils.ThemeHelper;
 import com.photor.album.views.CustomScrollBarRecyclerView;
 import com.photor.album.views.GridSpacingItemDecoration;
 import com.photor.util.AlertDialogsHelper;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -103,6 +99,9 @@ public class AlbumFragment extends Fragment {
 
     // 左边的拉出按钮信息
     private DrawerLayout mDrawerLayout;
+
+    // 当前已经被选中的照片信息
+    private ArrayList<Media> selectedMedias = new ArrayList<>();
 
 
     @BindView(R.id.swipeRefreshLayout)
@@ -213,7 +212,7 @@ public class AlbumFragment extends Fragment {
         toolbar.setTitle(getAlbum().getName());
         toolbar.setNavigationIcon(themeHelper.getToolbarIcon(GoogleMaterial.Icon.gmd_arrow_back));
 
-        mediaAdapter.swapDataSet(getAlbum().getMedia(), false);
+        mediaAdapter.swapDataSet(getAlbum().getMedias(), false);
         if (reload) {
             // 初始加载相册的时候，每个Album中只有一张照片，现在不要将album中的照片全部加载出来
             // 同时两个RecyclerView的交替显示也是在 Task 里面控制的
@@ -229,6 +228,113 @@ public class AlbumFragment extends Fragment {
         editMode = false;
         getActivity().invalidateOptionsMenu();
     }
+
+    /**
+     * 查找某一副图片在全体图片中的下标信息
+     * @param path
+     * @return
+     */
+    private int getImagePosition(String path) {
+        int pos = 0;
+        if (all_photos) {
+            for (int i = 0; i < listAll.size(); i ++) {
+                if (listAll.get(i).getPath().equals(path)) {
+                    pos = i;
+                    break;
+                }
+            }
+        }
+        return pos;
+    }
+
+    /**
+     * 设置具体图片被长按选择的具体状态
+     * @param m
+     * @return
+     */
+    private int toggleSelectPhoto(Media m) {
+        if (m != null) {
+            m.setSelected(!m.isSelected());
+            if (m.isSelected()) {
+                selectedMedias.add(m);
+            } else {
+                selectedMedias.remove(m);
+            }
+        }
+
+        if (selectedMedias.size() == 0) {
+            getNavigationBar();
+            editMode = false;
+            toolbar.setTitle(getString(R.string.all));
+        } else {
+            toolbar.setTitle(selectedMedias.size() + "/" + listAll.size());
+        }
+
+        getActivity().invalidateOptionsMenu();
+        return getImagePosition(m.getPath());
+    }
+
+    /**
+     * 在全体照片显示模式下，设置选择信息
+     * @param targetIndex
+     * @param adapter
+     */
+    public void selectAllPhotosUpTo(int targetIndex, MediaAdapter adapter) {
+        int indexRightBeforeOrAfter = -1;
+        int indexNow;
+        for (Media sm : selectedMedias) {
+            indexNow = getImagePosition(sm.getPath());
+            if (indexRightBeforeOrAfter == -1) indexRightBeforeOrAfter = indexNow;
+
+            if (indexNow > targetIndex) break;
+            indexRightBeforeOrAfter = indexNow;
+        }
+
+        if (indexRightBeforeOrAfter != -1) {
+            for (int index = Math.min(targetIndex, indexRightBeforeOrAfter); index <= Math.max(targetIndex, indexRightBeforeOrAfter); index++) {
+                if (listAll.get(index) != null && !listAll.get(index).isSelected()) {
+                    listAll.get(index).setSelected(true);
+                    selectedMedias.add(listAll.get(index));
+                    adapter.notifyItemChanged(index);
+                }
+            }
+        }
+        toolbar.setTitle(selectedMedias.size() + "/" + size);
+    }
+
+    private View.OnLongClickListener photosOnLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+            if (checkForReveal) {
+                enterReveal();
+                checkForReveal = false;  // 显示actionbar的动画
+            }
+
+            Media m = (Media) view.findViewById(R.id.photo_path).getTag();
+            // 隐藏底部的导航栏
+            hideNavigationBar();
+            hidenav = true;
+            if (!all_photos) {
+                // 某个相册下的全部文件图片信息
+                if (!editMode) {
+                    mediaAdapter.notifyItemChanged(getAlbum().toggleSelectPhoto(m));
+                    editMode = true;
+                } else {
+                    getAlbum().selectAllPhotosUpTo(getAlbum().getIndex(m), mediaAdapter);
+                }
+            } else {
+                // 全部文件图片信息
+                if (!editMode) {
+                    mediaAdapter.notifyItemChanged(toggleSelectPhoto(m));
+                    editMode = true;
+                } else {
+                    selectAllPhotosUpTo(getImagePosition(m.getPath()), mediaAdapter);
+                }
+            }
+            getActivity().invalidateOptionsMenu();
+            return true;
+        }
+    };
 
     /**
      * 相册被单击时的事件
@@ -432,7 +538,8 @@ public class AlbumFragment extends Fragment {
         rvMedia.addItemDecoration(rvMediaDecoration);
         rvMedia.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
 
-        mediaAdapter = new MediaAdapter(getAlbum().getMedia(), getActivity());
+        mediaAdapter = new MediaAdapter(getAlbum().getMedias(), getActivity());
+        mediaAdapter.setOnLongClickListener(photosOnLongClickListener);
         rvMedia.setAdapter(mediaAdapter);
 
         //2. 设置下拉刷新事件
@@ -481,7 +588,7 @@ public class AlbumFragment extends Fragment {
     private void checkNothing() {
         nothingToShow.setText(getString(R.string.there_is_nothing_to_show));
         nothingToShow.setVisibility((albumsMode && getAlbums().dispAlbums.size() == 0) ||
-                (!albumsMode && getAlbum().getMedia().size() == 0) ? View.VISIBLE : View.GONE);
+                (!albumsMode && getAlbum().getMedias().size() == 0) ? View.VISIBLE : View.GONE);
         starImageView.setVisibility(View.GONE);
     }
 
@@ -550,6 +657,9 @@ public class AlbumFragment extends Fragment {
      * （当返回键被按下的时候调用）
      */
     private void finishEditMode() {
+        if (editMode) {
+            enterReveal(); // 展示切换顶部导航栏的效果
+        }
         editMode = false;
         if (albumsMode) {
             // 相册模式
@@ -557,8 +667,14 @@ public class AlbumFragment extends Fragment {
             albumsAdapter.notifyDataSetChanged();
         } else {
             // 照片模式
+            if (!all_photos) {
+                getAlbum().clearSelectedPhotos();
+                mediaAdapter.notifyDataSetChanged();
+            } else {
+                clearSelectedPhotos();
+                mediaAdapter.notifyDataSetChanged();
+            }
         }
-
         getActivity().invalidateOptionsMenu();
     }
 
@@ -587,6 +703,9 @@ public class AlbumFragment extends Fragment {
                 | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
     }
 
+    /**
+     * 处理在长按模式下，点击导航栏返回按钮的各种逻辑
+     */
     private void updateSelectedStuff() {
         if (albumsMode) {
             if (getAlbums().getSelectedCount() == 0) {
@@ -615,7 +734,54 @@ public class AlbumFragment extends Fragment {
                 });
             }
         } else {
+            if (!all_photos) {
+                // 某一相册下的照片
+                if (getAlbum().getSelectedCount() == 0) {
+                    clearOverlay();
+                    checkForReveal = true;
+                    swipeRefreshLayout.setEnabled(true);
+                } else {
+                    appBarOverlay();
+                    swipeRefreshLayout.setEnabled(false);
+                }
+            } else {
+                // 全部照片的模式
+                if (selectedMedias.size() == 0) {
+                    clearOverlay();
+                    checkForReveal = true;
+                    swipeRefreshLayout.setEnabled(true);
+                } else {
+                    appBarOverlay();
+                    swipeRefreshLayout.setEnabled(false);
+                }
+            }
 
+            // 设置标题栏上的文字信息
+            if (editMode) {
+                // 处于编辑模式
+                if (!all_photos) {
+                    // 相册下的照片信息
+                    toolbar.setTitle(getAlbum().getSelectedCount() + "/" + getAlbum().getMedias().size());
+                } else {
+                    // 全部相片的列出模式
+                    toolbar.setTitle(selectedMedias.size() + "/" + listAll.size());
+                }
+            } else {
+                // 处于非编辑模式
+                if (!all_photos) {
+                    toolbar.setTitle(getAlbum().getName());
+                } else {
+                    toolbar.setTitle(getString(R.string.all_media));
+                }
+                // 在纯照片模式下点击返回按钮返回相册页面
+                toolbar.setNavigationIcon(themeHelper.getToolbarIcon(GoogleMaterial.Icon.gmd_arrow_back));
+                toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        displayAlbums();
+                    }
+                });
+            }
         }
 
         // editmode的时候，显示已经被选择的照片或者是相册的数量
@@ -625,15 +791,44 @@ public class AlbumFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     getNavigationBar();  // 显示底部的导航栏
-                    finishEditMode();  // 清空被选择的相册信息
+                    finishEditMode();  // 清空被选择的相册、相册信息
+                    clearSelectedPhotos();
                 }
             });
+        }
+    }
+
+    /**
+     * 清空已经选择的照片信息
+     */
+    public void clearSelectedPhotos() {
+        for (Media m : selectedMedias) {
+            m.setSelected(false);
+        }
+        if (selectedMedias != null) {
+            selectedMedias.clear();
+        }
+        toolbar.setTitle(getString(R.string.local_folder));
+    }
+
+
+    /**
+     * 选择列出全部照片模式下的全部照片信息
+     */
+    public void selectAllPhotos() {
+        if (all_photos) {
+            for (Media m: listAll) {
+                m.setSelected(true);
+                selectedMedias.add(m);
+            }
+            toolbar.setTitle(selectedMedias.size() + "/" + listAll.size());
         }
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         if (albumsMode) {
+            // 相册模式下（全部照片、选择全部）
             editMode = getAlbums().getSelectedCount() != 0;
             menu.setGroupVisible(R.id.album_options_menu, editMode);
             menu.setGroupVisible(R.id.photos_option_men, false);
@@ -645,6 +840,26 @@ public class AlbumFragment extends Fragment {
                     menu.findItem(R.id.album_details).setVisible(false);
                 }
             }
+        } else {
+            if (!all_photos) {
+                // 某个相册下的照片
+                editMode = getAlbum().areMediaSelected();
+                menu.setGroupVisible(R.id.photos_option_men, editMode);
+                menu.setGroupVisible(R.id.album_options_menu, !editMode);
+                menu.findItem(R.id.all_photos).setVisible(false);
+                menu.findItem(R.id.album_details).setVisible(false);
+            } else {
+                // 全部的照片
+                editMode = selectedMedias.size() != 0;
+                menu.setGroupVisible(R.id.photos_option_men, editMode);
+                menu.setGroupVisible(R.id.album_options_menu, !editMode);
+                menu.findItem(R.id.all_photos).setVisible(false);
+                menu.findItem(R.id.album_details).setVisible(false);
+            }
+            menu.findItem(R.id.select_all).setVisible(
+                    (getAlbum().getSelectedCount() == mediaAdapter.getItemCount()
+                            || selectedMedias.size() == listAll.size())
+                            ? false : true);
         }
         togglePrimaryToolbarOptions(menu);  // 控制是否显示排序菜单按钮
         updateSelectedStuff();  // 更新顶部导航栏信息
@@ -684,6 +899,17 @@ public class AlbumFragment extends Fragment {
                     // 相册模式下
                     getAlbums().selectAllAlbums();
                     albumsAdapter.notifyDataSetChanged();
+                } else {
+                    if (!all_photos) {
+                        // 某一相册下的图片信息
+                        getAlbum().selectAllPhotos();
+                        mediaAdapter.notifyDataSetChanged();
+                    } else {
+                        // 全部相片信息
+                        clearSelectedPhotos();
+                        selectAllPhotos();  // 必须先调用clearSelectedPhotos之后调用，否则selectMedias会出现重复的media
+                        mediaAdapter.notifyDataSetChanged();
+                    }
                 }
                 getActivity().invalidateOptionsMenu();
                 return true;
@@ -830,7 +1056,7 @@ public class AlbumFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             AlbumFragment albumFragment = reference.get();
             albumFragment.swipeRefreshLayout.setRefreshing(false);
-            albumFragment.mediaAdapter.swapDataSet(albumFragment.getAlbum().getMedia(), false);
+            albumFragment.mediaAdapter.swapDataSet(albumFragment.getAlbum().getMedias(), false);
             super.onPostExecute(aVoid);
         }
     }
@@ -991,7 +1217,7 @@ public class AlbumFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             AlbumFragment albumFragment = reference.get();
-            albumFragment.mediaAdapter.swapDataSet(albumFragment.getAlbum().getMedia(), false);
+            albumFragment.mediaAdapter.swapDataSet(albumFragment.getAlbum().getMedias(), false);
 
             albumFragment.checkNothing();
             albumFragment.swipeRefreshLayout.setRefreshing(false);

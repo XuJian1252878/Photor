@@ -44,4 +44,6 @@
     <!-- ACTIONS -->
     <string name="ok_action">OK</string>
 
+    <string name="all">全部图片</string>
+
 </resources>

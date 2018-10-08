@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import com.photor.R;
+import com.photor.album.adapter.MediaAdapter;
 import com.photor.album.entity.comparator.MediaComparators;
 import com.photor.album.provider.MediaStoreProvider;
 import com.photor.album.utils.PreferenceUtil;
@@ -29,7 +30,7 @@ public class Album {
     private boolean selected = false;
     public AlbumSettings settings = null;
 
-    private ArrayList<Media> media;
+    private ArrayList<Media> medias;
 
     public ArrayList<Media> selectedMedias;
     private boolean isPreviewSelected;
@@ -38,7 +39,7 @@ public class Album {
     private int selectedCount;
 
     private Album() {
-        media = new ArrayList<Media>();
+        medias = new ArrayList<Media>();
         selectedMedias = new ArrayList<Media>();
     }
 
@@ -66,11 +67,11 @@ public class Album {
      * used for open an image from an unknown content storage
      *
      * @param context context
-     * @param mediaUri uri of the media to display
+     * @param mediaUri uri of the medias to display
      */
     public Album(Context context, Uri mediaUri) {
         super();
-        media.add(0, new Media(context, mediaUri));
+        medias.add(0, new Media(context, mediaUri));
         setCurrentPhotoIndex(0);
     }
 
@@ -147,11 +148,11 @@ public class Album {
         return selected;
     }
 
-    public Media getMedia(int index) { return media.get(index); }
+    public Media getMedia(int index) { return medias.get(index); }
 
     public void setCurrentPhotoIndex(int index){ currentMediaIndex = index; }
 
-    public void setCurrentPhotoIndex(Media m){ setCurrentPhotoIndex(media.indexOf(m)); }
+    public void setCurrentPhotoIndex(Media m){ setCurrentPhotoIndex(medias.indexOf(m)); }
 
     public Media getCurrentMedia() { return getMedia(currentMediaIndex); }
 
@@ -239,8 +240,8 @@ public class Album {
     public Media getCoverAlbum() {
         if (hasCustomCover())
             return new Media(settings.getCoverPath());
-        if (media.size() > 0)
-            return media.get(0);
+        if (medias.size() > 0)
+            return medias.get(0);
         return new Media();
     }
 
@@ -254,18 +255,18 @@ public class Album {
         return album;
     }
 
-    public ArrayList<Media> getMedia() {
+    public ArrayList<Media> getMedias() {
         ArrayList<Media> mediaArrayList = new ArrayList<Media>();
         switch (getFilterMode()) {
             case ALL:
-                mediaArrayList = media;
+                mediaArrayList = medias;
                 break;
             case GIF:
-                for (Media media1 : media)
+                for (Media media1 : medias)
                     if (media1.isGif()) mediaArrayList.add(media1);
                 break;
             case IMAGES:
-                for (Media media1 : media)
+                for (Media media1 : medias)
                     if (media1.isImage()) mediaArrayList.add(media1);
                 break;
             default:
@@ -277,7 +278,7 @@ public class Album {
 
     public boolean addMedia(@Nullable Media media) {
         if(media == null) return false;
-        this.media.add(media);
+        this.medias.add(media);
         return true;
     }
 
@@ -294,8 +295,8 @@ public class Album {
     }
 
     private void setCurrentPhoto(String path) {
-        for (int i = 0; i < media.size(); i++)
-            if (media.get(i).getPath().equals(path)) currentMediaIndex = i;
+        for (int i = 0; i < medias.size(); i++)
+            if (medias.get(i).getPath().equals(path)) currentMediaIndex = i;
     }
 
     public int getSelectedCount() {
@@ -308,25 +309,25 @@ public class Album {
     public boolean areMediaSelected() { return getSelectedCount() != 0;}
 
     public void selectAllPhotos() {
-        for (int i = 0; i < media.size(); i++) {
-            if (!media.get(i).isSelected()) {
-                media.get(i).setSelected(true);
-                selectedMedias.add(media.get(i));
+        for (int i = 0; i < medias.size(); i++) {
+            if (!medias.get(i).isSelected()) {
+                medias.get(i).setSelected(true);
+                selectedMedias.add(medias.get(i));
             }
         }
     }
 
     private int toggleSelectPhoto(int index) {
-        if (media.get(index) != null) {
-            media.get(index).setSelected(!media.get(index).isSelected());
-            if (media.get(index).isSelected()) {
-                selectedMedias.add(media.get(index));
-                if(getPreviewPath() != null && getPreviewPath().equals(media.get(index).getPath()))
+        if (medias.get(index) != null) {
+            medias.get(index).setSelected(!medias.get(index).isSelected());
+            if (medias.get(index).isSelected()) {
+                selectedMedias.add(medias.get(index));
+                if(getPreviewPath() != null && getPreviewPath().equals(medias.get(index).getPath()))
                     setPreviewSelected(true);
             }
             else {
-                selectedMedias.remove(media.get(index));
-                if(getPreviewPath() != null && getPreviewPath().equals(media.get(index).getPath()))
+                selectedMedias.remove(medias.get(index));
+                if(getPreviewPath() != null && getPreviewPath().equals(medias.get(index).getPath()))
                     setPreviewSelected(false);
             }
         }
@@ -334,7 +335,7 @@ public class Album {
     }
 
     public int toggleSelectPhoto(Media m) {
-        return toggleSelectPhoto(media.indexOf(m));
+        return toggleSelectPhoto(medias.indexOf(m));
     }
 
     public void setDefaultSortingMode(Context context, SortingMode column) {
@@ -347,9 +348,9 @@ public class Album {
 
 
     public void updatePhotos(Context context) {
-        media = getMedia(context);
+        medias = getMedia(context);
         sortPhotos();
-        setCount(media.size());
+        setCount(medias.size());
     }
 
     private ArrayList<Media> getMedia(Context context) {
@@ -363,14 +364,14 @@ public class Album {
                     MediaStoreProvider.getMedias(
                             context, id));
         } else {
-//            mediaArrayList.addAll(StorageProvider.getMedia(
+//            mediaArrayList.addAll(StorageProvider.getMedias(
 //                    getPath(), SP.getBoolean("set_include_video", false)));
         }
         return mediaArrayList;
     }
 
     public void sortPhotos() {
-        Collections.sort(media, MediaComparators.getComparator(settings.getSortingMode(), settings.getSortingOrder()));
+        Collections.sort(medias, MediaComparators.getComparator(settings.getSortingMode(), settings.getSortingOrder()));
     }
 
 
@@ -395,6 +396,11 @@ public class Album {
         return settings != null ? settings.getFilterMode() : ALL;
     }
 
+    /**
+     * 获取文件夹的详情信息
+     * @param context
+     * @return
+     */
     public TreeMap<String, String> getAlbumDetails(Context context) {
         TreeMap<String, String> details = new TreeMap<>();
         details.put(context.getString(R.string.folder_path), getPath());
@@ -417,6 +423,69 @@ public class Album {
             details.put(context.getString(R.string.writable), context.getString(R.string.answer_no));
         }
         return details;
+    }
+
+    /**
+     * 连选当前点击图片 至前段位置图片间的所有图片信息
+     * @param targetIndex
+     * @param adapter
+     */
+    public void selectAllPhotosUpTo(int targetIndex, MediaAdapter adapter) {
+        int indexRightBeforeOrAfter = -1;
+        int indexNow;
+        for (Media m: selectedMedias) {
+            indexNow = medias.indexOf(m);
+
+            if (indexRightBeforeOrAfter == -1) {
+                indexRightBeforeOrAfter = indexNow;
+            }
+
+            if (indexNow > targetIndex) {
+                break;
+            }
+
+            indexRightBeforeOrAfter = indexNow;
+        }
+
+        if (indexRightBeforeOrAfter != -1) {
+            for (int index = Math.min(targetIndex, indexRightBeforeOrAfter);
+                 index <= Math.max(targetIndex, indexRightBeforeOrAfter);
+                 index ++) {
+                if (medias.get(index) != null && !medias.get(index).isSelected()) {
+                    medias.get(index).setSelected(true);
+                    selectedMedias.add(medias.get(index));
+
+                    if (getPreviewPath() != null &&
+                            medias.get(index).getPath().equals(getPreviewPath())) {
+                        setPreviewSelected(true);
+                    }
+
+                    adapter.notifyItemChanged(index);
+                }
+            }
+        }
+    }
+
+    /**
+     * 获得当前照片在相册下的下标信息
+     * @param m
+     * @return
+     */
+    public int getIndex(Media m) {
+        return medias.indexOf(m);
+    }
+
+    /**
+     * 清空当前Album内已经被选择的照片信息
+     */
+    public void clearSelectedPhotos() {
+        for (Media m : medias) {
+            m.setSelected(false);
+        }
+        if (selectedMedias != null) {
+            selectedMedias.clear();
+        }
+        setPreviewSelected(false);  // 设置封面页没有被选择，待用
     }
 
 }
