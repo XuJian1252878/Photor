@@ -230,6 +230,45 @@ public class AlbumFragment extends Fragment {
     }
 
     /**
+     * 具体的相册图片被单击时的响应事件
+     */
+    private View.OnClickListener photosOnClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View view) {
+            Media m = (Media) view.findViewById(R.id.photo_path).getTag();
+            int pos = -1;
+            if (all_photos) {
+                // 全局照片显示的模式下
+                pos = getImagePosition(m.getPath());
+            }
+
+            if (!all_photos) {
+                // 某一个相册下的照片列表
+                if (editMode) {
+                    // 长按模式
+                    appBarOverlay();
+                    mediaAdapter.notifyItemChanged(getAlbum().toggleSelectPhoto(m));
+                    if (getAlbum().selectedMedias.size() == 0) {
+                        getNavigationBar();  // 显示底部导航栏信息
+                    }
+                    getActivity().invalidateOptionsMenu();
+                } else {
+                    // 单击模式，进入相册列表
+                }
+            } else {
+                // 全部图片信息
+                if (editMode) {
+                    // 长按模式
+                    mediaAdapter.notifyItemChanged(toggleSelectPhoto(m));
+                } else {
+                    // 单击模式，进入相册列表
+                }
+            }
+        }
+    };
+
+    /**
      * 查找某一副图片在全体图片中的下标信息
      * @param path
      * @return
@@ -539,6 +578,7 @@ public class AlbumFragment extends Fragment {
         rvMedia.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
 
         mediaAdapter = new MediaAdapter(getAlbum().getMedias(), getActivity());
+        mediaAdapter.setOnClickListener(photosOnClickListener);
         mediaAdapter.setOnLongClickListener(photosOnLongClickListener);
         rvMedia.setAdapter(mediaAdapter);
 
