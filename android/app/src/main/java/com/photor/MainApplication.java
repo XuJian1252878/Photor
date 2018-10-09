@@ -9,6 +9,7 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.photor.album.entity.Album;
 import com.photor.album.entity.HandlingAlbums;
+import com.photor.util.ActivitySwitchHelper;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,6 +57,9 @@ public class MainApplication extends Application implements ReactApplication {
 
         // 相册处理信息初始化
         albums = new HandlingAlbums(getApplicationContext());
+
+        // 设置全局的applicationContext信息
+        ActivitySwitchHelper.setContext(getApplicationContext());
 
         super.onCreate();
         SoLoader.init(this, /* native exopackage */ false);

@@ -1,10 +1,14 @@
 package com.photor.util;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,6 +18,58 @@ import com.photor.album.entity.Album;
 import java.util.TreeMap;
 
 public class AlertDialogsHelper {
+
+    public static boolean check=false;
+
+    public static AlertDialog getTextDialog(final Activity activity, AlertDialog.Builder textDialogBuilder, @StringRes int title, @StringRes int Message, String msg){
+        View dialogLayout = activity.getLayoutInflater().inflate(R.layout.dialog_text, null);
+
+        TextView dialogTitle = (TextView) dialogLayout.findViewById(R.id.text_dialog_title);
+        TextView dialogMessage = (TextView) dialogLayout.findViewById(R.id.text_dialog_message);
+
+        ((CardView) dialogLayout.findViewById(R.id.message_card)).setCardBackgroundColor(ThemeHelper.getCardBackgroundColor(activity));
+        dialogTitle.setBackgroundColor(ThemeHelper.getPrimaryColor(activity));
+        dialogTitle.setText(title);
+        if (msg != null) dialogMessage.setText(msg);
+        else dialogMessage.setText(Message);
+        dialogMessage.setTextColor(ThemeHelper.getTextColor(activity));
+        textDialogBuilder.setView(dialogLayout);
+        return textDialogBuilder.create();
+    }
+
+    public static AlertDialog getTextCheckboxDialog(final Activity activity, AlertDialog.Builder
+            textDialogBuilder, @StringRes int title, @StringRes int Message, String msg, String checkboxmessage,
+                                                    final int colorId){
+        View dialogLayout = activity.getLayoutInflater().inflate(R.layout.dialog_checkbox, null);
+        TextView dialogTitle = (TextView) dialogLayout.findViewById(R.id.text_dialog_title);
+        TextView dialogMessage = (TextView) dialogLayout.findViewById(R.id.text_dialog_message);
+        TextView checkboxmessg = (TextView) dialogLayout.findViewById(R.id.checkbox_text_dialog);
+        final CheckBox checkBox = (CheckBox) dialogLayout.findViewById(R.id.checkbox_text_dialog_cb);
+        if(checkBox.isChecked()){
+            check = true;
+        }
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    check=true;
+
+                }else{
+                    check=false;
+                }
+            }
+        });
+        ((CardView) dialogLayout.findViewById(R.id.message_card)).setCardBackgroundColor(ThemeHelper.getCardBackgroundColor(activity));
+        dialogTitle.setBackgroundColor(ThemeHelper.getPrimaryColor(activity));
+        dialogTitle.setText(title);
+        checkboxmessg.setText(checkboxmessage);
+        checkboxmessg.setTextColor(ThemeHelper.getTextColor(activity));
+        if (msg != null) dialogMessage.setText(msg);
+        else dialogMessage.setText(Message);
+        dialogMessage.setTextColor(ThemeHelper.getTextColor(activity));
+        textDialogBuilder.setView(dialogLayout);
+        checkBox.setButtonTintList(ColorStateList.valueOf(colorId));
+        return textDialogBuilder.create();
+    }
 
     public static AlertDialog getAlbumDetailsDialog(Activity activity, AlertDialog.Builder detailsDialogBuilder,
                                                     final Album f) {

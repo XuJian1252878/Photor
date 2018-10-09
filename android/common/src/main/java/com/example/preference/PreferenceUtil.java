@@ -1,4 +1,4 @@
-package com.photor.album.utils;
+package com.example.preference;
 
 import android.content.Context;
 import android.content.SharedPreferences;

@@ -1,13 +1,21 @@
 package com.photor.base.fragment;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -27,7 +35,6 @@ import android.widget.TextView;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
-import com.orhanobut.logger.Logger;
 import com.photor.MainApplication;
 import com.photor.R;
 import com.photor.album.adapter.AlbumsAdapter;
@@ -40,18 +47,25 @@ import com.photor.album.entity.SortingOrder;
 import com.photor.album.entity.comparator.MediaComparators;
 import com.photor.album.provider.StorageProvider;
 import com.photor.album.utils.Measure;
-import com.photor.album.utils.PreferenceUtil;
+import com.example.preference.PreferenceUtil;
 import com.photor.album.utils.ThemeHelper;
 import com.photor.album.views.CustomScrollBarRecyclerView;
 import com.photor.album.views.GridSpacingItemDecoration;
+import com.photor.data.TrashBinRealmModel;
 import com.photor.util.AlertDialogsHelper;
+import com.photor.util.SnackBarHandler;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 
 import static com.photor.album.entity.SortingMode.DATE;
 
@@ -60,6 +74,8 @@ import static com.photor.album.entity.SortingMode.DATE;
  */
 
 public class AlbumFragment extends Fragment {
+
+    private int REQUEST_CODE_SD_CARD_PERMISSIONS = 42;
 
     private PreferenceUtil SP;
 
@@ -81,7 +97,7 @@ public class AlbumFragment extends Fragment {
     public boolean all_photos = false;  // true 以照片模式显示当前的图片
     public static ArrayList<Media> listAll;
     public int size;
-    private ArrayList<Media> media;
+//    private ArrayList<Media> media;
     private ArrayList<Album> albList;
 
     // 跟图标设置相关的信息
@@ -103,6 +119,9 @@ public class AlbumFragment extends Fragment {
 
     // 当前已经被选中的照片信息
     private ArrayList<Media> selectedMedias = new ArrayList<>();
+
+    // 数据库实例
+    private Realm realm;
 
 
     @BindView(R.id.swipeRefreshLayout)
@@ -547,7 +566,7 @@ public class AlbumFragment extends Fragment {
         protected Void doInBackground(Void... arg0) {
             listAll = StorageProvider.getAllShownImages(AlbumFragment.this.getActivity());
             size = listAll.size();
-            media = listAll;
+//            media = listAll;
             Collections.sort(listAll, MediaComparators.getComparator(getAlbum().settings.getSortingMode(), getAlbum().settings.getSortingOrder()));
             return null;
         }
@@ -906,6 +925,10 @@ public class AlbumFragment extends Fragment {
         }
         togglePrimaryToolbarOptions(menu);  // 控制是否显示排序菜单按钮
         updateSelectedStuff();  // 更新顶部导航栏信息
+
+        // 控制各种菜单项是否显示
+        menu.findItem(R.id.delete_action).setVisible((!albumsMode || editMode) && (!all_photos || editMode));  // 在editMode，或者 显示某一个相册下照片的时候显示删除按钮
+
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -955,6 +978,32 @@ public class AlbumFragment extends Fragment {
                     }
                 }
                 getActivity().invalidateOptionsMenu();
+                return true;
+            case R.id.delete_action:
+                getNavigationBar(); // 显示底部的导航栏信息
+                AlertDialog.Builder deleteDialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialog_Light);
+
+                AlertDialogsHelper.getTextCheckboxDialog(getActivity(), deleteDialog, R.string.delete, albumsMode || !editMode ?
+                        R.string.delete_album_message :
+                        R.string.delete_photos_message,
+                        null,
+                        getResources().getString(R.string.move_to_trashbin),
+                        com.photor.util.ThemeHelper.getAccentColor(getContext()));
+
+                deleteDialog.setNegativeButton(getString(R.string.cancel).toUpperCase(), null);
+                deleteDialog.setPositiveButton(getString(R.string.delete).toUpperCase(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        new DeletePhotos().execute();
+                    }
+                });
+
+                AlertDialog alertDialogDelete = deleteDialog.create();
+                alertDialogDelete.show();
+                AlertDialogsHelper.setButtonTextColor(
+                        new int[]{DialogInterface.BUTTON_POSITIVE, DialogInterface.BUTTON_NEGATIVE},
+                        com.photor.util.ThemeHelper.getAccentColor(getContext()),
+                        alertDialogDelete);
                 return true;
             case R.id.name_sort_action:
                 if (albumsMode) {
@@ -1268,4 +1317,294 @@ public class AlbumFragment extends Fragment {
     }
 
 
+    /**
+     * @param no 记录移动至垃圾箱的文件的个数信息
+     * @param file 垃圾箱的文件路径
+     * @param media1 即将被移入垃圾箱的文件在垃圾箱中的路径
+     * @return
+     */
+    private boolean addToTrashInnerAction(int no, File file, ArrayList<Media> media1) {
+        boolean succ = false;
+        // 如果回收站文件夹存在
+        if (!all_photos && editMode) {
+            // 某一个相册下的被选择的图片信息移动到回收站中
+            no = getAlbum().moveSelectedMedia(getContext(), file.getAbsolutePath());
+        } else if (all_photos && editMode) {
+            // 全部照片模式下被选择的图片移动至回收站
+            no = getAlbum().moveAllMedia(getContext(), file.getAbsolutePath(), selectedMedias);
+        } else if (!editMode && !all_photos) {
+            // 当前处于相册模式，并且已经选中某一个相册的时候（将相册内的文件移动至回收站）
+            no = getAlbum().moveAllMedia(getContext(), file.getAbsolutePath(), getAlbum().getMedias());
+        }
+
+        if (no > 0) {
+            succ = true;
+            if (no == 1) {
+                Snackbar snackbar = SnackBarHandler.showWithBottomMargin2(mDrawerLayout,
+                        String.valueOf(no) + " " + getString(R.string.trashbin_move_onefile), navigationView.getHeight(),
+                        Snackbar.LENGTH_SHORT);
+                snackbar.setAction("撤销", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // 这里有个问题待解决，如果是 全部照片模式下发生的撤销会发生错误
+                        getAlbum().moveAllMedia(getContext(), getAlbum().getPath(), media1);
+                        // 还需要删除已经存在于回收站中的文件路径信息
+                        deleteTrashObjectsFromRealm(media1);
+                        refreshListener.onRefresh();
+                    }
+                });
+                snackbar.show();
+            } else {
+                Snackbar snackbar = SnackBarHandler.showWithBottomMargin2(mDrawerLayout, String.valueOf(no) + " " + getString(R.string
+                                .trashbin_move),
+                        navigationView.getHeight
+                                (), Snackbar.LENGTH_SHORT);
+                snackbar.setAction("撤销", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        getAlbum().moveAllMedia(getContext(), getAlbum().getPath(), media1);
+                        // 还需要删除已经存在于回收站中的文件路径信息
+                        deleteTrashObjectsFromRealm(media1);
+                        refreshListener.onRefresh();
+                    }
+                });
+                snackbar.show();
+            }
+        } else {
+            SnackBarHandler.showWithBottomMargin(mDrawerLayout, String.valueOf(no) + " " + getString(R.string
+                            .trashbin_move_error),
+                    navigationView.getHeight
+                            ());
+        }
+        return succ;
+    }
+
+    private boolean addToTrash() {
+        int no = 0;
+        boolean succ = false;
+        final ArrayList<Media> media1 = storeDeletedFilesTemporarily();
+        File file = new File(Environment.getExternalStorageDirectory() + "/" + ".nomedia");
+        if (file.exists() && file.isDirectory()) {
+            succ = addToTrashInnerAction(no, file, media1);
+        } else {
+            // 如果回收站文件夹不存在
+            if (file.mkdirs()) {
+                succ = addToTrashInnerAction(no, file, media1);
+            }
+        }
+        return succ;
+    }
+
+    /**
+     * 将要被删除的文件 即将在垃圾箱中的文件路径记录下来
+     * /storage/emulated/0/.nomedia/filename 中
+     * @return
+     */
+    private ArrayList<Media> storeDeletedFilesTemporarily() {
+        ArrayList<Media> deletedImages = new ArrayList<>();
+        if (!all_photos && editMode) {
+            // 如果是某一个相册下的照片信息
+            for (Media m : getAlbum().getSelectedMedia()) {
+                String name = m.getPath().substring(m.getPath().lastIndexOf('/') + 1);
+                // /storage/emulated/0
+                deletedImages.add(new Media(Environment.getExternalStorageDirectory() + "/" + ".nomedia" + "/" + name));
+            }
+        } else if (all_photos && editMode) {
+            for (Media m : selectedMedias) {
+                String name = m.getPath().substring(m.getPath().lastIndexOf("/") + 1);
+                // /storage/emulated/0
+                deletedImages.add(new Media(Environment.getExternalStorageDirectory() + "/" + ".nomedia" + "/" + name));
+            }
+        } else if (!editMode && !all_photos) {
+            for (Media m : getAlbum().getMedias()) {
+                String name = m.getPath().substring(m.getPath().lastIndexOf("/") + 1);
+                deletedImages.add(new Media(Environment.getExternalStorageDirectory() + "/" + ".nomedia" + "/" + name));
+            }
+        }
+        return deletedImages;
+    }
+
+    /**
+     * 将被删除的图片写入 realm 数据库
+     */
+    private void addTrashObjectsToRealm(ArrayList<Media> media) {
+        String trashbinpath = Environment.getExternalStorageDirectory() + "/" + ".nomedia";
+        Realm.init(getContext());
+        realm = Realm.getDefaultInstance();
+        for (int i = 0; i < media.size(); i ++) {
+            int index = media.get(i).getPath().lastIndexOf("/");
+            String name = media.get(i).getPath().substring(index + 1);
+
+            realm.beginTransaction();
+            String trashpath = trashbinpath + "/" + name;
+            TrashBinRealmModel trashBinRealmModel = realm.createObject(TrashBinRealmModel.class, trashpath);
+            trashBinRealmModel.setOldpath(media.get(i).getPath());
+            trashBinRealmModel.setDatetime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+            trashBinRealmModel.setTimeperiod("null");
+            realm.commitTransaction();
+        }
+    }
+
+    /**
+     * 用户在进行回收站操作的时候，会将回收站内的文件路径作为主键写入realm
+     * 用户进行撤销操作的时候，需要将 realm中对应的回收站文件删除
+     * @param media
+     */
+    private void deleteTrashObjectsFromRealm(ArrayList<Media> media) {
+        Realm.init(getContext());
+        realm = Realm.getDefaultInstance();
+        for (int i = 0; i < media.size(); i ++) {
+            final int index = i;
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    TrashBinRealmModel model = realm.where(TrashBinRealmModel.class)
+                            .equalTo("trashbinpath", media.get(index).getPath()).findFirst();
+                    if (model != null) {
+                        model.deleteFromRealm();
+                    }
+                }
+            });
+        }
+    }
+
+    private void showSnackbar(Boolean result) {
+        if(result) {
+            SnackBarHandler.show(mDrawerLayout, getString(R.string.photo_deleted_msg), navigationView.getHeight());
+        } else {
+            SnackBarHandler.show(mDrawerLayout, getString(R.string.photo_deletion_failed), navigationView.getHeight());
+        }
+    }
+
+    /**
+     * 删除图片的逻辑
+     */
+    private class DeletePhotos extends AsyncTask<String, Integer, Boolean> {
+
+        private boolean succ = false;
+
+        @Override
+        protected void onPreExecute() {
+            swipeRefreshLayout.setRefreshing(true);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            if (albumsMode) {
+                // 说明是删除整个相册的文件信息
+                succ = getAlbums().deleteSelectedAlbums(getActivity());
+            } else {
+                if (editMode) {
+                    // 如果处于选择模式，那么删除被选择的相册或者照片信息
+                    if (!all_photos) {
+                        // 显示的是某一个相册下的照片文件信息
+                        if (AlertDialogsHelper.check) {  // 移动至垃圾箱的按钮是否被选择
+                            succ = addToTrash();
+                            if (succ) {
+                                addTrashObjectsToRealm(getAlbum().getSelectedMedia());
+                            }
+                            // 因为 addToTrash 只是把 Album中medias的 被选中medias删除了，selectedMedias没有动
+                            getAlbum().clearSelectedPhotos();  // 删除被选择的图片信息
+                        } else {
+                            succ = getAlbum().deleteSelectedMedia(getContext());
+                        }
+                    } else {
+                        // 全部照片打开的情况
+                        if (AlertDialogsHelper.check) { // 删除文件至回收站
+                            succ = addToTrash();
+                            if (succ) {
+                                addTrashObjectsToRealm(selectedMedias);
+                            }
+                        } else {  // 直接删除文件
+                            for (Media media: selectedMedias) {
+                                String[] projection = {MediaStore.Images.Media._ID};
+                                String selection = MediaStore.Images.Media.DATA + " = ? ";
+                                String[] selectionArgs = new String[] {media.getPath()};
+                                Uri queryUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                                ContentResolver contentResolver = getContext().getContentResolver();
+
+                                Cursor cursor = contentResolver.query(queryUri, projection, selection, selectionArgs, null);
+                                if (cursor.moveToFirst()) {
+                                    long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
+                                    Uri deleteUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                                    contentResolver.delete(deleteUri, null, null);
+                                    succ = true;
+                                } else {
+                                    succ = true;
+                                }
+                                cursor.close();
+                            }
+                        }
+                    }
+                } else { // (!editMode)
+                    // 不是处于EditMode下，那么需要删除整个相册信息
+                    if (AlertDialogsHelper.check) {
+                        succ = addToTrash();
+                        if (succ) {
+                            addTrashObjectsToRealm(getAlbum().getMedias());
+                        }
+                        getAlbum().getMedias().clear();
+                    } else {
+                        succ = getAlbums().deleteAlbum(getAlbum(), getContext());
+                        getAlbum().getMedias().clear();
+                    }
+                }
+            }
+            return succ;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+
+            if (result) {
+                if (albumsMode) {
+                    // 相册模式下，某一个相册已经删除
+                    getAlbums().clearSelectedAlbums();
+                    albumsAdapter.notifyDataSetChanged();
+                } else {
+                    if (!all_photos) {
+                        // 如果当前相册的所有照片已经被删除了，那么也要删除该照片
+                        if (getAlbum().getMedias().size() == 0) {
+                            getAlbums().removeCurrentAlbum();
+                            albumsAdapter.notifyDataSetChanged();
+                            displayAlbums();
+                            showSnackbar(succ);
+                            swipeRefreshLayout.setRefreshing(true);
+                        } else {
+                            // 当前相册里面的照片没有被完全删除
+                            mediaAdapter.swapDataSet(getAlbum().getMedias(), false);
+                        }
+                    } else { // all_photos = true
+                        // 以全部的模式显示照片
+                        clearSelectedPhotos();
+                        listAll = StorageProvider.getAllShownImages(getActivity());
+//                                media = listAll;
+                        size = listAll.size();
+                        showSnackbar(succ);
+                        Collections.sort(listAll, MediaComparators.getComparator(
+                                getAlbum().settings.getSortingMode(),
+                                getAlbum().settings.getSortingOrder()
+                        ));
+                        mediaAdapter.swapDataSet(listAll, false);
+                    }
+                }
+            } else {
+                new RxPermissions(albumFragment).request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .subscribe(granted -> {
+                            if (granted) { // Always true pre-M
+                                // I can control the camera now
+                                SnackBarHandler.show(mDrawerLayout, "权限申请成功", Snackbar.LENGTH_SHORT);
+                            } else {
+                                // Oups permission denied
+                                SnackBarHandler.show(mDrawerLayout, "权限申请失败", Snackbar.LENGTH_SHORT);
+                            }
+                        });
+            }
+            getActivity().invalidateOptionsMenu();
+            checkNothing();
+            swipeRefreshLayout.setRefreshing(false);
+            super.onPostExecute(result);
+        }
+    }
 }

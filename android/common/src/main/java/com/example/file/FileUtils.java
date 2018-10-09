@@ -1,23 +1,41 @@
 package com.example.file;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.BaseColumns;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.example.common.R;
+import com.example.preference.PreferenceUtil;
+import com.example.strings.StringUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
 
 
@@ -26,6 +44,8 @@ import java.util.Locale;
  */
 
 public class FileUtils {
+
+    private static final String TAG = "FileUtils";
 
     public static final String FOLDER_NAME = "photor";
     private static final String JPEG_FILE_PREFIX = "IMG_";
@@ -450,6 +470,376 @@ public class FileUtils {
 
         }
         return false;
+    }
+
+    /**
+     * 删除一个文件夹下的所有文件信息
+     * @param context
+     * @param folder
+     * @return
+     */
+    public static boolean deleteFilesInFolder(Context context, @NonNull final File folder) {
+        boolean totalSuccess = true;
+        String[] children = folder.list();
+        if (children != null) {
+            for (String child: children) {
+                File file = new File(folder, child);
+                if (!file.isDirectory()) {
+                    boolean success = deleteFile(context, file);
+                    if (!success) {
+                        Log.w(TAG, "Failed to delete file" + child);
+                        totalSuccess = false;
+                    }
+                }
+            }
+        }
+        return totalSuccess;
+    }
+
+    /**
+     * 删除指定的文件
+     * @param context
+     * @param file
+     * @return
+     */
+    public static boolean deleteFile(Context context, @NonNull final File file) {
+        // First try the normal deletion.
+        boolean success = file.delete();
+
+        // Try with Storage Access Framework.
+        if (!success && Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            DocumentFile document = getDocumentFile(context, file, false, false);
+            success = document != null && document.delete();
+        }
+
+        // Try the Kitkat workaround.
+        if (!success && Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            ContentResolver resolver = context.getContentResolver();
+
+            try {
+                Uri uri = null;//MediaStoreUtil.getUriFromFile(file.getAbsolutePath());
+                if (uri != null) {
+                    resolver.delete(uri, null, null);
+                }
+                success = !file.exists();
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Error when deleting file " + file.getAbsolutePath(), e);
+                return false;
+            }
+        }
+
+        if (success) {
+            scanFile(context, new String[]{ file.getPath() });
+        }
+        return success;
+    }
+
+    /**
+     * MediaScannerConnection 作用是为应用提供一个媒体扫描服务，
+     * 当有新创建或者下载的文件时，会从该文件读取元数据并将该文件添加到媒体中去。
+     * 当我们添加一个文件的时候，我们需要刷新媒体库才能立即找得到添加文件，使用MediaScannerConnection 去刷新媒体库
+     * @param context
+     * @param paths
+     */
+    private static void scanFile(Context context, String[] paths) {
+        MediaScannerConnection.scanFile(context, paths, null, null);
+    }
+
+    /**
+     * Get a DocumentFile corresponding to the given file (for writing on ExtSdCard on Android 5). If the file is not
+     * existing, it is created.
+     *
+     * @param file              The file.
+     * @param isDirectory       flag indicating if the file should be a directory.
+     * @param createDirectories flag indicating if intermediate path directories should be created if not existing.
+     * @return The DocumentFile
+     */
+    private static DocumentFile getDocumentFile(Context context, @NonNull final File file, final boolean isDirectory, final boolean createDirectories) {
+
+        Uri treeUri = getTreeUri(context);
+
+        if (treeUri == null) return null;
+
+        DocumentFile document = DocumentFile.fromTreeUri(context, treeUri);
+        String sdcardPath = getSavedSdcardPath(context);
+        String suffixPathPart = null;
+
+        if (sdcardPath != null) {
+            if((file.getPath().indexOf(sdcardPath)) != -1)
+                suffixPathPart = file.getAbsolutePath().substring(sdcardPath.length());
+        } else {
+            HashSet<File> storageRoots = getStorageRoots(context);
+            for(File root : storageRoots) {
+                if (root != null) {
+                    if ((file.getPath().indexOf(root.getPath())) != -1)
+                        suffixPathPart = file.getAbsolutePath().substring(file.getPath().length());
+                }
+            }
+        }
+
+        if (suffixPathPart == null) {
+            Log.d(TAG, "unable to find the document file, filePath:"+ file.getPath()+ " root: " + ""+sdcardPath);
+            return null;
+        }
+
+        if (suffixPathPart.startsWith(File.separator)) suffixPathPart = suffixPathPart.substring(1);
+
+        String[] parts = suffixPathPart.split("/");
+
+        for (int i = 0; i < parts.length; i++) { // 3 is the
+
+            DocumentFile tmp = document.findFile(parts[i]);
+            if (tmp != null)
+                document = document.findFile(parts[i]);
+            else {
+                if (i < parts.length - 1) {
+                    if (createDirectories) document = document.createDirectory(parts[i]);
+                    else return null;
+                }
+                else if (isDirectory) document = document.createDirectory(parts[i]);
+                else return document.createFile("image", parts[i]);
+            }
+        }
+
+        return document;
+    }
+
+    /**
+     * Get the stored tree URIs.
+     *
+     * @return The tree URIs.
+     * @param context context
+     */
+    private static Uri getTreeUri(Context context) {
+        String uriString = PreferenceUtil.getInstance(context).getString(context.getString(R.string.preference_internal_uri_extsdcard_photos), null);
+
+        if (uriString == null) return null;
+        return Uri.parse(uriString);
+    }
+
+
+    private static String getSavedSdcardPath(Context context) {
+        return PreferenceUtil.getInstance(context).getString("sd_card_path", null);
+    }
+
+    /**
+     * 返回应用缓存目录的根目录信息
+     * /storage/emulated/0/Android/data/应用包名/files
+     * @param context
+     * @return
+     */
+    public static HashSet<File> getStorageRoots(Context context) {
+        HashSet<File> paths = new HashSet<File>();
+        for (File file : ContextCompat.getExternalFilesDirs(context, "external")) {
+            if (file != null) {
+                int index = file.getAbsolutePath().lastIndexOf("/Android/data");
+                if (index < 0) Log.w("asd", "Unexpected external file dir: " + file.getAbsolutePath());
+                else
+                    paths.add(new File(file.getAbsolutePath().substring(0, index)));
+            }
+        }
+        return paths;
+    }
+
+
+    /**
+     * 将source文件移动至 targetDir目录下
+     * @param context
+     * @param source
+     * @param targetDir
+     * @return
+     */
+    public static boolean moveFile(Context context, @NonNull final File source, @NonNull final File targetDir) {
+        // 首先尝试普通的重命名操作
+        File target = new File(targetDir, source.getName());
+        boolean success = source.renameTo(target); // 重命名操作
+        if (!success) {
+            success = copyFile(context, source, targetDir);
+            if (success) {
+                success = deleteFile(context, source);
+            }
+        }
+        return success;
+    }
+
+
+    public static boolean copyFile(Context context, @NonNull final File source, @NonNull final File targetDir) {
+        InputStream inStream = null;
+        OutputStream outStream = null;
+
+        boolean success = false;
+        File target = getTargetFile(source, targetDir);
+
+        try {
+            inStream = new FileInputStream(source);
+
+            // First try the normal way
+            if (isWritable(target)) {
+                // standard way
+                FileChannel inChannel = new FileInputStream(source).getChannel();
+                FileChannel outChannel = new FileOutputStream(target).getChannel();
+                inChannel.transferTo(0, inChannel.size(), outChannel);
+                success = true;
+                try { inChannel.close(); } catch (Exception ignored) { }
+                try { outChannel.close(); } catch (Exception ignored) { }
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    //inStream = context.getContentResolver().openInputStream(Uri.fromFile(source));
+                    //outStream = context.getContentResolver().openOutputStream(Uri.fromFile(target));
+                    if (isFileOnSdCard(context, source)) {
+                        DocumentFile sourceDocument = getDocumentFile(context, source, false, false);
+                        if (sourceDocument != null) {
+                            inStream = context.getContentResolver().openInputStream(sourceDocument.getUri());
+                        }
+                    }
+                    // Storage Access Framework
+                    DocumentFile targetDocument = getDocumentFile(context, target, false, false);
+                    if (targetDocument != null) {
+                        outStream = context.getContentResolver().openOutputStream(targetDocument.getUri());
+                    }
+                }
+                else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+                    // TODO: 13/08/16 test this
+                    // Workaround for Kitkat ext SD card
+                    Uri uri = getUriFromFile(context,target.getAbsolutePath());
+                    if (uri != null) {
+                        outStream = context.getContentResolver().openOutputStream(uri);
+                    }
+                }
+
+                if (outStream != null) {
+                    // Both for SAF and for Kitkat, write to output stream.
+                    byte[] buffer = new byte[4096]; // MAGIC_NUMBER
+                    int bytesRead;
+                    while ((bytesRead = inStream.read(buffer)) != -1) outStream.write(buffer, 0, bytesRead);
+                    success = true;
+                }
+
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error when copying file from " + source.getAbsolutePath() + " to " + target.getAbsolutePath(), e);
+            return false;
+        }
+        finally {
+            try { inStream.close(); } catch (Exception ignored) { }
+            try { outStream.close(); } catch (Exception ignored) { }
+        }
+
+        if (success) scanFile(context, new String[] { target.getPath() });
+        return success;
+    }
+
+    /**
+     * 生成 targetDir + source.getName()_date.xxx 的文件
+     * @param source
+     * @param targetDir
+     * @return
+     */
+    private static File getTargetFile(File source, File targetDir) {
+        File file = new File(targetDir, source.getName());
+        if (!source.getParentFile().equals(targetDir) && !file.exists())
+            return file;
+        return new File(targetDir, StringUtils.incrementFileNameSuffix(source.getName()));
+    }
+
+    /**
+     * Check is a file is writable. Detects write issues on external SD card.
+     *
+     * @param file The file
+     * @return true if the file is writable.
+     */
+    private static boolean isWritable(@NonNull final File file) {
+        boolean isExisting = file.exists();
+
+        try {
+            FileOutputStream output = new FileOutputStream(file, true);
+            try {
+                output.close();
+            }
+            catch (IOException e) {
+                // do nothing.
+            }
+        }
+        catch (java.io.FileNotFoundException e) {
+            return false;
+        }
+        boolean result = file.canWrite();
+
+        // Ensure that file is not created during this process.
+        if (!isExisting) {
+            //noinspection ResultOfMethodCallIgnored
+            file.delete();
+        }
+
+        return result;
+    }
+
+
+    /**
+     * 判断file文件时候在SD卡上
+     * @param context
+     * @param file
+     * @return
+     */
+    public static boolean isFileOnSdCard(Context context, File file) {
+        String sdcardPath = getSdcardPath(context);
+        if (sdcardPath != null)
+            return file.getPath().startsWith(sdcardPath);
+
+        return false;
+    }
+
+    /**
+     * 判断当前手机有无sd卡信息，有的话，返回SD卡的根路径信息
+     * http://blog.desmondyao.com/android-storage/
+     * @param context
+     * @return
+     */
+    public static String getSdcardPath(Context context) {
+        for(File file : context.getExternalFilesDirs("external")) {
+            if (file != null && !file.equals(context.getExternalFilesDir("external"))) {
+                int index = file.getAbsolutePath().lastIndexOf("/Android/data");
+                if (index < 0) Log.w("asd", "Unexpected external file dir: " + file.getAbsolutePath());
+                else
+                    return new File(file.getAbsolutePath().substring(0, index)).getPath();
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * Get an Uri from an file path.
+     *
+     * @param path The file path.
+     * @return The Uri.
+     */
+    private static Uri getUriFromFile(Context context, final String path) {
+        ContentResolver resolver = context.getContentResolver();
+
+        Cursor filecursor = resolver.query(MediaStore.Files.getContentUri("external"),
+                new String[] {BaseColumns._ID}, MediaStore.MediaColumns.DATA + " = ?",
+                new String[] {path}, MediaStore.MediaColumns.DATE_ADDED + " desc");
+        if (filecursor == null) {
+            return null;
+        }
+        filecursor.moveToFirst();
+
+        // cursor.isAfterLast() method returns true if you've read all position in your cursor,
+        if (filecursor.isAfterLast()) {
+            filecursor.close();
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.MediaColumns.DATA, path);
+            return resolver.insert(MediaStore.Files.getContentUri("external"), values);
+        }
+        else {
+            int imageId = filecursor.getInt(filecursor.getColumnIndex(BaseColumns._ID));
+            Uri uri = MediaStore.Files.getContentUri("external").buildUpon().appendPath(
+                    Integer.toString(imageId)).build();
+            filecursor.close();
+            return uri;
+        }
     }
 
 }

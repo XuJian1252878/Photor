@@ -1,15 +1,19 @@
 package com.photor.album.entity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.example.file.FileUtils;
+import com.example.strings.StringUtils;
 import com.photor.R;
 import com.photor.album.adapter.MediaAdapter;
 import com.photor.album.entity.comparator.MediaComparators;
 import com.photor.album.provider.MediaStoreProvider;
-import com.photor.album.utils.PreferenceUtil;
+import com.example.preference.PreferenceUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -392,6 +396,15 @@ public class Album {
         MediaScannerConnection.scanFile(context, path, null, onScanCompletedListener);
     }
 
+    public void scanFile(Context context, String[] addPaths, String[] deletePaths, MediaScannerConnection.OnScanCompletedListener onScanCompletedListener) {
+        // 更新增加的文件的信息
+        for (String mediaPathAdded: addPaths) {
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(mediaPathAdded))));
+        }
+
+        MediaScannerConnection.scanFile(context, addPaths, null, onScanCompletedListener);
+    }
+
     public FilterMode getFilterMode() {
         return settings != null ? settings.getFilterMode() : ALL;
     }
@@ -486,6 +499,135 @@ public class Album {
             selectedMedias.clear();
         }
         setPreviewSelected(false);  // 设置封面页没有被选择，待用
+    }
+
+
+    /**
+     * 转移被选择的照片信息到指定的文件夹
+     * @param context
+     * @param targetDir
+     * @return
+     */
+    public int moveSelectedMedia(Context context, String targetDir) {
+        return moveAllMedia(context, targetDir, selectedMedias);
+    }
+
+    /**
+     * 将 source文件路径的文件，移动至 targetDir这个文件夹中
+     * @param context
+     * @param source
+     * @param targetDir
+     * @return
+     */
+    private boolean moveMedia(Context context, String source, String targetDir) {
+        File from = new File(source);
+        File to = new File(targetDir);
+        return FileUtils.moveFile(context, from, to);
+    }
+
+
+    /**
+     * 转移albummedia信息到指定的文件夹
+     * @param context
+     * @param targetDir
+     * @return
+     */
+    public int moveAllMedia(Context context, String targetDir, ArrayList<Media> albummedia){
+        int n = 0;
+        try
+        {
+            int index=-1;
+            for (int i =0;i<albummedia.size(); i++) {
+
+                String s = albummedia.get(i).getPath();
+                int indexOfLastSlash = s.lastIndexOf("/");
+                String fileName = s.substring(indexOfLastSlash + 1);
+
+                if (!albummedia.get(i).getPath().equals(targetDir+"/"+fileName)) {
+                    // 当前被选择的照片没有完成移动操作
+                    index=-1;
+                } else {
+                    index=i;
+                    break;
+                }
+            }
+
+            if(index!=-1) {
+                n = -1;
+            } else {
+                // 当前被选择的照片都没有发生移动操作
+                for (int i = 0; i < albummedia.size(); i++) {
+
+                    if (moveMedia(context, albummedia.get(i).getPath(), targetDir)) {
+                        String from = albummedia.get(i).getPath();
+
+                        scanFile(context,
+                                new String[] {StringUtils.getPhotoPathMoved(albummedia.get(i).getPath(), targetDir)},
+                                new String[] {from},
+                                new MediaScannerConnection.OnScanCompletedListener() {
+                                    @Override
+                                    public void onScanCompleted(String s, Uri uri) {
+                                        Log.d("scanFile", "onScanCompleted: " + s);
+                                    }
+                                });
+
+
+                        medias.remove(albummedia.get(i));
+                        n++;
+                    }
+                }
+                setCount(medias.size());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return n;
+
+    }
+
+    /**
+     * 删除Album对应的图片信息
+     * @param context
+     * @param media
+     * @return
+     */
+    private boolean deleteMedia(Context context, Media media) {
+        boolean success;
+        File file = new File(media.getPath());
+        if (success = FileUtils.deleteFile(context, file)) {
+            scanFile(context, new String[] {file.getAbsolutePath()});
+            // 如果被删除的文件是封面文件
+            if (getPreviewPath() != null && media.getPath().equals(getPreviewPath())) {
+                removeCoverAlbum(context);
+            }
+        }
+        return success;
+    }
+
+    /**
+     * 删除当前相册所有被选中的图片文件信息
+     * @param context
+     * @return
+     */
+    public boolean deleteSelectedMedia(Context context) {
+        boolean success = true;
+        for (Media selectedMedia: selectedMedias) {
+            if (deleteMedia(context, selectedMedia)) {
+                medias.remove(selectedMedia);
+            } else {
+                success = false;
+            }
+
+            if (getPreviewPath() != null && selectedMedia.getPath().equals(getPreviewPath())) {
+                removeCoverAlbum(context);
+            }
+        }
+
+        if (success) {
+            clearSelectedPhotos();
+            setCount(medias.size());
+        }
+        return success;
     }
 
 }

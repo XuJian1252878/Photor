@@ -2,11 +2,12 @@ package com.photor.album.entity;
 
 import android.content.Context;
 
+import com.example.file.FileUtils;
 import com.photor.R;
 import com.photor.album.adapter.AlbumsAdapter;
 import com.photor.album.entity.comparator.AlbumsComparators;
 import com.photor.album.provider.MediaStoreProvider;
-import com.photor.album.utils.PreferenceUtil;
+import com.example.preference.PreferenceUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -220,6 +221,37 @@ public class HandlingAlbums {
                 selectedAlbums.add(dispAlbum);
             }
         }
+    }
+
+
+    /**
+     * 删除当前被选择的相册中的所有照片信息
+     * @param context
+     * @return
+     */
+    public boolean deleteSelectedAlbums(Context context) {
+        boolean success = true;
+        for (Album selectedAlbum: selectedAlbums) {
+            int index = dispAlbums.indexOf(selectedAlbum);
+            if (deleteAlbum(selectedAlbum, context)) {
+                dispAlbums.remove(index);
+            } else {
+                success = false;
+            }
+        }
+        return success;
+    }
+
+
+    public boolean deleteAlbum(Album album, Context context) {
+        return FileUtils.deleteFilesInFolder(context, new File(album.getPath()));
+    }
+
+    /**
+     * 删除当前的相册信息（不显示相册）
+     */
+    public void removeCurrentAlbum() {
+        dispAlbums.remove(current);
     }
 
 }

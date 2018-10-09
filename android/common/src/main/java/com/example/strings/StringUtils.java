@@ -1,4 +1,4 @@
-package com.photor.album.utils;
+package com.example.strings;
 
 import android.webkit.MimeTypeMap;
 
@@ -24,7 +24,12 @@ public class StringUtils {
     }
 
 
-    static String incrementFileNameSuffix(String name) {
+    /**
+     * 为文件名加上版本信息，文件名称如： fileName_date.xxx
+     * @param name
+     * @return
+     */
+    public static String incrementFileNameSuffix(String name) {
         StringBuilder builder = new StringBuilder();
         int dot = name.lastIndexOf('.');
         String baseName = dot != -1 ? name.subSequence(0, dot).toString() : name;

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.photor.album.entity.Album;
 import com.photor.album.entity.Media;
-import com.photor.album.utils.StringUtils;
+import com.example.strings.StringUtils;
 
 import android.database.Cursor;
 import android.net.Uri;

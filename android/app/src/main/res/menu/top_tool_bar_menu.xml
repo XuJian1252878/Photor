@@ -80,6 +80,11 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/delete_action"
+        android:title="@string/delete"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/backup"
         android:icon="@drawable/ic_backup"
         android:title="@string/main_activity_action_menu_item_backup"

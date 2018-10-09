@@ -15,12 +15,17 @@
     <string name="ascending">升序</string>
     <string name="descending">降序</string>
 
+    <!-- Album Action -->
     <string name="details">详细信息</string>
     <string name="copy_to">复制到</string>
     <string name="move_to">移动到</string>
     <string name="share">分享到</string>
-
     <string name="select_all">选择全部</string>
+    <string name="delete">删除</string>
+
+    <string name="trashbin_move">图片已移至垃圾箱中</string>
+    <string name="trashbin_move_onefile">图片已移至垃圾箱中</string>
+    <string name="trashbin_move_error">E发生错误</string>
 
     <!--ALBUM DETAILS-->
     <string name="total_photos">图片数量:</string>
@@ -45,5 +50,22 @@
     <string name="ok_action">OK</string>
 
     <string name="all">全部图片</string>
+
+    <!-- 图片删除信息 -->
+    <!-- Photo deletion toast messages -->
+    <string name="photo_deleted_msg">图片删除成功</string>
+    <string name="photo_deletion_failed">图片删除失败</string>
+    <string name="delete_album_message">确定删除选择的相册？</string>
+    <string name="delete_albums_message">确定删除选择的相册？</string>
+    <string name="delete_photo_message">确定删除这些图片？</string>
+    <string name="delete_photos_message">确定删除这些图片？</string>
+    <string name="move_to_trashbin">移动至回收站</string>
+
+
+    <string name="sd_card_write_permission_title">SD-Card write permission</string>
+    <string name="sd_card_permissions_message">In the next screen, please select the root of the SD
+        card in the left sidebar and confirm at the bottom, to grant the writing permission of
+        the SD card.
+    </string>
 
 </resources>
