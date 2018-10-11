@@ -93,6 +93,17 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/clear_album_preview"
+        android:title="@string/clear_preview"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/rename_album"
+        android:title="@string/rename"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/backup"
         android:icon="@drawable/ic_backup"
         android:title="@string/main_activity_action_menu_item_backup"

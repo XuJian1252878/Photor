@@ -28,6 +28,11 @@
     <string name="trashbin_move_error">发生错误</string>
 
     <string name="set_preview">设置为封面</string>
+    <string name="set_preview_success">设置封面信息成功</string>
+    <string name="clear_preview">清除相册封面信息</string>
+    <string name="clear_preview_success">清除相册封面信息成功</string>
+
+    <string name="rename">重命名</string>
 
     <!--ALBUM DETAILS-->
     <string name="total_photos">图片数量:</string>

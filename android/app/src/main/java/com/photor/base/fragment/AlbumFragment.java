@@ -35,6 +35,7 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.file.FileUtils;
 import com.example.strings.StringUtils;
@@ -955,6 +956,9 @@ public class AlbumFragment extends Fragment {
         menu.findItem(R.id.set_as_album_preview).setVisible(!albumsMode && !all_photos && getAlbum()
                 .getSelectedCount() == 1);
 
+        // 设置清除相册封面选项
+        menu.findItem(R.id.clear_album_preview).setVisible(!albumsMode && getAlbum().hasCustomCover() && !all_photos);
+
         // 控制各种菜单项是否显示
         menu.findItem(R.id.delete_action).setVisible((!albumsMode || editMode) && (!all_photos || editMode));  // 在editMode，或者 显示某一个相册下照片的时候显示删除按钮
 
@@ -1249,7 +1253,14 @@ public class AlbumFragment extends Fragment {
             case R.id.set_as_album_preview:
                 if (!albumsMode) {
                     getAlbum().setSelectedPhotoAsPreview(getActivity().getApplicationContext());
+                    Toast.makeText(getContext(), getString(R.string.set_preview_success), Toast.LENGTH_SHORT).show();
                     finishEditMode();
+                }
+                return true;
+            case R.id.clear_album_preview:
+                if (!albumsMode && !all_photos) {
+                    getAlbum().removeCoverAlbum(getContext());
+                    Toast.makeText(getContext(), getString(R.string.clear_preview_success), Toast.LENGTH_SHORT).show();
                 }
                 return true;
             default:
