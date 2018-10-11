@@ -19,6 +19,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -49,6 +50,7 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.photor.MainApplication;
 import com.photor.R;
+import com.photor.album.activity.SingleMediaActivity;
 import com.photor.album.adapter.AlbumsAdapter;
 import com.photor.album.adapter.MediaAdapter;
 import com.photor.album.entity.Album;
@@ -71,7 +73,6 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -90,7 +91,7 @@ import static com.photor.album.entity.SortingMode.DATE;
 
 public class AlbumFragment extends Fragment {
 
-    private int REQUEST_CODE_SD_CARD_PERMISSIONS = 42;
+    final String ACTION_REVIEW = "com.android.camera.action.REVIEW";
 
     private PreferenceUtil SP;
 
@@ -294,6 +295,13 @@ public class AlbumFragment extends Fragment {
                     getActivity().invalidateOptionsMenu();
                 } else {
                     // 单击模式，进入相册列表
+                    view.setTransitionName(getString(R.string.transition_photo)); // 设置Activity的过度动画效果
+                    getAlbum().setCurrentPhotoIndex(m);
+                    Intent intent = new Intent(getActivity(), SingleMediaActivity.class);
+                    intent.putExtra("path", Uri.fromFile(new File(m.getPath())).toString());
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), view, view.getTransitionName());
+                    intent.setAction(SingleMediaActivity.ACTION_OPEN_ALBUM);
+                    startActivity(intent, options.toBundle());
                 }
             } else {
                 // 全部图片信息
@@ -302,6 +310,13 @@ public class AlbumFragment extends Fragment {
                     mediaAdapter.notifyItemChanged(toggleSelectPhoto(m));
                 } else {
                     // 单击模式，进入相册列表
+                    Intent intent = new Intent(ACTION_REVIEW, Uri.fromFile(new File(m.getPath())));
+                    intent.putExtra(getString(R.string.all_photo_mode), true);
+                    intent.putExtra(getString(R.string.position), pos);
+                    intent.putExtra(getString(R.string.allMediaSize), listAll.size());
+                    view.setTransitionName(getString(R.string.transition_photo));
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), view, view.getTransitionName());
+                    intent.setClass(getActivity(), SingleMediaActivity.class);
                 }
             }
         }

@@ -61,9 +61,24 @@
 
     <string name="folder">文件夹</string>
 
+    <string name="path">Path</string>
+    <string name="details_title">Title</string>
+    <string name="type">Type</string>
+    <string name="resolution">Resolution</string>
+    <string name="exif">EXIF</string>
+    <string name="device">Device</string>
+    <string name="orientation">Orientation</string>
+    <string name="location">Location</string>
+    <string name="no_description">No description added.</string>
+    <string name="deleted_share_image">Media deleted from local folders.</string>
+    <string name="no_location">No location</string>
+    <string name="no_exif_data">No data found.</string>
+    <string name="type_description">Description</string>
+
+    <string name="transition_photo">transition_photo</string>
+
     <!-- ACTIONS -->
     <string name="ok_action">OK</string>
-
     <string name="all">全部图片</string>
 
     <!-- 图片删除信息 -->
@@ -74,6 +89,7 @@
     <string name="delete_photo_message">确定删除这些图片？</string>
     <string name="delete_photos_message">确定删除这些图片？</string>
     <string name="move_to_trashbin">移动至回收站</string>
+    <string name="restore_photo">撤销操作</string>
 
     <!-- 图片被移动的信息 -->
     <string name="photos_moved_successfully">图片移动成功</string>
@@ -86,10 +102,9 @@
     <string name="copied_successfully">拷贝成功</string>
 
 
-    <string name="sd_card_write_permission_title">SD-Card write permission</string>
-    <string name="sd_card_permissions_message">In the next screen, please select the root of the SD
-        card in the left sidebar and confirm at the bottom, to grant the writing permission of
-        the SD card.
-    </string>
+
+    <string name="all_photo_mode">photo mode</string>
+    <string name="position">position</string>
+    <string name="allMediaSize">size</string>
 
 </resources>

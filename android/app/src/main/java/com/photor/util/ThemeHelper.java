@@ -79,4 +79,13 @@ public class ThemeHelper {
         } catch (final Throwable ignored) {  }
     }
 
+    public static int getBackgroundColor(Context context) {
+        int color = getColor(context, R.color.md_light_background);
+        return color;
+    }
+
+    public static IconicsDrawable getToolbarIcon(Context context, IIcon icon) {
+        return new IconicsDrawable(context).icon(icon).color(Color.WHITE).sizeDp(18);
+    }
+
 }

@@ -100,6 +100,9 @@
         <!-- 公共组件，图片选择器界面 -->
         <activity android:name="com.example.photopicker.PhotoPickerActivity" />
         <activity android:name="com.example.photopicker.PhotoPagerActivity" />
+
+        <!--显示相册图片详情的页面 -->
+        <activity android:name=".album.activity.SingleMediaActivity" />
     </application>
 
 </manifest>

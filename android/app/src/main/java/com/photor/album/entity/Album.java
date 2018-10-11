@@ -3,6 +3,7 @@ package com.photor.album.entity;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -56,7 +57,7 @@ public class Album {
         setPreviewPath(getCoverPath());
     }
 
-    public Album(Context context, File mediaPath) {
+    public Album(Context context, @NonNull File mediaPath) {
         super();
         File folder = mediaPath.getParentFile();
         this.path = folder.getPath();
