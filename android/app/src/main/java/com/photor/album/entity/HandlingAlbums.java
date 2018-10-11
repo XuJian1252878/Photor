@@ -268,4 +268,13 @@ public class HandlingAlbums {
         return res != -1;
     }
 
+    /**
+     * 获取位于index位置的相册信息
+     * @param index
+     * @return
+     */
+    public Album getAlbum(int index) {
+        return dispAlbums.get(index);
+    }
+
 }

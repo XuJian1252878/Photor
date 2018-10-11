@@ -3,23 +3,66 @@ package com.photor.util;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.photor.R;
 import com.photor.album.entity.Album;
 
+import java.lang.reflect.Field;
 import java.util.TreeMap;
 
 public class AlertDialogsHelper {
 
     public static boolean check=false;
+
+    public static AlertDialog getInsertTextDialog(final Activity activity, AlertDialog.Builder dialogBuilder , EditText editText, @StringRes int title, String link) {
+        View dialogLayout = activity.getLayoutInflater().inflate(R.layout.dialog_insert_text, null);
+        TextView textViewTitle = (TextView) dialogLayout.findViewById(R.id.rename_title);
+        ((CardView) dialogLayout.findViewById(R.id.dialog_chose_provider_title)).setCardBackgroundColor(ThemeHelper.getCardBackgroundColor(activity));
+        textViewTitle.setBackgroundColor(ThemeHelper.getPrimaryColor(activity));
+
+        if (link != null) {
+            textViewTitle.setText(Html.fromHtml(link));
+            textViewTitle.setLinkTextColor(Color.WHITE);
+        } else {
+            textViewTitle.setText(title);
+        }
+        // 激活链接需要在Java代码中使用setMovementMethod()方法设置TextView为可点击。
+        textViewTitle.setMovementMethod(LinkMovementMethod.getInstance());
+        ThemeHelper.setCursorDrawableColor(editText, ThemeHelper.getTextColor(activity));  // 设置标题栏光标的颜色
+
+        // 设置editText的布局
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        editText.setLayoutParams(layoutParams);
+        editText.setSingleLine(true);
+        editText.getBackground().mutate().setColorFilter(ThemeHelper.getTextColor(activity), PorterDuff.Mode.SRC_IN);
+        editText.setTextColor(ThemeHelper.getTextColor(activity));
+
+        // ...
+        try {
+            Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
+            f.setAccessible(true);
+            f.set(editText, null);
+        } catch (Exception ignored) { }
+
+        ((RelativeLayout) dialogLayout.findViewById(R.id.container_edit_text)).addView(editText);
+        dialogBuilder.setView(dialogLayout);
+        return dialogBuilder.create();
+    }
 
     public static AlertDialog getTextDialog(final Activity activity, AlertDialog.Builder textDialogBuilder, @StringRes int title, @StringRes int Message, String msg){
         View dialogLayout = activity.getLayoutInflater().inflate(R.layout.dialog_text, null);

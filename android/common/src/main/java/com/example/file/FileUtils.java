@@ -685,7 +685,7 @@ public class FileUtils {
      * @return
      */
     public static boolean updateMediaStoreAfterCreate(Context context, File createFile) {
-        return updateMediaStore(context, createFile);
+        return updateMediaStore(context, createFile, null);
     }
 
     /**
@@ -703,7 +703,7 @@ public class FileUtils {
 //            context.getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
 //                    MediaStore.Images.Media.DATA + " = ? ",
 //                    new String[] { deleteFile.getAbsolutePath()});
-            return updateMediaStore(context, deleteFile);
+            return updateMediaStore(context, deleteFile, null);
         } catch (Exception e) {
             Log.d("MediaStoreAfterDelete", e.getMessage());
             return false;
@@ -716,25 +716,26 @@ public class FileUtils {
      * @param file
      * @return
      */
-    public static boolean updateMediaStore(final Context context, final File file) {
+    public static boolean updateMediaStore(final Context context, final File file, MediaScannerConnection.OnScanCompletedListener onScanCompletedListener) {
         try {
             //版本号的判断  4.4为分水岭，发送广播更新媒体库
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 MediaScannerConnection.scanFile(context,
                         new String[]{file.getAbsolutePath()},
                         null,  // 根绝文件后缀名称决定mimetype
-                        new MediaScannerConnection.OnScanCompletedListener() {
-                            @Override
-                            public void onScanCompleted(String s, Uri uri) {
-//                                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-//                                intent.setData(uri);
-//                                context.sendBroadcast(intent);
-//                                Log.d("updateMediaStore1", s);
-//                                Log.d("updateMediaStore2", Uri.fromFile(file).toString());
-//                                Log.d("updateMediaStore3", uri.toString());
-//                                Log.d("updateMediaStore4", Environment.getExternalStorageDirectory().getAbsolutePath());
-                            }
-                        });
+                        onScanCompletedListener);
+//                        new MediaScannerConnection.OnScanCompletedListener() {
+//                            @Override
+//                            public void onScanCompleted(String s, Uri uri) {
+////                                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+////                                intent.setData(uri);
+////                                context.sendBroadcast(intent);
+////                                Log.d("updateMediaStore1", s);
+////                                Log.d("updateMediaStore2", Uri.fromFile(file).toString());
+////                                Log.d("updateMediaStore3", uri.toString());
+////                                Log.d("updateMediaStore4", Environment.getExternalStorageDirectory().getAbsolutePath());
+//                            }
+//                        });
             } else {
                 context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.fromFile(file)));
             }

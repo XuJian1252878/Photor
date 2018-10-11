@@ -33,6 +33,14 @@
     <string name="clear_preview_success">清除相册封面信息成功</string>
 
     <string name="rename">重命名</string>
+    <string name="rename_photo_action">相册重命名</string>
+    <string name="description_hint">...</string>
+    <string name="rename_album">相册重命名</string>
+    <string name="rename_no_change">相册名称未更改</string>
+
+    <string name="rename_error">重命名失败</string>
+    <string name="rename_succes">重命名成功</string>
+    <string name="insert_something">请输入内容</string>
 
     <!--ALBUM DETAILS-->
     <string name="total_photos">图片数量:</string>

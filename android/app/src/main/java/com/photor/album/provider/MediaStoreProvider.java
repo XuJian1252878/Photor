@@ -169,4 +169,18 @@ public class MediaStoreProvider {
         return list;
     }
 
+    public static long getAlbumId(Context context, String mediaPath) {
+        long id = -1;
+        Cursor cursor = context.getContentResolver().query(MediaStore.Files.getContentUri("external"),
+                new String[] {MediaStore.Files.FileColumns.PARENT },
+                MediaStore.Files.FileColumns.DATA + " = ? ",
+                new String[] {mediaPath},
+                null);
+        if (cursor != null && cursor.moveToNext()) {
+            id = cursor.getLong(0);
+            cursor.close();
+        }
+        return id;
+    }
+
 }

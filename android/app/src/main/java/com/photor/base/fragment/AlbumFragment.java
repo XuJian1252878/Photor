@@ -20,6 +20,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -27,12 +28,17 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -959,6 +965,10 @@ public class AlbumFragment extends Fragment {
         // 设置清除相册封面选项
         menu.findItem(R.id.clear_album_preview).setVisible(!albumsMode && getAlbum().hasCustomCover() && !all_photos);
 
+        // 重命名相册的菜单项（某一个相册被选择 || 正在浏览某一个相册下的图片）
+        menu.findItem(R.id.rename_album).setVisible(((albumsMode && getAlbums().getSelectedCount() == 1) ||
+                (!albumsMode && !editMode)) && !all_photos);
+
         // 控制各种菜单项是否显示
         menu.findItem(R.id.delete_action).setVisible((!albumsMode || editMode) && (!all_photos || editMode));  // 在editMode，或者 显示某一个相册下照片的时候显示删除按钮
 
@@ -1262,6 +1272,113 @@ public class AlbumFragment extends Fragment {
                     getAlbum().removeCoverAlbum(getContext());
                     Toast.makeText(getContext(), getString(R.string.clear_preview_success), Toast.LENGTH_SHORT).show();
                 }
+                return true;
+            case R.id.rename_album:
+                AlertDialog.Builder renameDialogBuilder = new AlertDialog.Builder(getActivity(), R.style.AlertDialog_Light);
+                EditText editTextNewName = new EditText(getActivity().getApplicationContext());
+                editTextNewName.setText(albumsMode ? getAlbums().getSelectedAlbum(0).getName() : getAlbum().getName());
+                editTextNewName.setSelectAllOnFocus(true);
+                editTextNewName.setHint(R.string.description_hint);
+                editTextNewName.setHintTextColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.grey));
+                editTextNewName.setHighlightColor(ContextCompat.getColor(getActivity().getApplicationContext(), R.color.cardview_shadow_start_color));
+                editTextNewName.selectAll();
+                editTextNewName.setSingleLine(false);
+
+                final String albumName = albumsMode ? getAlbums().getSelectedAlbum(0).getName() : getAlbum().getName();
+                AlertDialogsHelper.getInsertTextDialog(getActivity(), renameDialogBuilder,
+                        editTextNewName, R.string.rename_album, null);
+                renameDialogBuilder.setNegativeButton(getString(R.string.cancel), null);
+                renameDialogBuilder.setPositiveButton(getString(R.string.ok_action), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // 这里的函数体为空，之后会重写 dialog positive button的click listener，防止renameDialog dismiss
+                    }
+                });
+
+                AlertDialog renameDialog = renameDialogBuilder.create();
+                // 系统自动设置软键盘
+                renameDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_IS_FORWARD_NAVIGATION);
+                editTextNewName.setSelection(editTextNewName.getText().toString().length());
+                renameDialog.show();
+                AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE,
+                        DialogInterface.BUTTON_NEGATIVE}, com.photor.util.ThemeHelper.getAccentColor(getActivity()), renameDialog);
+                // 初识时首先禁止确认按钮
+                renameDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE}, ContextCompat.getColor(getActivity(), R.color.grey), renameDialog);
+
+                // 设置输入文字的时候
+                editTextNewName.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (TextUtils.isEmpty(editable)) {
+                            // 说明没有文字
+                            renameDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                            AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE},
+                                    ContextCompat.getColor(albumFragment.getActivity(), R.color.grey),
+                                    renameDialog);
+                        } else {
+                            // 已经有文字输入
+                            renameDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                            AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE},
+                                    com.photor.util.ThemeHelper.getAccentColor(albumFragment.getActivity()),
+                                    renameDialog);
+                        }
+                    }
+                });
+
+                renameDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        boolean rename = false;
+                        if (editTextNewName.length() != 0) {
+                            swipeRefreshLayout.setRefreshing(true);
+                            boolean success = false;
+                            if (albumsMode) {
+                                if (!editTextNewName.getText().toString().equals(albumName)) {
+                                    int index = getAlbums().dispAlbums.indexOf(getAlbums().getSelectedAlbum(0));  // 获取被选择的相册在相册中的下标
+                                    success = getAlbums().getAlbum(index).renameAlbum(getContext(), editTextNewName.getText().toString());
+                                    albumsAdapter.notifyItemChanged(index);
+                                } else {
+                                    SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.rename_no_change), navigationView.getHeight());
+                                    rename = true;
+                                }
+                            } else {
+                                if (!editTextNewName.getText().toString().equals(albumName)) {
+                                    success = getAlbum().renameAlbum(getContext(), editTextNewName.getText().toString());
+                                    toolbar.setTitle(getAlbum().getName());
+                                    mediaAdapter.notifyDataSetChanged();  // 更新相册内的照片信息
+                                } else {
+                                    SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.rename_no_change), navigationView.getHeight());
+                                    rename = true;
+                                }
+                            }
+                            renameDialog.dismiss();
+                            if (success) {
+                                SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.rename_succes), navigationView.getHeight());
+                                getAlbums().clearSelectedAlbums();
+                                getActivity().invalidateOptionsMenu();
+                            } else if (!rename) {
+                                // 说明重命名操作失败
+                                SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.rename_error), navigationView.getHeight());
+                                requestSdCardPermissions();
+                            }
+                            swipeRefreshLayout.setRefreshing(false);
+                        } else {
+                            SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.insert_something), navigationView.getHeight());
+                            editTextNewName.requestFocus();
+                        }
+                    }
+                });
                 return true;
             default:
                 break;

@@ -1,8 +1,10 @@
 package com.photor.album.entity;
 
 import android.content.Context;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.file.FileUtils;
 import com.example.strings.StringUtils;
@@ -623,6 +625,38 @@ public class Album {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return success;
+    }
+
+    public boolean renameAlbum(final Context context, String newName) {
+        found_id_album = false; //
+        boolean success;
+        File newDir = new File(StringUtils.getAlbumPathRenamed(getPath(), newName)); // 生成新的相册路径
+        File oldDir = new File(getPath());
+        success = oldDir.renameTo(newDir);
+
+        if (success) {
+            // 更新图片文件信息至MediaStore
+            for (Media m: medias) {
+                File from = new File(m.getPath());  // 旧相册中图片路径
+                File to = new File(StringUtils.getPhotoPathRenamedAlbumChange(m.getPath(), newName)); // 新相册中图片路径
+                FileUtils.updateMediaStore(context, from, null);
+                FileUtils.updateMediaStore(context, to, new MediaScannerConnection.OnScanCompletedListener() {
+                    @Override
+                    public void onScanCompleted(String s, Uri uri) {
+                        if (!found_id_album) {
+                            id = MediaStoreProvider.getAlbumId(context, s);
+                            found_id_album = true;
+                        }
+                        Log.d(s, "onScanCompleted: "+s);
+                        m.setPath(s);  // 更新相册中文件的路径信息
+                        m.setUri(uri.toString());
+                    }
+                });
+            }
+            path = newDir.getAbsolutePath();
+            name = newName;
         }
         return success;
     }

@@ -7,10 +7,14 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.typeface.IIcon;
 import com.photor.R;
+
+import java.lang.reflect.Field;
 
 public class ThemeHelper {
 
@@ -51,6 +55,28 @@ public class ThemeHelper {
 
     public static void setColorScrollBarDrawable(Context context, Drawable drawable) {
         drawable.setColorFilter(new PorterDuffColorFilter(getPrimaryColor(context), PorterDuff.Mode.SRC_ATOP));
+    }
+
+    public static void setCursorDrawableColor(EditText editText, int color) {
+        try {
+            Field fCursorDrawableRes =
+                    TextView.class.getDeclaredField("mCursorDrawableRes");
+            fCursorDrawableRes.setAccessible(true);
+            int mCursorDrawableRes = fCursorDrawableRes.getInt(editText);
+            Field fEditor = TextView.class.getDeclaredField("mEditor");
+            fEditor.setAccessible(true);
+            Object editor = fEditor.get(editText);
+            Class<?> clazz = editor.getClass();
+            Field fCursorDrawable = clazz.getDeclaredField("mCursorDrawable");
+            fCursorDrawable.setAccessible(true);
+
+            Drawable[] drawables = new Drawable[2];
+            drawables[0] = ContextCompat.getDrawable(editText.getContext(), mCursorDrawableRes);
+            drawables[1] = ContextCompat.getDrawable(editText.getContext(), mCursorDrawableRes);
+            drawables[0].setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            drawables[1].setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            fCursorDrawable.set(editor, drawables);
+        } catch (final Throwable ignored) {  }
     }
 
 }
