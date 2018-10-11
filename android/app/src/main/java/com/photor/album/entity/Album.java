@@ -289,6 +289,10 @@ public class Album {
         setPreviewPath(null);
     }
 
+    /**
+     * 将更新的相册封面信息写入sqllite数据库中
+     * @param context
+     */
     public void setSelectedPhotoAsPreview(Context context) {
         if (selectedMedias.size() > 0)
             settings.changeCoverPath(context, selectedMedias.get(0).getPath());

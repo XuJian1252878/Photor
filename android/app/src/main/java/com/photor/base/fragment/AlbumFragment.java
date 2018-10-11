@@ -951,6 +951,9 @@ public class AlbumFragment extends Fragment {
             menu.findItem(R.id.action_move).setVisible(getAlbums().getSelectedCount() == 1);
         }
 
+        // 设置相册封面的照片
+        menu.findItem(R.id.set_as_album_preview).setVisible(!albumsMode && !all_photos && getAlbum()
+                .getSelectedCount() == 1);
 
         // 控制各种菜单项是否显示
         menu.findItem(R.id.delete_action).setVisible((!albumsMode || editMode) && (!all_photos || editMode));  // 在editMode，或者 显示某一个相册下照片的时候显示删除按钮
@@ -1242,6 +1245,12 @@ public class AlbumFragment extends Fragment {
                 }
                 item.setTitle(!item.isChecked() ? R.string.descending : R.string.ascending);
                 item.setChecked(!item.isChecked());
+                return true;
+            case R.id.set_as_album_preview:
+                if (!albumsMode) {
+                    getAlbum().setSelectedPhotoAsPreview(getActivity().getApplicationContext());
+                    finishEditMode();
+                }
                 return true;
             default:
                 break;

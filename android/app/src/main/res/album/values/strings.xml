@@ -25,7 +25,9 @@
 
     <string name="trashbin_move">图片已移至垃圾箱中</string>
     <string name="trashbin_move_onefile">图片已移至垃圾箱中</string>
-    <string name="trashbin_move_error">E发生错误</string>
+    <string name="trashbin_move_error">发生错误</string>
+
+    <string name="set_preview">设置为封面</string>
 
     <!--ALBUM DETAILS-->
     <string name="total_photos">图片数量:</string>
