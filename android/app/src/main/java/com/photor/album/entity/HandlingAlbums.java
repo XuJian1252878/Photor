@@ -254,4 +254,18 @@ public class HandlingAlbums {
         dispAlbums.remove(current);
     }
 
+    /**
+     * 移动当前被选择的相册中的所有照片到指定的文件夹
+     * @param context
+     * @param targetDir
+     * @return
+     */
+    public boolean moveSelectedAlbum(Context context, String targetDir) {
+        Album current = selectedAlbums.get(0); // 只有选择一个相册的时候才有可能出现 移动的选项
+        current.updatePhotos(context);
+        current.selectAllPhotos();
+        int res = current.moveSelectedMedia(context, targetDir);
+        return res != -1;
+    }
+
 }

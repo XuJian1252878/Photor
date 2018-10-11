@@ -1,11 +1,8 @@
 package com.photor.album.entity;
 
 import android.content.Context;
-import android.content.Intent;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.example.file.FileUtils;
 import com.example.strings.StringUtils;
@@ -389,22 +386,6 @@ public class Album {
 
     private boolean found_id_album = false;
 
-
-    public void scanFile(Context context, String[] path) { MediaScannerConnection.scanFile(context, path, null, null); }
-
-    public void scanFile(Context context, String[] path, MediaScannerConnection.OnScanCompletedListener onScanCompletedListener) {
-        MediaScannerConnection.scanFile(context, path, null, onScanCompletedListener);
-    }
-
-    public void scanFile(Context context, String[] addPaths, String[] deletePaths, MediaScannerConnection.OnScanCompletedListener onScanCompletedListener) {
-        // 更新增加的文件的信息
-        for (String mediaPathAdded: addPaths) {
-            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(mediaPathAdded))));
-        }
-
-        MediaScannerConnection.scanFile(context, addPaths, null, onScanCompletedListener);
-    }
-
     public FilterMode getFilterMode() {
         return settings != null ? settings.getFilterMode() : ALL;
     }
@@ -553,24 +534,12 @@ public class Album {
             }
 
             if(index!=-1) {
-                n = -1;
+                n = -1;  // 一种情况是：当前要移动文件所处的文件夹与当前的目标文件夹相同
             } else {
                 // 当前被选择的照片都没有发生移动操作
                 for (int i = 0; i < albummedia.size(); i++) {
 
                     if (moveMedia(context, albummedia.get(i).getPath(), targetDir)) {
-                        String from = albummedia.get(i).getPath();
-
-                        scanFile(context,
-                                new String[] {StringUtils.getPhotoPathMoved(albummedia.get(i).getPath(), targetDir)},
-                                new String[] {from},
-                                new MediaScannerConnection.OnScanCompletedListener() {
-                                    @Override
-                                    public void onScanCompleted(String s, Uri uri) {
-                                        Log.d("scanFile", "onScanCompleted: " + s);
-                                    }
-                                });
-
 
                         medias.remove(albummedia.get(i));
                         n++;
@@ -595,7 +564,6 @@ public class Album {
         boolean success;
         File file = new File(media.getPath());
         if (success = FileUtils.deleteFile(context, file)) {
-            scanFile(context, new String[] {file.getAbsolutePath()});
             // 如果被删除的文件是封面文件
             if (getPreviewPath() != null && media.getPath().equals(getPreviewPath())) {
                 removeCoverAlbum(context);
@@ -626,6 +594,31 @@ public class Album {
         if (success) {
             clearSelectedPhotos();
             setCount(medias.size());
+        }
+        return success;
+    }
+
+    public boolean copySelectedPhotos(Context context, String folderPath) {
+        boolean success = true;
+        for (Media media: selectedMedias) {
+            if (!copyPhoto(context, media.getPath(), folderPath)) {
+                success = false;
+            }
+        }
+        return success;
+    }
+
+
+    public boolean copyPhoto(Context context, String olderPath, String folderPath) {
+        boolean success = false;
+        try {
+            File from = new File(olderPath);
+            File to = new File(folderPath);
+            if (success = FileUtils.copyFile(context, from, to)) {
+                FileUtils.updateMediaStoreAfterCreate(context, new File(StringUtils.getPhotoPathMoved(olderPath, folderPath)));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return success;
     }

@@ -77,10 +77,18 @@ public class MediaStoreProvider {
                 MediaStore.Files.FileColumns.PARENT
         };
 
-        String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? and "
+        String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? or "
+                + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? or "
+                + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? or "
+                + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? or "
+                + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? ) and ( "
                 + MediaStore.Files.FileColumns.PARENT + " = ? ";
         String[] selectionArgs = new String[] {
                 String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
+                "image/jpeg",
+                "image/png",
+                "image/jpg",
+                "image/gif",
                 String.valueOf(albumId)
         };
 
@@ -125,9 +133,18 @@ public class MediaStoreProvider {
         Uri images = MediaStore.Files.getContentUri("external");
 
         // 获取某个特定文件夹下的图片信息
-        String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? and " + MediaStore.Files.FileColumns.PARENT + " = ? ";
+        String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? or "
+                + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? or "
+                + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? or "
+                + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? or "
+                + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? ) and ( "
+                + MediaStore.Files.FileColumns.PARENT + " = ? ";
         String[] selectionArgs = new String[] {
                 String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),
+                "image/jpeg",
+                "image/png",
+                "image/jpg",
+                "image/gif",
                 String.valueOf(albumId)
         };
 

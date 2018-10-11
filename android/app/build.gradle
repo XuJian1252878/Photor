@@ -177,8 +177,8 @@ android {
         }
     }
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -190,71 +190,53 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:cardview-v7:27.1.1'
-
     implementation 'com.facebook.react:react-native:+'
-
     // 实现图片圆形化的功能
     implementation 'de.hdodenhof:circleimageview:2.1.0'
-
     // BottomNavigationView的扩展
     implementation 'com.github.ittianyu:BottomNavigationViewEx:1.2.4'
-
     // 消息小气泡的实现
     implementation 'q.rorbin:badgeview:1.1.0'
-
     // 引入 glide 库
-    implementation("com.github.bumptech.glide:glide:4.8.0") {
+    implementation('com.github.bumptech.glide:glide:4.8.0') {
         exclude group: "com.android.support"
     }
-    implementation "com.android.support:support-fragment:27.1.1"
+    implementation 'com.android.support:support-fragment:27.1.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
-
     // 引入步骤控件
     implementation 'com.shuhart.stepview:stepview:1.2.5'
-
     // 引入日志
     implementation 'com.orhanobut:logger:1.15'
-
     // 引入camera view
     implementation 'com.otaliastudios:cameraview:1.6.0'
-    implementation "com.android.support:exifinterface:27.1.1"
-
+    implementation 'com.android.support:exifinterface:27.1.1'
     // 引入选择器
     implementation 'com.contrarywind:wheelview:4.0.8'
-
     // 引入选择器
     implementation 'com.shawnlin:number-picker:2.4.6'
-
     // 引入视频播放器
     implementation 'cn.jzvd:jiaozivideoplayer:6.3.1'
-
     // 引入富文本框信息
     implementation 'com.github.lygttpod:SuperTextView:2.1.8'
-
     implementation project(':photopicker')
-
     // 引入依赖android模块信息
     api project(':smartcameralib')
     api project(':smartcropperlib')
     api project(':imageeditlibrary')
     api project(':openCVLibrary341')
-
     // 引入rxjava
     implementation 'io.reactivex.rxjava2:rxjava:2.2.2'
-
     // This library allows the usage of RxJava with the new Android M permission model.
     implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
-
     // 引入 android 图标信息
     //the core iconcis library (without any widgets)
-    implementation "com.mikepenz:iconics-core:2.8.4"
+    implementation 'com.mikepenz:iconics-core:2.8.4'
     //this adds all ui view widgets (IconicsButton, IconicsImageView, ...)
     implementation 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
     implementation 'com.mikepenz:community-material-typeface:1.5.54.2@aar'
     implementation 'com.mikepenz:fontawesome-typeface:4.6.0.1@aar'
-    implementation 'com.mikepenz:ionicons-typeface:+@aar'
+    implementation 'com.mikepenz:ionicons-typeface:2.0.1.5@aar'
     implementation 'org.jetbrains:annotations-java5:15.0'
-
     // android 控件注入
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'

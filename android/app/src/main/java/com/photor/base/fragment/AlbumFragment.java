@@ -5,9 +5,12 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,6 +36,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.file.FileUtils;
+import com.example.strings.StringUtils;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.photor.MainApplication;
@@ -51,6 +56,7 @@ import com.example.preference.PreferenceUtil;
 import com.photor.album.utils.ThemeHelper;
 import com.photor.album.views.CustomScrollBarRecyclerView;
 import com.photor.album.views.GridSpacingItemDecoration;
+import com.photor.album.views.SelectAlbumBottomSheet;
 import com.photor.data.TrashBinRealmModel;
 import com.photor.util.AlertDialogsHelper;
 import com.photor.util.SnackBarHandler;
@@ -58,6 +64,7 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,6 +72,7 @@ import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.Disposable;
 import io.realm.Realm;
 
 import static com.photor.album.entity.SortingMode.DATE;
@@ -122,6 +130,9 @@ public class AlbumFragment extends Fragment {
 
     // 数据库实例
     private Realm realm;
+
+    // 弹出的文件夹选择对话框
+    private SelectAlbumBottomSheet bottomSheetDialogFragment;
 
 
     @BindView(R.id.swipeRefreshLayout)
@@ -201,6 +212,7 @@ public class AlbumFragment extends Fragment {
 
         firstLaunch = false;
         getActivity().invalidateOptionsMenu();
+        refreshListener.onRefresh();  // 直接刷新相册界面的数据，解决长按失常的问题
     }
 
     private boolean displayData(Bundle data) {
@@ -917,6 +929,7 @@ public class AlbumFragment extends Fragment {
                 menu.setGroupVisible(R.id.album_options_menu, !editMode);
                 menu.findItem(R.id.all_photos).setVisible(false);
                 menu.findItem(R.id.album_details).setVisible(false);
+                menu.findItem(R.id.action_move).setVisible(false);
             }
             menu.findItem(R.id.select_all).setVisible(
                     (getAlbum().getSelectedCount() == mediaAdapter.getItemCount()
@@ -925,6 +938,19 @@ public class AlbumFragment extends Fragment {
         }
         togglePrimaryToolbarOptions(menu);  // 控制是否显示排序菜单按钮
         updateSelectedStuff();  // 更新顶部导航栏信息
+
+        boolean visible = false;  // 处理 action_move 这些菜单项是否显示
+        if (!albumsMode) {
+            visible = getAlbum().getSelectedCount() > 0;
+        }
+        menu.findItem(R.id.action_copy).setVisible(visible);
+        menu.findItem(R.id.action_move).setVisible(visible || editMode);  // 选择的是照片的情况
+
+        if (albumsMode) {
+            // 移动文件夹的情况
+            menu.findItem(R.id.action_move).setVisible(getAlbums().getSelectedCount() == 1);
+        }
+
 
         // 控制各种菜单项是否显示
         menu.findItem(R.id.delete_action).setVisible((!albumsMode || editMode) && (!all_photos || editMode));  // 在editMode，或者 显示某一个相册下照片的时候显示删除按钮
@@ -1004,6 +1030,148 @@ public class AlbumFragment extends Fragment {
                         new int[]{DialogInterface.BUTTON_POSITIVE, DialogInterface.BUTTON_NEGATIVE},
                         com.photor.util.ThemeHelper.getAccentColor(getContext()),
                         alertDialogDelete);
+                return true;
+            case R.id.action_move:  // 在相册模式下，被选择的图片大于0的时候，move的菜单项才会显示出来
+                bottomSheetDialogFragment = new SelectAlbumBottomSheet();
+                bottomSheetDialogFragment.setTitle(getString(R.string.move_to));
+
+                if (!albumsMode) {
+                    // 当前选中了某一个相册下的某几张照片
+                    bottomSheetDialogFragment.setSelectAlbumInterface(new SelectAlbumBottomSheet.SelectAlbumInterface() {
+                        @Override
+                        public void folderSelected(String path) {
+//                            final ArrayList<Media> stringIO = storeTemporaryPhotos(path);  // 获得文件在新文件夹中的路径，供撤销操作使用
+//                            swipeRefreshLayout.setRefreshing(true);
+//
+//                            int numberOfImageMoved;
+//                            if ((numberOfImageMoved = getAlbum().moveSelectedMedia(getActivity().getApplicationContext(), path)) > 0) {
+//                                // 说明文件移动成功
+//                                if (getAlbum().getMedias().size() == 0) {
+//                                    // 说明相册下的文件已经被全部移走
+//                                    getAlbums().removeCurrentAlbum();
+//                                    albumsAdapter.notifyDataSetChanged();
+//                                    displayAlbums();
+//                                }
+//
+//                                // 文件没有被全部移走，那么还是显示当前相册内图片的界面
+//                                mediaAdapter.swapDataSet(getAlbum().getMedias(), false);
+//                                finishEditMode();
+//                                getActivity().invalidateOptionsMenu();
+//
+//                                Snackbar snackbar = SnackBarHandler.showWithBottomMargin2(mDrawerLayout,
+//                                        getString(R.string.photos_moved_successfully),
+//                                        navigationView.getHeight(),
+//                                        Snackbar.LENGTH_SHORT);
+//
+//                                snackbar.setAction("撤销", new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View view) {
+//                                        getAlbum().moveAllMedia(getContext(), getAlbum().getPath(), stringIO);
+//                                    }
+//                                });
+//                                snackbar.show();
+//                            } else if (numberOfImageMoved == -1 && getAlbum().getPath().equals(path)) {
+//                                // 选择移动到相同的文件夹
+//                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialog_Light);
+//                                alertDialog.setCancelable(false);
+//
+//                                AlertDialogsHelper.getTextDialog(getActivity(), alertDialog, R.string.move_to, R.string.move,null);
+//                                alertDialog.setNeutralButton(getString(R.string.make_copies), new DialogInterface.OnClickListener() {
+//
+//                                    public void onClick(DialogInterface dialog, int id) {
+//                                        new CopyPhotos(path, true, false, albumFragment).execute();
+//                                    }
+//                                });
+//
+//                                alertDialog.setPositiveButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialogInterface, int i) {
+//                                        dialogInterface.cancel();
+//                                    }
+//                                });
+//
+//                                alertDialog.setNegativeButton(getString(R.string.replace), new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialogInterface, int i) {
+//                                        finishEditMode();
+//                                        getActivity().invalidateOptionsMenu();
+//                                        SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.photo_moved_successfully), navigationView.getHeight());
+//                                    }
+//                                });
+//
+//                                AlertDialog alert = alertDialog.create();
+//                                alert.show();
+//                                // 设置警告栏按钮的颜色
+//                                AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE,
+//                                        DialogInterface.BUTTON_NEGATIVE, DialogInterface.BUTTON_NEUTRAL},
+//                                        com.photor.util.ThemeHelper.getAccentColor(getContext()),
+//                                        alert);
+//                            }
+//
+//                            swipeRefreshLayout.setRefreshing(false);
+                            new MovePhotosTask(path, albumFragment).execute();
+                            bottomSheetDialogFragment.dismiss();
+                        }
+                    });
+                    bottomSheetDialogFragment.show(getActivity().getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+                } else {
+                    // 如果是在相册模式下
+                    AlertDialog.Builder alertDialogMoveAll = new AlertDialog.Builder(getActivity(), R.style.AlertDialog_Light);
+                    // 点击对话框外面和按返回键对话框不会消失
+                    alertDialogMoveAll.setCancelable(false);
+                    AlertDialogsHelper.getTextDialog(getActivity(), alertDialogMoveAll, R.string.move_to, R.string.move_all_photos, null);
+                    alertDialogMoveAll.setPositiveButton(R.string.ok_action, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            bottomSheetDialogFragment.show(getActivity().getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
+                        }
+                    });
+                    alertDialogMoveAll.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+
+                    bottomSheetDialogFragment.setSelectAlbumInterface(new SelectAlbumBottomSheet.SelectAlbumInterface() {
+                        @Override
+                        public void folderSelected(String path) {
+//                            swipeRefreshLayout.setRefreshing(true);
+//                            if (getAlbums().moveSelectedAlbum(getContext(), path)) {
+//                                // 移动操作成功
+//                                SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.moved_target_folder_success), Snackbar.LENGTH_LONG);
+//                                getAlbums().deleteSelectedAlbums(getContext());
+//                                getAlbums().clearSelectedAlbums();
+//                                // 重新显示相册界面
+//                                new PrepareAlbumTask(albumFragment).execute();
+//                            } else {
+//                                requestSdCardPermissions();
+//                                swipeRefreshLayout.setRefreshing(false);
+//                                getActivity().invalidateOptionsMenu();
+//                            }
+                            bottomSheetDialogFragment.dismiss();
+                            new MoveAllPhotoTask(path, albumFragment).execute();
+                        }
+                    });
+
+                    AlertDialog alertDialog = alertDialogMoveAll.create();
+                    alertDialog.show();
+                    AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE, DialogInterface
+                            .BUTTON_NEGATIVE}, com.photor.util.ThemeHelper.getAccentColor(getContext()), alertDialog);
+                }
+
+                return true;
+            case R.id.action_copy:
+                bottomSheetDialogFragment = new SelectAlbumBottomSheet();
+                bottomSheetDialogFragment.setTitle(getString(R.string.copy_to));
+                bottomSheetDialogFragment.setSelectAlbumInterface(new SelectAlbumBottomSheet.SelectAlbumInterface() {
+                    @Override
+                    public void folderSelected(String path) {
+                        new CopyPhotos(path, false, true, albumFragment).execute();
+                        bottomSheetDialogFragment.dismiss();
+                    }
+                });
+                bottomSheetDialogFragment.show(getActivity().getSupportFragmentManager(), bottomSheetDialogFragment.getTag());
                 return true;
             case R.id.name_sort_action:
                 if (albumsMode) {
@@ -1590,21 +1758,337 @@ public class AlbumFragment extends Fragment {
                     }
                 }
             } else {
-                new RxPermissions(albumFragment).request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .subscribe(granted -> {
-                            if (granted) { // Always true pre-M
-                                // I can control the camera now
-                                SnackBarHandler.show(mDrawerLayout, "权限申请成功", Snackbar.LENGTH_SHORT);
-                            } else {
-                                // Oups permission denied
-                                SnackBarHandler.show(mDrawerLayout, "权限申请失败", Snackbar.LENGTH_SHORT);
-                            }
-                        });
+                requestSdCardPermissions();
             }
             getActivity().invalidateOptionsMenu();
             checkNothing();
             swipeRefreshLayout.setRefreshing(false);
             super.onPostExecute(result);
+        }
+    }
+
+
+    /**
+     * 获得当前的相册被选择的照片信息
+     * @return
+     */
+    private ArrayList<Media> getSelectedMedias() {
+        ArrayList<Media> selectedMedias = new ArrayList<>();
+        for (Media m: getAlbum().getSelectedMedia()) {
+            selectedMedias.add(m);
+        }
+        return selectedMedias;
+    }
+
+    /**
+     * 获得移动操作完成之后，被移动的图片的路径
+     * @param moveToPath
+     * @return
+     */
+    private ArrayList<Media> storeTemporaryPhotos(String moveToPath) {
+        ArrayList<Media> temp = new ArrayList<>();
+        if (!all_photos && editMode) {
+            // 某一个相册下的图片信息 || 某一个相册被选
+            for (Media m: getAlbum().getSelectedMedia()) {
+                String name = m.getPath().substring(m.getPath().lastIndexOf("/") + 1);
+                temp.add(new Media(moveToPath + "/" + name));
+            }
+        }
+        return temp;
+    }
+
+    /**
+     * 申请外部存储设备的写权限
+     * @return
+     */
+    private Disposable requestSdCardPermissions() {
+        Disposable disposable = new RxPermissions(albumFragment).request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .subscribe(granted -> {
+                    if (granted) { // Always true pre-M
+                        // I can control the camera now
+                        SnackBarHandler.show(mDrawerLayout, "权限申请成功", Snackbar.LENGTH_SHORT);
+                    } else {
+                        // Oups permission denied
+                        SnackBarHandler.show(mDrawerLayout, "权限申请失败", Snackbar.LENGTH_SHORT);
+                    }
+                });
+        return disposable;
+    }
+
+    /**
+     * 拷贝相片的任务
+     */
+    private class CopyPhotos extends AsyncTask<String, Integer, Boolean> {
+
+        private WeakReference<AlbumFragment> reference;
+        private String path;
+        private Snackbar snackbar;
+        private ArrayList<Media> temp;
+        private Boolean moveAction, copyAction, success;
+
+        CopyPhotos(String path, Boolean moveAction, Boolean copyAction, AlbumFragment reference) {
+            this.path = path;
+            this.moveAction = moveAction;
+            this.copyAction = copyAction;
+            this.reference = new WeakReference<>(reference);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            AlbumFragment albumFragment = reference.get();
+            albumFragment.swipeRefreshLayout.setRefreshing(true);
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            temp = storeTemporaryPhotos(path);
+            AlbumFragment albumFragment = reference.get();
+            if (!albumFragment.all_photos) {
+                success = albumFragment.getAlbum().copySelectedPhotos(albumFragment.getContext(), path);
+                albumFragment.getAlbum().updatePhotos(albumFragment.getContext());
+            } else {
+                // 在显示全部照片的模式下
+                success = albumFragment.copyFromAllPhotos(albumFragment.getContext(), path);
+            }
+            return success;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            AlbumFragment albumFragment = reference.get();
+            if (result) {
+                if (!albumFragment.all_photos) {
+                    // 某一个相册下的照片信息
+                    albumFragment.mediaAdapter.swapDataSet(albumFragment.getAlbum().getMedias(), false);
+                } else {
+                    // 显示全部照片信息
+                    albumFragment.mediaAdapter.swapDataSet(listAll, false);
+                }
+
+                albumFragment.getActivity().invalidateOptionsMenu();
+                albumFragment.swipeRefreshLayout.setRefreshing(false);
+                albumFragment.finishEditMode();
+
+                if (moveAction) {
+                    SnackBarHandler.showWithBottomMargin(albumFragment.mDrawerLayout,
+                            albumFragment.getString(R.string.photos_moved_successfully),
+                            albumFragment.navigationView.getHeight());
+                } else if (copyAction) {
+                    snackbar = SnackBarHandler.showWithBottomMargin2(albumFragment.mDrawerLayout,
+                            albumFragment.getString(R.string.copied_successfully),
+                            albumFragment.navigationView.getHeight(),
+                            Snackbar.LENGTH_LONG);
+
+                    snackbar.setAction("撤销", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // 撤销操作就是把已经拷贝完成的照片删除
+                            for (Media media: temp) {
+                                String[] projection = { MediaStore.Images.Media._ID };
+
+                                String selection = MediaStore.Images.Media.DATA + " = ? ";
+                                String[] selectionArgs = new String[] {media.getPath()};
+
+                                Uri queryUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                                ContentResolver contentResolver = albumFragment.getActivity().getContentResolver();
+
+                                Cursor cursor = contentResolver.query(queryUri, projection, selection, selectionArgs, null);
+                                if (cursor.moveToFirst()) {
+                                    long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
+                                    Uri deleteUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                                    contentResolver.delete(deleteUri, null, null);
+                                }
+
+                                cursor.close();
+                            }
+                        }
+                    });
+                    snackbar.show();
+                }
+            } else {
+                albumFragment.requestSdCardPermissions(); // 申请SD卡权限
+            }
+            super.onPostExecute(result);
+        }
+    }
+
+    /**
+     * 在全部照片模式下的拷贝操作
+     * @param context
+     * @param folderPath
+     * @return
+     */
+    private boolean copyFromAllPhotos(Context context, String folderPath) {
+        boolean success = false;
+        for (Media m : selectedMedias) {
+            try {
+                File from = new File(m.getPath());
+                File to = new File(folderPath);
+                if (success = FileUtils.copyFile(getContext(), from, to)) {
+                    scanFile(context, new String[] {StringUtils.getPhotoPathMoved(m.getPath(), folderPath)}, null);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return success;
+    }
+
+    public void scanFile(Context context, String[] path, MediaScannerConnection.OnScanCompletedListener onScanCompletedListener) {
+        // 更新增加的文件的信息
+        for (String mediaPathAdded: path) {
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(mediaPathAdded))));
+        }
+        MediaScannerConnection.scanFile(context, path, null, onScanCompletedListener);
+    }
+
+    /**
+     * 移动部分图片的异步任务
+     */
+    class MovePhotosTask extends AsyncTask<String, Integer, Integer> {
+
+        private String targetPath;
+        private WeakReference<AlbumFragment> reference;
+        private ArrayList<Media> stringIO;  // 获得文件在新文件夹中的路径，供撤销操作使用
+
+        public MovePhotosTask(String targetPath, AlbumFragment reference) {
+            this.targetPath = targetPath;
+            this.reference = new WeakReference<>(reference);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            AlbumFragment albumFragment = reference.get();
+            albumFragment.swipeRefreshLayout.setRefreshing(true);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Integer doInBackground(String... strings) {
+            AlbumFragment albumFragment = reference.get();
+            stringIO = storeTemporaryPhotos(targetPath);
+            int numberOfImageMoved = getAlbum().moveSelectedMedia(getActivity().getApplicationContext(), targetPath);
+            return numberOfImageMoved;
+        }
+
+        @Override
+        protected void onPostExecute(Integer numberOfImageMoved) {
+            AlbumFragment albumFragment = reference.get();
+
+            if (numberOfImageMoved > 0) {
+                // 说明文件移动成功
+                if (getAlbum().getMedias().size() == 0) {
+                    // 说明相册下的文件已经被全部移走
+                    getAlbums().removeCurrentAlbum();
+                    albumsAdapter.notifyDataSetChanged();
+                    displayAlbums();
+                }
+
+                // 文件没有被全部移走，那么还是显示当前相册内图片的界面
+                mediaAdapter.swapDataSet(getAlbum().getMedias(), false);
+                finishEditMode();
+                getActivity().invalidateOptionsMenu();
+
+                Snackbar snackbar = SnackBarHandler.showWithBottomMargin2(mDrawerLayout,
+                        getString(R.string.photos_moved_successfully),
+                        navigationView.getHeight(),
+                        Snackbar.LENGTH_SHORT);
+
+                snackbar.setAction("撤销", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        getAlbum().moveAllMedia(getContext(), getAlbum().getPath(), stringIO);
+                    }
+                });
+                snackbar.show();
+            } else if (numberOfImageMoved == -1 && getAlbum().getPath().equals(targetPath)) {
+                // 选择移动到相同的文件夹
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity(), R.style.AlertDialog_Light);
+                alertDialog.setCancelable(false);
+
+                AlertDialogsHelper.getTextDialog(getActivity(), alertDialog, R.string.move_to, R.string.move,null);
+                alertDialog.setNeutralButton(getString(R.string.make_copies), new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int id) {
+                        new CopyPhotos(targetPath, true, false, albumFragment).execute();
+                    }
+                });
+
+                alertDialog.setPositiveButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+
+                alertDialog.setNegativeButton(getString(R.string.replace), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finishEditMode();
+                        getActivity().invalidateOptionsMenu();
+                        SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.photo_moved_successfully), navigationView.getHeight());
+                    }
+                });
+
+                AlertDialog alert = alertDialog.create();
+                alert.show();
+                // 设置警告栏按钮的颜色
+                AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE,
+                                DialogInterface.BUTTON_NEGATIVE, DialogInterface.BUTTON_NEUTRAL},
+                        com.photor.util.ThemeHelper.getAccentColor(getContext()),
+                        alert);
+            }
+
+            albumFragment.swipeRefreshLayout.setRefreshing(false);
+            super.onPostExecute(numberOfImageMoved);
+        }
+    }
+
+
+    /**
+     * 移动一整个相册的后台任务
+     */
+    class MoveAllPhotoTask extends AsyncTask<String, Integer, Boolean> {
+
+        private String path;
+        private WeakReference<AlbumFragment> reference;
+
+        public MoveAllPhotoTask(String path, AlbumFragment reference) {
+            this.path = path;
+            this.reference = new WeakReference<>(reference);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            AlbumFragment albumFragment = reference.get();
+            albumFragment.swipeRefreshLayout.setRefreshing(true);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            AlbumFragment albumFragment = reference.get();
+            boolean success = albumFragment.getAlbums().moveSelectedAlbum(getContext(), path);
+            return success;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            AlbumFragment albumFragment = reference.get();
+            if (result) {
+                // 移动操作成功
+                SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.moved_target_folder_success), Snackbar.LENGTH_LONG);
+                albumFragment.getAlbums().deleteSelectedAlbums(getContext());
+                finishEditMode();
+                // 重新显示相册界面
+                new PrepareAlbumTask(albumFragment).execute();
+            } else {
+                albumFragment.requestSdCardPermissions();
+                albumFragment.swipeRefreshLayout.setRefreshing(false);
+                albumFragment.getActivity().invalidateOptionsMenu();
+            }
         }
     }
 }

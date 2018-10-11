@@ -52,7 +52,6 @@
     <string name="all">全部图片</string>
 
     <!-- 图片删除信息 -->
-    <!-- Photo deletion toast messages -->
     <string name="photo_deleted_msg">图片删除成功</string>
     <string name="photo_deletion_failed">图片删除失败</string>
     <string name="delete_album_message">确定删除选择的相册？</string>
@@ -60,6 +59,16 @@
     <string name="delete_photo_message">确定删除这些图片？</string>
     <string name="delete_photos_message">确定删除这些图片？</string>
     <string name="move_to_trashbin">移动至回收站</string>
+
+    <!-- 图片被移动的信息 -->
+    <string name="photos_moved_successfully">图片移动成功</string>
+    <string name="photo_moved_successfully">图片移动成功</string>
+    <string name="move">替换目标文件夹中相同的文件？</string>
+    <string name="make_copies">生成副本</string>
+    <string name="replace">替换</string>
+    <string name="move_all_photos">确定将全部的照片移入选择的文件夹？</string>
+    <string name="moved_target_folder_success">图片移动成功</string>
+    <string name="copied_successfully">拷贝成功</string>
 
 
     <string name="sd_card_write_permission_title">SD-Card write permission</string>

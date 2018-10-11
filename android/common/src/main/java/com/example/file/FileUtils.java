@@ -3,6 +3,7 @@ package com.example.file;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -504,6 +505,11 @@ public class FileUtils {
      */
     public static boolean deleteFile(Context context, @NonNull final File file) {
         // First try the normal deletion.
+
+        if (updateMediaStoreAfterDelete(context, file)) {
+            return true;
+        }
+
         boolean success = file.delete();
 
         // Try with Storage Access Framework.
@@ -657,10 +663,87 @@ public class FileUtils {
         if (!success) {
             success = copyFile(context, source, targetDir);
             if (success) {
-                success = deleteFile(context, source);
+//                success = deleteFile(context, source);
+                success = updateMediaStoreAfterDelete(context, source) && updateMediaStoreAfterCreate(context, target);
             }
+        } else {
+            success = updateMediaStoreAfterDelete(context, source) && updateMediaStoreAfterCreate(context, target);
         }
+
+//        boolean success = copyFile(context, source, targetDir);
+//        if (success) {
+//            success = updateMediaStoreAfterDelete(context, source) && updateMediaStoreAfterCreate(context, target);
+//        }
+
         return success;
+    }
+
+    /**
+     * 创建新文件的时候，增加新文件值媒体库（新文件的创建操作并不在这个函数内）
+     * @param context
+     * @param createFile
+     * @return
+     */
+    public static boolean updateMediaStoreAfterCreate(Context context, File createFile) {
+        return updateMediaStore(context, createFile);
+    }
+
+    /**
+     * 在进行删除文件的操作时，同时更新MediaStore（删除文件的操作在这个函数内）
+     * @param context
+     * @param deleteFile
+     * @return
+     */
+    public static boolean updateMediaStoreAfterDelete(Context context, File deleteFile) {
+//        if (!deleteFile.exists()) {
+//            return false;
+//        }
+
+        try {
+//            context.getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+//                    MediaStore.Images.Media.DATA + " = ? ",
+//                    new String[] { deleteFile.getAbsolutePath()});
+            return updateMediaStore(context, deleteFile);
+        } catch (Exception e) {
+            Log.d("MediaStoreAfterDelete", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 更新MediaStore数据库
+     * @param context
+     * @param file
+     * @return
+     */
+    public static boolean updateMediaStore(final Context context, final File file) {
+        try {
+            //版本号的判断  4.4为分水岭，发送广播更新媒体库
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                MediaScannerConnection.scanFile(context,
+                        new String[]{file.getAbsolutePath()},
+                        null,  // 根绝文件后缀名称决定mimetype
+                        new MediaScannerConnection.OnScanCompletedListener() {
+                            @Override
+                            public void onScanCompleted(String s, Uri uri) {
+//                                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//                                intent.setData(uri);
+//                                context.sendBroadcast(intent);
+//                                Log.d("updateMediaStore1", s);
+//                                Log.d("updateMediaStore2", Uri.fromFile(file).toString());
+//                                Log.d("updateMediaStore3", uri.toString());
+//                                Log.d("updateMediaStore4", Environment.getExternalStorageDirectory().getAbsolutePath());
+                            }
+                        });
+            } else {
+                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.fromFile(file)));
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d("updateMediaStore", e.getMessage());
+            return false;
+        }
     }
 
 
