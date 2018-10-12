@@ -55,6 +55,7 @@ import com.photor.album.entity.Media;
 import com.photor.album.utils.Measure;
 import com.photor.album.views.PagerRecyclerView;
 import com.photor.base.activity.BaseActivity;
+import com.photor.base.activity.PhotoCropActivity;
 import com.photor.base.activity.PhotoExifDetailActivity;
 import com.photor.base.fragment.AlbumFragment;
 import com.photor.data.TrashBinRealmModel;
@@ -78,6 +79,7 @@ import io.realm.Realm;
 
 import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_IS_SAVED_CROP_RES;
 import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_ORI_IMG_PATH;
+import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_IS_FROM_CAMERA_TAKEN;
 import static com.photor.util.ActivitySwitchHelper.getContext;
 
 public class SingleMediaActivity extends BaseActivity implements ImageAdapter.OnSingleTap, ImageAdapter.EnterTransition {
@@ -158,7 +160,8 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
 
         try {
             Album album;
-            if (getIntent().getAction().equals(Intent.ACTION_VIEW) || getIntent().getAction().equals(ACTION_REVIEW) || getIntent().getData() != null) {
+            Uri uri = getIntent().getData();
+            if (Intent.ACTION_VIEW.equals(getIntent().getAction()) || ACTION_REVIEW.equals(getIntent().getAction()) || getIntent().getData() != null) {
                 // 从其他应用传递过来的图片
                 String path = FileUtils.getMediaPath(getApplicationContext(), getIntent().getData());
                 pathForDescription = path;
@@ -166,7 +169,9 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
                 if (path != null) {
                     file = new File(path);
                 }
-                if (file != null && file.isFile()) {
+
+                boolean isFromCameraTaken = getIntent().getBooleanExtra(EXTRA_PHOTO_IS_FROM_CAMERA_TAKEN, false);
+                if (file != null && file.isFile() && !isFromCameraTaken) {
                     // 图片在本地路径上
                     album = new Album(getApplicationContext(), file);
                 } else {
@@ -427,10 +432,16 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
                 return true;
             case R.id.action_details:
                 handler.removeCallbacks(slideShowRunnable);
-                Intent intent = new Intent(SingleMediaActivity.this, PhotoExifDetailActivity.class);
-                intent.putExtra(EXTRA_ORI_IMG_PATH, pathForDescription);  // 设置原图的路径
-                intent.putExtra(EXTRA_IS_SAVED_CROP_RES, false);  // 说明不是经过裁剪之后的图片
-                startActivity(intent);
+                Intent exifIntent = new Intent(SingleMediaActivity.this, PhotoExifDetailActivity.class);
+                exifIntent.putExtra(EXTRA_ORI_IMG_PATH, pathForDescription);  // 设置原图的路径
+                exifIntent.putExtra(EXTRA_IS_SAVED_CROP_RES, false);  // 说明不是经过裁剪之后的图片
+                startActivity(exifIntent);
+                return true;
+            case R.id.action_crop:
+                handler.removeCallbacks(slideShowRunnable);
+                Intent cropIntent = new Intent(SingleMediaActivity.this, ImageCropActivity.class);
+                cropIntent.putExtra(EXTRA_ORI_IMG_PATH, pathForDescription);
+                startActivity(cropIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -589,6 +600,18 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacks(slideShowRunnable);
+        if (customUri) {
+            getAlbums().deleteAlbumByIndexSoft(0);  // 删除供拍照使用的临时相册
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        handler.removeCallbacks(slideShowRunnable);
+        if (customUri) {
+            getAlbums().deleteAlbumByIndexSoft(0);  // 删除供拍照使用的临时相册
+        }
     }
 
     private void deleteAction() {

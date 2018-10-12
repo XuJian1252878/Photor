@@ -334,6 +334,8 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
                 FileUtils.saveFileByByte(resImgPath, jpeg);
                 CameraOperator.builder()
                         .setCameraResImgPath(resImgPath)
+                        .setFileUri(Uri.fromFile(new File(resImgPath)))
+                        .setIsFromCamera(true)
                         .start(CameraFragment.this.getActivity());
             }
         });

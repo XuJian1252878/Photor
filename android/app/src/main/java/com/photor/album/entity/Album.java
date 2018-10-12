@@ -75,8 +75,17 @@ public class Album {
      */
     public Album(Context context, Uri mediaUri) {
         super();
-        medias.add(0, new Media(context, mediaUri));
-        setCurrentPhotoIndex(0);
+        if (medias == null) {
+            synchronized (Album.class) {
+                if (medias == null) {
+                    medias = new ArrayList<>();
+                    medias.add(0, new Media(context, mediaUri));
+                    String imgPath = mediaUri.getPath();
+                    path = StringUtils.getBucketPathByImagePath(imgPath);
+                    setCurrentPhotoIndex(0);
+                }
+            }
+        }
     }
 
     public void setPreviewPath(String previewPath) {

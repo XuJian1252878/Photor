@@ -67,6 +67,7 @@ import com.photor.album.views.CustomScrollBarRecyclerView;
 import com.photor.album.views.GridSpacingItemDecoration;
 import com.photor.album.views.SelectAlbumBottomSheet;
 import com.photor.data.TrashBinRealmModel;
+import com.photor.util.ActivitySwitchHelper;
 import com.photor.util.AlertDialogsHelper;
 import com.photor.util.SnackBarHandler;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -1544,7 +1545,7 @@ public class AlbumFragment extends Fragment {
             AlbumFragment albumFragment = reference.get();
             // 设置初始化时的Album相册信息
             albumFragment.albumsAdapter.swapDataSet(
-                    ((MainApplication) reference.get().getContext().getApplicationContext()).getAlbums().dispAlbums
+                    ((MainApplication) ActivitySwitchHelper.getContext()).getAlbums().dispAlbums
             );
             albumFragment.albList = new ArrayList<>();
             albumFragment.populateAlbum();

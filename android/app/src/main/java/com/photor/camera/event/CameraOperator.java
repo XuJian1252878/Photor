@@ -2,10 +2,13 @@ package com.photor.camera.event;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import com.photor.album.activity.SingleMediaActivity;
 import com.photor.base.activity.PhotoOperateResultActivity;
 
+import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_IS_FROM_CAMERA_TAKEN;
 import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_OPERATE_RESULT_PATH;
 
 public class CameraOperator {
@@ -31,9 +34,20 @@ public class CameraOperator {
             return this;
         }
 
+        public CameraOperatorBuilder setFileUri(Uri fileUri) {
+            this.intent.setData(fileUri);
+            return this;
+        }
+
+        public CameraOperatorBuilder setIsFromCamera(boolean isFromCamera) {
+            this.bundle.putBoolean(EXTRA_PHOTO_IS_FROM_CAMERA_TAKEN, isFromCamera);
+            return this;
+        }
+
 
         public void start(Activity activity) {
-            intent.setClass(activity, PhotoOperateResultActivity.class);
+//            intent.setClass(activity, PhotoOperateResultActivity.class);
+            intent.setClass(activity, SingleMediaActivity.class);
             intent.putExtras(bundle);
             activity.startActivityForResult(intent, REQUEST_RESULT_CODE);
         }

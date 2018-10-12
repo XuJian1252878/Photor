@@ -56,7 +56,6 @@ public class HandlingAlbums {
     public void addAlbum(int position, Album album) {
         dispAlbums.add(position, album);
         setCurrentAlbum(album);
-
     }
 
     public void setCurrentAlbum(Album album) {
@@ -245,6 +244,19 @@ public class HandlingAlbums {
 
     public boolean deleteAlbum(Album album, Context context) {
         return FileUtils.deleteFilesInFolder(context, new File(album.getPath()));
+    }
+
+    /**
+     * 删除相册信息（只有在处理拍照照片的时候使用）
+     * @param index
+     * @return
+     */
+    public boolean deleteAlbumByIndexSoft(int index) {
+        if (index >= dispAlbums.size()) {
+            return false;
+        }
+        dispAlbums.remove(index);
+        return true;
     }
 
     /**

@@ -240,6 +240,26 @@ public class FileUtils {
         return null;
     }
 
+    public static String generateImgEditResPath() {
+        if (TextUtils.equals(Environment.getExternalStorageState(), Environment.MEDIA_MOUNTED)) {
+            String cropDirStr = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/photor_edit";
+            File cropDirFile = new File(cropDirStr);
+            if (!cropDirFile.exists()) {
+                if (!cropDirFile.mkdirs()) {
+                    Log.e("generateImgEditResPath", "make edit image dir error!!!");
+                    return null;
+                }
+            }
+
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+            String imgFileName = "JPEG_" + timeStamp + ".jpg";
+
+            File image = new File(cropDirFile, imgFileName);
+            return image.getAbsolutePath();
+        }
+        return null;
+    }
+
 
     /**
      * 创建录制视频的存储路径
@@ -722,19 +742,19 @@ public class FileUtils {
                 MediaScannerConnection.scanFile(context,
                         new String[]{file.getAbsolutePath()},
                         null,  // 根绝文件后缀名称决定mimetype
-                        onScanCompletedListener);
-//                        new MediaScannerConnection.OnScanCompletedListener() {
-//                            @Override
-//                            public void onScanCompleted(String s, Uri uri) {
-////                                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-////                                intent.setData(uri);
-////                                context.sendBroadcast(intent);
-////                                Log.d("updateMediaStore1", s);
-////                                Log.d("updateMediaStore2", Uri.fromFile(file).toString());
-////                                Log.d("updateMediaStore3", uri.toString());
-////                                Log.d("updateMediaStore4", Environment.getExternalStorageDirectory().getAbsolutePath());
-//                            }
-//                        });
+//                        onScanCompletedListener);
+                        new MediaScannerConnection.OnScanCompletedListener() {
+                            @Override
+                            public void onScanCompleted(String s, Uri uri) {
+                                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                                intent.setData(uri);
+                                context.sendBroadcast(intent);
+                                Log.d("updateMediaStore1", s);
+                                Log.d("updateMediaStore2", Uri.fromFile(file).toString());
+                                Log.d("updateMediaStore3", uri.toString());
+                                Log.d("updateMediaStore4", Environment.getExternalStorageDirectory().getAbsolutePath());
+                            }
+                        });
             } else {
                 context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.fromFile(file)));
             }
