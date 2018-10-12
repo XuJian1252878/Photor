@@ -240,6 +240,9 @@ dependencies {
     // android 控件注入
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    // 引入sketch imageview
+//    implementation 'me.panpf:sketch:2.6.1'
+//    implementation 'me.panpf:sketch-gif:2.6.1'
 }
 
 // Run this once to be able to run the application with BUCK

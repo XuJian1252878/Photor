@@ -88,4 +88,8 @@ public class ThemeHelper {
         return new IconicsDrawable(context).icon(icon).color(Color.WHITE).sizeDp(18);
     }
 
+    public static int getPopupToolbarStyle(Context context) {
+        return R.style.LightActionBarMenu;
+    }
+
 }

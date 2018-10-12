@@ -3,19 +3,26 @@ package com.photor.album.activity;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.transition.ChangeBounds;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -26,12 +33,17 @@ import android.widget.ViewSwitcher;
 import com.example.file.FileUtils;
 import com.example.preference.PreferenceUtil;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
+import com.photor.BuildConfig;
 import com.photor.R;
+import com.photor.album.adapter.ImageAdapter;
 import com.photor.album.entity.Album;
 import com.photor.album.utils.Measure;
 import com.photor.album.views.PagerRecyclerView;
 import com.photor.base.activity.BaseActivity;
+import com.photor.base.fragment.AlbumFragment;
 import com.photor.util.ActivitySwitchHelper;
+import com.photor.util.BasicCallBack;
+import com.photor.util.ColorPalette;
 import com.photor.util.ThemeHelper;
 
 import java.io.File;
@@ -39,7 +51,7 @@ import java.io.File;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SingleMediaActivity extends BaseActivity {
+public class SingleMediaActivity extends BaseActivity implements ImageAdapter.OnSingleTap, ImageAdapter.EnterTransition {
 
     public static final String ACTION_OPEN_ALBUM = "android.intent.action.pagerAlbumMedia";
     private static final String ACTION_REVIEW = "com.android.camera.action.REVIEW";
@@ -56,8 +68,16 @@ public class SingleMediaActivity extends BaseActivity {
     private boolean customUri = false;  // 图片是否是以URI形式传递来的
     private boolean fullScreenMode = false; // 当前是否以全屏模式来显示照片
 
+    // 跟显示系统UI相关
     private Handler handler;
     private Runnable runnable;
+
+    private ImageAdapter adapter;
+
+    // 幻灯片播放
+    private boolean slideshow = false;
+
+    public int current_image_pos; // 记录当前图片的下标位置（在全局图片显示的模式下）
 
     @Nullable
     @BindView(R.id.view_switcher_single_media)
@@ -69,7 +89,7 @@ public class SingleMediaActivity extends BaseActivity {
 
     @Nullable
     @BindView(R.id.photos_pager)
-    PagerRecyclerView mViewPager;
+    PagerRecyclerView mViewPager;  // 图片的RecyclerView
 
     @Nullable
     @BindView(R.id.toolbar_bottom)
@@ -122,6 +142,7 @@ public class SingleMediaActivity extends BaseActivity {
 
             setUpSwitcherAnimation();
             initUI();
+            setUpUI();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -292,10 +313,149 @@ public class SingleMediaActivity extends BaseActivity {
                     }
                 });
 
+        setUpViewPager();
+
+        // https://cstsinghua.github.io/2018/03/26/Android%E5%B1%8F%E5%B9%95%E6%96%B9%E5%90%91/
+        // 监听android 的横竖屏幕
+        Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+        if (display.getRotation() == Surface.ROTATION_90) {
+            // 当前已经处于横屏状态
+            Configuration configuration = new Configuration();
+            configuration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+            onConfigurationChanged(configuration);
+        }
+    }
+
+    private void setUpUI() {
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(
+                ColorPalette.getTransparentColor(ThemeHelper.getPrimaryColor(getApplicationContext()), 255)
+        );
+        toolbar.setPopupTheme(ThemeHelper.getPopupToolbarStyle(getApplicationContext()));
+
+        ActivityBackground.setBackgroundColor(ThemeHelper.getBackgroundColor(getApplicationContext()));
+
+    }
+
+    /**
+     * 分享图片至外部应用
+     */
+    private void shareToOthers() {
+        Uri uri = null;
+        String name = null;
+        String mediaPath = null;
+
+        if (!allPhotoMode) {
+            mediaPath = getAlbum().getCurrentMedia().getPath();
+            name = getAlbum().getCurrentMedia().getName();
+        } else {
+            mediaPath = AlbumFragment.listAll.get(current_image_pos).getPath();
+            name = AlbumFragment.listAll.get(current_image_pos).getName();
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            uri = FileProvider.getUriForFile(getApplicationContext(),
+                    BuildConfig.APPLICATION_ID + ".provider", new File(mediaPath));
+        } else {
+            uri = Uri.fromFile(new File(mediaPath));
+        }
+
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, name);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        shareIntent.setType("image/png");
+
+        startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_image)));
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                supportFinishAfterTransition();
+                return true;
+            case R.id.action_share:
+                shareToOthers();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void singleTap() {
+        toggleSystemUI();
+        // slideshow的情况
+    }
+
+    @Override
+    public void startPostponedTransition() {
+        getWindow().setSharedElementEnterTransition(new ChangeBounds().setDuration(300));
+        startPostponedEnterTransition();  // 启动共享元素动画
+    }
+
+    private void setUpViewPager() {
+        // 控制显示UI界面的回调
+        BasicCallBack basicCallBack = new BasicCallBack() {
+            @Override
+            public void callBack(int status, Object data) {
+                toggleSystemUI();
+            }
+        };
+
+        if (!allPhotoMode) {
+            // 相册模式下点击某一个图片进入该界面
+            adapter = new ImageAdapter(basicCallBack, getAlbum().getMedias(), this, this);
+            getSupportActionBar().setTitle((getAlbum().getCurrentMediaIndex() + 1) + " / " + getAlbum().getMedias().size()); // 设置标题栏为当前图片下标
+            mViewPager.setOnPageChangeListener(new PagerRecyclerView.OnPageChangeListener() {
+                @Override
+                public void onPageChanged(int oldPosition, int newPosition) {
+                    getAlbum().setCurrentPhotoIndex(newPosition);
+                    toolbar.setTitle((newPosition + 1) + " / " + getAlbum().getMedias().size());
+                    invalidateOptionsMenu();
+                    // 记录当前的图片文件路径
+                    pathForDescription = getAlbum().getMedias().get(newPosition).getPath();
+                }
+            });
+            // 设置RecyclerView滚动到当前的item下标
+            mViewPager.scrollToPosition(getAlbum().getCurrentMediaIndex());
+        } else {
+            // 全部照片模式下，点击一个图片进入该界面
+            adapter = new ImageAdapter(basicCallBack, AlbumFragment.listAll, this, this);
+            getSupportActionBar().setTitle(all_photo_pos + " / " + size_all);
+            current_image_pos = all_photo_pos;
+            // OnPageChangeListener 是由OnScroller事件来触发的
+            mViewPager.setOnPageChangeListener(new PagerRecyclerView.OnPageChangeListener() {
+                @Override
+                public void onPageChanged(int oldPosition, int newPosition) {
+                    current_image_pos = newPosition;
+//                    getAlbum().setCurrentPhotoIndex(getAlbum().getCurrentMediaIndex());
+                    toolbar.setTitle((newPosition + 1) + " / " + size_all);
+                    invalidateOptionsMenu();
+                    pathForDescription = AlbumFragment.listAll.get(newPosition).getPath();
+                }
+            });
+            mViewPager.scrollToPosition(all_photo_pos);
+        }
+        mViewPager.setAdapter(adapter);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+        );
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            params.setMargins(0,0,0,0);
+        } else {
+            params.setMargins(0,0,0,0);
+        }
+
+        toolbar.setLayoutParams(params);
+        setUpViewPager();
     }
 }

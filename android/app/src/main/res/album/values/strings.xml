@@ -102,6 +102,7 @@
     <string name="copied_successfully">拷贝成功</string>
 
 
+    <string name="send_image">发送图片至</string>
 
     <string name="all_photo_mode">photo mode</string>
     <string name="position">position</string>
