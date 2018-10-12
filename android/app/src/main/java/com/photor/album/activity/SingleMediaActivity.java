@@ -55,6 +55,7 @@ import com.photor.album.entity.Media;
 import com.photor.album.utils.Measure;
 import com.photor.album.views.PagerRecyclerView;
 import com.photor.base.activity.BaseActivity;
+import com.photor.base.activity.PhotoExifDetailActivity;
 import com.photor.base.fragment.AlbumFragment;
 import com.photor.data.TrashBinRealmModel;
 import com.photor.util.ActivitySwitchHelper;
@@ -75,6 +76,8 @@ import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
 import io.realm.Realm;
 
+import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_IS_SAVED_CROP_RES;
+import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_ORI_IMG_PATH;
 import static com.photor.util.ActivitySwitchHelper.getContext;
 
 public class SingleMediaActivity extends BaseActivity implements ImageAdapter.OnSingleTap, ImageAdapter.EnterTransition {
@@ -421,6 +424,13 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
             case R.id.action_delete:
                 handler.removeCallbacks(slideShowRunnable);
                 deleteAction();
+                return true;
+            case R.id.action_details:
+                handler.removeCallbacks(slideShowRunnable);
+                Intent intent = new Intent(SingleMediaActivity.this, PhotoExifDetailActivity.class);
+                intent.putExtra(EXTRA_ORI_IMG_PATH, pathForDescription);  // 设置原图的路径
+                intent.putExtra(EXTRA_IS_SAVED_CROP_RES, false);  // 说明不是经过裁剪之后的图片
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

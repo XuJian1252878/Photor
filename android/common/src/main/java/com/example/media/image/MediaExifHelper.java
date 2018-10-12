@@ -87,7 +87,7 @@ public class MediaExifHelper {
             String shijian = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
 
             String baoguangshijian = exifInterface.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
-            baoguangshijian = decimalFormat.format(Double.valueOf(baoguangshijian));
+            baoguangshijian = baoguangshijian != null ? decimalFormat.format(Double.valueOf(baoguangshijian)) : null;
 
             String jiaoju = exifInterface.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
             String chang = exifInterface.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
