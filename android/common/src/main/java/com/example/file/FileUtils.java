@@ -508,10 +508,6 @@ public class FileUtils {
     public static boolean deleteFile(Context context, @NonNull final File file) {
         // First try the normal deletion.
 
-        if (updateMediaStoreAfterDelete(context, file)) {
-            return true;
-        }
-
         boolean success = file.delete();
 
         // Try with Storage Access Framework.
@@ -538,7 +534,8 @@ public class FileUtils {
         }
 
         if (success) {
-            scanFile(context, new String[]{ file.getPath() });
+//            scanFile(context, new String[]{ file.getPath() });
+            updateMediaStoreAfterDelete(context, file);
         }
         return success;
     }

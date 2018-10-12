@@ -1,17 +1,24 @@
 package com.photor.album.activity;
 
+import android.Manifest;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
@@ -44,20 +51,31 @@ import com.photor.BuildConfig;
 import com.photor.R;
 import com.photor.album.adapter.ImageAdapter;
 import com.photor.album.entity.Album;
+import com.photor.album.entity.Media;
 import com.photor.album.utils.Measure;
 import com.photor.album.views.PagerRecyclerView;
 import com.photor.base.activity.BaseActivity;
 import com.photor.base.fragment.AlbumFragment;
+import com.photor.data.TrashBinRealmModel;
 import com.photor.util.ActivitySwitchHelper;
 import com.photor.util.AlertDialogsHelper;
 import com.photor.util.BasicCallBack;
 import com.photor.util.ColorPalette;
+import com.photor.util.SnackBarHandler;
 import com.photor.util.ThemeHelper;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.Disposable;
+import io.realm.Realm;
+
+import static com.photor.util.ActivitySwitchHelper.getContext;
 
 public class SingleMediaActivity extends BaseActivity implements ImageAdapter.OnSingleTap, ImageAdapter.EnterTransition {
 
@@ -67,7 +85,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
     private PreferenceUtil SP;
     private static int SLIDE_SHOW_INTERVAL = 5000;  // 控制幻灯片播放的时长
 
-    private CoordinatorLayout relativeLayout, ActivityBackground;
+    private RelativeLayout relativeLayout, ActivityBackground;
 
     public Boolean allPhotoMode;  // 是否由全部照片模式跳转而来的
     public int all_photo_pos;  // 全部照片模式下，照片的当前位置信息
@@ -86,6 +104,9 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
     // 幻灯片播放
     private boolean slideshow = false;
 
+    // 数据库实例
+    private Realm realm;
+
     public int current_image_pos; // 记录当前图片的下标位置（在全局图片显示的模式下）
 
     @Nullable
@@ -103,6 +124,10 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
     @Nullable
     @BindView(R.id.toolbar_bottom)
     ActionMenuView bottomBar;
+
+    @Nullable
+    @BindView(R.id.PhotoPager_Layout)
+    View parentView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -301,7 +326,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
         setupSystemUI();
 
         // 设置显示照片RecycleView的界面
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ActivitySwitchHelper.getContext(),
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.HORIZONTAL, false);
         mViewPager.setLayoutManager(linearLayoutManager);
         mViewPager.setHasFixedSize(true);
@@ -392,6 +417,10 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
             case R.id.action_slideshow:
                 handler.removeCallbacks(slideShowRunnable);
                 setSlideShowDialog();
+                return true;
+            case R.id.action_delete:
+                handler.removeCallbacks(slideShowRunnable);
+                deleteAction();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -550,5 +579,238 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacks(slideShowRunnable);
+    }
+
+    private void deleteAction() {
+        final AlertDialog.Builder deleteDialog = new AlertDialog.Builder(SingleMediaActivity.this, R.style.AlertDialog_Light);
+        AlertDialogsHelper.getTextCheckboxDialog(SingleMediaActivity.this,
+                deleteDialog,
+                R.string.delete,
+                R.string.delete_photo_message,
+                null,
+                "移至回收站",
+                ThemeHelper.getAccentColor(this));
+        String buttonDelete = getString(R.string.delete);
+        deleteDialog.setNegativeButton(getString(R.string.cancel), null);
+        deleteDialog.setPositiveButton(buttonDelete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                deleteCurrentMedia();
+            }
+        });
+
+        AlertDialog alertDialog = deleteDialog.create();
+        alertDialog.show();
+        AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE, DialogInterface.BUTTON_NEGATIVE},
+                ThemeHelper.getAccentColor(this),
+                alertDialog);
+    }
+
+    /**
+     * 将文件加入回收站
+     * @return
+     */
+    private boolean addToTrash(){
+        String pathOld = null;
+        String oldpath = null;
+        int no = 0;
+        boolean succ = false;
+        if(!allPhotoMode){
+            // 某一个相册下的照片
+            oldpath = getAlbum().getCurrentMedia().getPath();
+        } else {
+            // 全部照片模式下的照片信息
+            oldpath = AlbumFragment.listAll.get(current_image_pos).getPath();
+        }
+        File file = new File(Environment.getExternalStorageDirectory() + "/" + ".nomedia");
+
+        if (file.exists() && file.isDirectory()) {
+            if (!allPhotoMode) {
+                pathOld = getAlbum().getCurrentMedia().getPath();
+                succ = getAlbum().moveCurrentMedia(getApplicationContext(), file.getAbsolutePath());
+            } else {
+                // 全部照片模式
+                pathOld = AlbumFragment.listAll.get(current_image_pos).getPath();
+                succ = getAlbum().moveAnyMedia(getApplicationContext(), file.getAbsolutePath(), AlbumFragment.listAll.get
+                        (current_image_pos).getPath());
+            }
+            if (succ) {
+                Snackbar snackbar = SnackBarHandler.showWithBottomMargin2(parentView, getString(R.string
+                                .trashbin_move_onefile),
+                        bottomBar.getHeight(), Snackbar.LENGTH_SHORT);
+                final String finalOldpath = oldpath;
+                snackbar.setAction("撤销", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        removeTrashObjectFromRealm(finalOldpath);
+                        getAlbum().moveAnyMedia(getApplicationContext(), getAlbum().getPath(), finalOldpath);
+                    }
+                });
+                snackbar.show();
+            } else {
+                SnackBarHandler.showWithBottomMargin(parentView, String.valueOf(no) + " " + getString(R.string
+                                .trashbin_move_error),
+                        bottomBar.getHeight());
+            }
+        } else {
+            if (file.mkdir()) {
+                if (!allPhotoMode) {
+                    pathOld = getAlbum().getCurrentMedia().getPath();
+                    succ = getAlbum().moveCurrentMedia(getApplicationContext(), file.getAbsolutePath());
+                } else {
+                    pathOld = getAlbum().getCurrentMedia().getPath();
+                    succ = getAlbum().moveAnyMedia(getApplicationContext(), file.getAbsolutePath(), AlbumFragment.listAll.get
+                            (current_image_pos).getPath());
+                }
+                if (succ) {
+                    SnackBarHandler.showWithBottomMargin(parentView, String.valueOf(no) + " " + getString(R.string
+                                    .trashbin_move_onefile), bottomBar.getHeight());
+                } else {
+                    SnackBarHandler.showWithBottomMargin(parentView, String.valueOf(no) + " " + getString(R.string
+                                    .trashbin_move_error),
+                            bottomBar.getHeight());
+                }
+            }
+        }
+        addTrashObjectsToRealm(pathOld);
+        return succ;
+    }
+
+    /**
+     * 将被删除的图片写入 realm 数据库
+     */
+    private void addTrashObjectsToRealm(String mediaPath) {
+        String trashbinpath = Environment.getExternalStorageDirectory() + "/" + ".nomedia";
+        Realm.init(getContext());
+        realm = Realm.getDefaultInstance();
+
+        int index = mediaPath.lastIndexOf("/");
+        String name = mediaPath.substring(index + 1);
+        String trashpath = trashbinpath + "/" + name;
+
+        // 首先检查当前文件是否已经存在与垃圾箱中（否则会出现主键冲突）
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                TrashBinRealmModel model = realm.where(TrashBinRealmModel.class)
+                        .equalTo("trashbinpath", trashpath).findFirst();
+                if (model != null) {
+                    model.deleteFromRealm();
+                }
+            }
+        });
+
+        realm.beginTransaction();
+        TrashBinRealmModel trashBinRealmModel = realm.createObject(TrashBinRealmModel.class, trashpath);
+        trashBinRealmModel.setOldpath(mediaPath);
+        trashBinRealmModel.setDatetime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+        trashBinRealmModel.setTimeperiod("null");
+        realm.commitTransaction();
+    }
+
+    /**
+     * 删除回收站中的照片信息
+     */
+    private void removeTrashObjectFromRealm(String mediaPath) {
+        String trashbinpath = Environment.getExternalStorageDirectory() + "/" + ".nomedia";
+        Realm.init(getContext());
+        realm = Realm.getDefaultInstance();
+
+        int index = mediaPath.lastIndexOf("/");
+        String name = mediaPath.substring(index + 1);
+        String trashpath = trashbinpath + "/" + name;
+
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                TrashBinRealmModel model = realm.where(TrashBinRealmModel.class)
+                        .equalTo("trashbinpath", trashpath).findFirst();
+                if (model != null) {
+                    model.deleteFromRealm();
+                }
+            }
+        });
+    }
+
+
+    private void deleteCurrentMedia() {
+        boolean success = false;
+        if (!allPhotoMode) {
+            // 某一个相册下显示的图片信息
+            if (AlertDialogsHelper.check) {
+                success = addToTrash();  // 删除至回收站的操作
+            } else {
+                success = getAlbum().deleteCurrentMedia(getApplicationContext());
+            }
+
+            if (!success) {
+                // 申请SD卡权限
+                requestSdCardPermissions();
+            }
+
+            if (getAlbum().getMedias().size() == 0) {
+                if (customUri) {
+                    finish();
+                } else {
+                    getAlbums().removeCurrentAlbum();
+                    finish();
+                }
+            }
+            adapter.notifyDataSetChanged();
+            getSupportActionBar().setTitle((getAlbum().getCurrentMediaIndex() + 1) + " / " + getAlbum().getMedias().size());
+        } else {
+            // 以全部的模式显示照片
+            int c = all_photo_pos;
+            if (AlertDialogsHelper.check) {
+                success = addToTrash();  // 收入回收站
+            } else {
+                deleteMedia(AlbumFragment.listAll.get(all_photo_pos).getPath());
+                success = true;
+            }
+
+            if (success) {
+                AlbumFragment.listAll.remove(all_photo_pos);
+                size_all = AlbumFragment.listAll.size();
+                adapter.notifyDataSetChanged();
+            }
+
+            if (current_image_pos != size_all) {
+                getSupportActionBar().setTitle((c + 1) + " / " + size_all);
+            }
+        }
+    }
+
+    private Disposable requestSdCardPermissions() {
+        Disposable disposable = new RxPermissions(this).request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .subscribe(granted -> {
+                    if (granted) { // Always true pre-M
+                        // I can control the camera now
+                        SnackBarHandler.show(bottomBar, "权限申请成功", Snackbar.LENGTH_SHORT);
+                    } else {
+                        // Oups permission denied
+                        SnackBarHandler.show(bottomBar, "权限申请失败", Snackbar.LENGTH_SHORT);
+                    }
+                });
+        return disposable;
+    }
+
+    private void deleteMedia(String path) {
+        String[] projection = {MediaStore.Images.Media._ID};
+
+        // Match on the file path
+        String selection = MediaStore.Images.Media.DATA + " = ?";
+        String[] selectionArgs = new String[]{path};
+
+        // Query for the ID of the media matching the file path
+        Uri queryUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        ContentResolver contentResolver = getContentResolver();
+        Cursor c = contentResolver.query(queryUri, projection, selection, selectionArgs, null);
+        if (c.moveToFirst()) {
+            // We found the ID. Deleting the item via the content provider will also remove the file
+            long id = c.getLong(c.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
+            Uri deleteUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+            contentResolver.delete(deleteUri, null, null);
+        }
+        c.close();
     }
 }

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.CoordinatorLayout
+    <RelativeLayout
         android:id="@+id/PhotoPager_Layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -37,7 +37,7 @@
                 android:background="#99000000"
                 android:elevation="4dp" />
         </RelativeLayout>
-    </android.support.design.widget.CoordinatorLayout>
+    </RelativeLayout>
 
 
 </ViewSwitcher>

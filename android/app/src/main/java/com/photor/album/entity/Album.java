@@ -662,4 +662,59 @@ public class Album {
         return success;
     }
 
+    /**
+     * 移动当前相片文件的位置
+     * @param context
+     * @param targetDir
+     * @return
+     */
+    public boolean moveCurrentMedia(Context context, String targetDir) {
+        boolean success = false;
+        try {
+            String from = getCurrentMedia().getPath();
+            if (success = moveMedia(context, from, targetDir)) {
+                medias.remove(getCurrentMediaIndex());
+                if (getPreviewPath() != null && from.equals(getPreviewPath())) {
+                    removeCoverAlbum(context);
+                }
+                setCount(medias.size());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
+
+    /**
+     * 移动指定图片文件至targetDir
+     * @param context
+     * @param targetDir
+     * @param pathofmed
+     * @return
+     */
+    public boolean moveAnyMedia(Context context, String targetDir, String pathofmed) {
+        boolean success = false;
+        try {
+            String from = pathofmed;
+            if (success = moveMedia(context, from, targetDir)) {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
+
+    public boolean deleteCurrentMedia(Context context) {
+        boolean success = deleteMedia(context, getCurrentMedia());
+        if (success) {
+            medias.remove(getCurrentMediaIndex());
+            if(getPreviewPath() != null && getCurrentMedia().getPath().equals(getPreviewPath())) {
+                removeCoverAlbum(context);
+            }
+            setCount(medias.size());
+        }
+        return success;
+    }
+
 }
