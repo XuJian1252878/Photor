@@ -2,8 +2,10 @@ package com.photor.album.activity;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,8 +14,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ActionMenuView;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.transition.ChangeBounds;
@@ -27,7 +31,10 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.example.file.FileUtils;
@@ -42,6 +49,7 @@ import com.photor.album.views.PagerRecyclerView;
 import com.photor.base.activity.BaseActivity;
 import com.photor.base.fragment.AlbumFragment;
 import com.photor.util.ActivitySwitchHelper;
+import com.photor.util.AlertDialogsHelper;
 import com.photor.util.BasicCallBack;
 import com.photor.util.ColorPalette;
 import com.photor.util.ThemeHelper;
@@ -57,6 +65,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
     private static final String ACTION_REVIEW = "com.android.camera.action.REVIEW";
 
     private PreferenceUtil SP;
+    private static int SLIDE_SHOW_INTERVAL = 5000;  // 控制幻灯片播放的时长
 
     private CoordinatorLayout relativeLayout, ActivityBackground;
 
@@ -377,7 +386,12 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
                 supportFinishAfterTransition();
                 return true;
             case R.id.action_share:
+                handler.removeCallbacks(slideShowRunnable);
                 shareToOthers();
+                return true;
+            case R.id.action_slideshow:
+                handler.removeCallbacks(slideShowRunnable);
+                setSlideShowDialog();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -388,6 +402,11 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
     public void singleTap() {
         toggleSystemUI();
         // slideshow的情况
+        if (slideshow) {
+            handler.removeCallbacks(slideShowRunnable);
+            slideshow = false;
+            Toast.makeText(this, getString(R.string.slide_show_off), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -450,12 +469,86 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
                 RelativeLayout.LayoutParams.WRAP_CONTENT
         );
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            params.setMargins(0,0,0,0);
+            params.setMargins(0,0, 0,0);
         } else {
             params.setMargins(0,0,0,0);
         }
 
         toolbar.setLayoutParams(params);
         setUpViewPager();
+    }
+
+    private Runnable slideShowRunnable = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                if (!allPhotoMode) {
+                    // 相册模式
+                    mViewPager.scrollToPosition((getAlbum().getCurrentMediaIndex() + 1) % getAlbum().getMedias().size());
+                } else {
+                    // 全部照片模式
+                    mViewPager.scrollToPosition((current_image_pos + 1) % AlbumFragment.listAll.size());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (getAlbum().getCurrentMediaIndex() + 1 == getAlbum().getMedias().size() - 1) {
+                    handler.removeCallbacks(slideShowRunnable);
+                    slideshow = false;
+                    toggleSystemUI();
+                } else {
+                    handler.postDelayed(this, SLIDE_SHOW_INTERVAL);
+                }
+            }
+        }
+    };
+
+    /**
+     * 设置幻灯片播放
+     */
+    private void setSlideShowDialog() {
+        final AlertDialog.Builder slideshowDialog = new AlertDialog.Builder(SingleMediaActivity.this, R.style.AlertDialog_Light);
+        final View SlideshowDialogLayout = getLayoutInflater().inflate(R.layout.dialog_slideshow, null);
+        final TextView slideshowDialogTitle = (TextView) SlideshowDialogLayout.findViewById(R.id.slideshow_dialog_title);
+        final CardView slideshowDialogCard = (CardView) SlideshowDialogLayout.findViewById(R.id.slideshow_dialog_card);
+        final EditText editTextTimeInterval = (EditText) SlideshowDialogLayout.findViewById(R.id.slideshow_edittext);
+
+        slideshowDialogTitle.setBackgroundColor(ThemeHelper.getPrimaryColor(this));
+        slideshowDialogCard.setBackgroundColor(ThemeHelper.getCardBackgroundColor(this));
+        editTextTimeInterval.getBackground().mutate().setColorFilter(ThemeHelper.getTextColor(this), PorterDuff.Mode.SRC_ATOP);
+        editTextTimeInterval.setTextColor(ThemeHelper.getTextColor(this));
+        editTextTimeInterval.setHintTextColor(ThemeHelper.getSubTextColor(this));
+
+        slideshowDialog.setView(SlideshowDialogLayout);
+        AlertDialog dialog = slideshowDialog.create();
+
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok_action), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String value = editTextTimeInterval.getText().toString();
+                if (!"".equals(value)) {
+                    slideshow = true;
+                    int intValue = Integer.valueOf(value);
+                    SLIDE_SHOW_INTERVAL = intValue * 1000;
+                    if (SLIDE_SHOW_INTERVAL > 1000) {
+                        hideSystemUI();
+                        Toast.makeText(SingleMediaActivity.this, getString(R.string.slide_show_on), Toast.LENGTH_SHORT).show();
+                        handler.postDelayed(slideShowRunnable, SLIDE_SHOW_INTERVAL);
+                    } else {
+                        Toast.makeText(SingleMediaActivity.this, "Minimum duration is 2 sec", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        dialog.show();
+        AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE}, ThemeHelper.getAccentColor(this), dialog);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(slideShowRunnable);
     }
 }

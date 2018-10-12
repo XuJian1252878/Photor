@@ -16,7 +16,7 @@
         android:title="Edit"/>
 
     <item
-            android:id="@+id/action_compress"
+            android:id="@+id/action_slideshow"
             android:orderInCategory="2"
             app:showAsAction="always"
             android:icon="@drawable/compressicn"

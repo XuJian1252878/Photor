@@ -104,6 +104,12 @@
 
     <string name="send_image">发送图片至</string>
 
+    <string name="enter_time">输入时间间隔</string>
+    <string name="time_interval">时间间隔（秒）（>1秒）</string>
+
+    <string name="slide_show_on">幻灯片播放开</string>
+    <string name="slide_show_off">幻灯片播放关</string>
+
     <string name="all_photo_mode">photo mode</string>
     <string name="position">position</string>
     <string name="allMediaSize">size</string>
