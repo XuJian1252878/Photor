@@ -1,0 +1,32 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/save_operate_btn"
+        android:orderInCategory="0"
+        android:title="@string/save"
+        android:icon="@drawable/ic_save"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/operate_crop_btn"
+        android:orderInCategory="1"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_crop"
+        android:title="裁剪"/>
+
+    <item
+        android:id="@+id/image_exif_btn"
+        android:orderInCategory="2"
+        android:icon="@drawable/ic_information"
+        app:showAsAction="always"
+        android:title="详情"/>
+
+    <item
+        android:id="@+id/delete_operate_res_btn"
+        android:orderInCategory="4"
+        android:icon="@drawable/ic_delete"
+        android:title="@string/delete"
+        app:showAsAction="always" />
+
+</menu>

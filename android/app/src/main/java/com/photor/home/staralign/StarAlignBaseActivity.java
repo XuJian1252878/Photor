@@ -100,6 +100,8 @@ public class StarAlignBaseActivity extends PhotoOperateBaseActivity {
                                 @Override
                                 public void onStarAlignThreadFinish(int alignResultFlag) {
                                     if (alignResultFlag == StarAlignEnum.STAR_ALIGN_RESLUT_SUCCESS.getCode()) {
+                                        // 添加相册信息
+                                        FileUtils.updateMediaStore(getApplicationContext(), new File(imgAbsPath), null);
                                         // 说明对齐操作成功
                                         StarAlignOperator.resultBuilder()
                                                 .setAlignResultPath(imgAbsPath)
