@@ -2,6 +2,7 @@ package com.photor.home.staralign;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -21,6 +22,7 @@ import com.photor.home.staralign.task.StarPhotoAlignThread;
 
 import org.opencv.core.Mat;
 
+import java.io.File;
 import java.util.Arrays;
 
 
@@ -101,6 +103,8 @@ public class StarAlignBaseActivity extends PhotoOperateBaseActivity {
                                         // 说明对齐操作成功
                                         StarAlignOperator.resultBuilder()
                                                 .setAlignResultPath(imgAbsPath)
+                                                .setAlignResultUri(Uri.fromFile(new File(imgAbsPath)))
+                                                .setIsFromOperator(true)
                                                 .start(StarAlignBaseActivity.this);
                                     } else {
                                         Toast.makeText(StarAlignBaseActivity.this, "图片对齐失败", Toast.LENGTH_SHORT);

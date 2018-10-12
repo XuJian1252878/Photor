@@ -6,9 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.photor.album.activity.SingleMediaActivity;
-import com.photor.base.activity.PhotoOperateResultActivity;
 
-import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_IS_FROM_CAMERA_TAKEN;
+import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_IS_FROM_OPERATE_RESULT;
 import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_OPERATE_RESULT_PATH;
 
 public class CameraOperator {
@@ -40,7 +39,7 @@ public class CameraOperator {
         }
 
         public CameraOperatorBuilder setIsFromCamera(boolean isFromCamera) {
-            this.bundle.putBoolean(EXTRA_PHOTO_IS_FROM_CAMERA_TAKEN, isFromCamera);
+            this.bundle.putBoolean(EXTRA_PHOTO_IS_FROM_OPERATE_RESULT, isFromCamera);
             return this;
         }
 

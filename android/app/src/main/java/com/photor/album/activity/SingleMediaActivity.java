@@ -17,12 +17,10 @@ import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -51,15 +49,12 @@ import com.photor.BuildConfig;
 import com.photor.R;
 import com.photor.album.adapter.ImageAdapter;
 import com.photor.album.entity.Album;
-import com.photor.album.entity.Media;
 import com.photor.album.utils.Measure;
 import com.photor.album.views.PagerRecyclerView;
 import com.photor.base.activity.BaseActivity;
-import com.photor.base.activity.PhotoCropActivity;
 import com.photor.base.activity.PhotoExifDetailActivity;
 import com.photor.base.fragment.AlbumFragment;
 import com.photor.data.TrashBinRealmModel;
-import com.photor.util.ActivitySwitchHelper;
 import com.photor.util.AlertDialogsHelper;
 import com.photor.util.BasicCallBack;
 import com.photor.util.ColorPalette;
@@ -69,7 +64,6 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -79,7 +73,7 @@ import io.realm.Realm;
 
 import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_IS_SAVED_CROP_RES;
 import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_ORI_IMG_PATH;
-import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_IS_FROM_CAMERA_TAKEN;
+import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_IS_FROM_OPERATE_RESULT;
 import static com.photor.util.ActivitySwitchHelper.getContext;
 
 public class SingleMediaActivity extends BaseActivity implements ImageAdapter.OnSingleTap, ImageAdapter.EnterTransition {
@@ -170,8 +164,8 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
                     file = new File(path);
                 }
 
-                boolean isFromCameraTaken = getIntent().getBooleanExtra(EXTRA_PHOTO_IS_FROM_CAMERA_TAKEN, false);
-                if (file != null && file.isFile() && !isFromCameraTaken) {
+                boolean isFromOperateResult = getIntent().getBooleanExtra(EXTRA_PHOTO_IS_FROM_OPERATE_RESULT, false);
+                if (file != null && file.isFile() && !isFromOperateResult) {
                     // 图片在本地路径上
                     album = new Album(getApplicationContext(), file);
                 } else {
@@ -670,7 +664,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
             if (succ) {
                 Snackbar snackbar = SnackBarHandler.showWithBottomMargin2(parentView, getString(R.string
                                 .trashbin_move_onefile),
-                        bottomBar.getHeight(), Snackbar.LENGTH_LONG);
+                        bottomBar.getHeight(), Snackbar.LENGTH_SHORT);
                 final String finalOldpath = oldpath;
                 snackbar.setAction("撤销", new View.OnClickListener() {
                     @Override

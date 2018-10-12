@@ -326,7 +326,7 @@ Java_com_photor_staralign_StarAlignSplitActivity_reset(JNIEnv *env, jobject inst
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_photor_exposure_task_ExposureMergeThread_exposureMergePhotos(JNIEnv *env, jobject instance,
+Java_com_photor_home_exposure_task_ExposureMergeThread_exposureMergePhotos(JNIEnv *env, jobject instance,
                                                                       jobject photos,
                                                                       jobject exposureTimes,
                                                                       jlong resImgAddr,

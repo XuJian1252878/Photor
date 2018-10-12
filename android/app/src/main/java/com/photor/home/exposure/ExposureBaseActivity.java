@@ -2,6 +2,7 @@ package com.photor.home.exposure;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.OrientationHelper;
@@ -23,6 +24,7 @@ import com.photor.home.exposure.task.ExposureMergeThread;
 
 import org.opencv.core.Mat;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -105,6 +107,8 @@ public class ExposureBaseActivity extends PhotoOperateBaseActivity {
                                 System.out.println(resImgPath);
                                 ExposureOperator.resultBuilder()
                                         .setExposureResPath(resImgPath)
+                                        .setExposureResultUri(Uri.fromFile(new File(resImgPath)))
+                                        .setIsFromOperate(true)
                                         .start(ExposureBaseActivity.this);
                             } else {
                                 Toast.makeText(ExposureBaseActivity.this,

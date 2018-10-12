@@ -2,10 +2,13 @@ package com.photor.home.staralign;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import com.photor.album.activity.SingleMediaActivity;
 import com.photor.base.activity.PhotoOperateResultActivity;
 
+import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_IS_FROM_OPERATE_RESULT;
 import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_OPERATE_RESULT_PATH;
 
 /**
@@ -33,8 +36,19 @@ public class StarAlignOperator {
             return this;
         }
 
+        public StarAlignResultBuilder setAlignResultUri(Uri uri) {
+            intent.setData(uri);
+            return this;
+        }
+
+        public StarAlignResultBuilder setIsFromOperator(boolean isFromOperator) {
+            intent.putExtra(EXTRA_PHOTO_IS_FROM_OPERATE_RESULT, isFromOperator);
+            return this;
+        }
+
         public void start(Activity activity) {
-            intent.setClass(activity, PhotoOperateResultActivity.class);
+//            intent.setClass(activity, PhotoOperateResultActivity.class);
+            intent.setClass(activity, SingleMediaActivity.class);
             intent.putExtras(bundle);
             activity.startActivityForResult(intent, REQUEST_RESULT_CODE);
         }
