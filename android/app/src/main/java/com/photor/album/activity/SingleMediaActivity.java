@@ -670,7 +670,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
             if (succ) {
                 Snackbar snackbar = SnackBarHandler.showWithBottomMargin2(parentView, getString(R.string
                                 .trashbin_move_onefile),
-                        bottomBar.getHeight(), Snackbar.LENGTH_SHORT);
+                        bottomBar.getHeight(), Snackbar.LENGTH_LONG);
                 final String finalOldpath = oldpath;
                 snackbar.setAction("撤销", new View.OnClickListener() {
                     @Override
@@ -783,6 +783,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
 
             if (getAlbum().getMedias().size() == 0) {
                 if (customUri) {
+                    getAlbums().deleteAlbumByIndexSoft(0);  // 删除供拍照使用的临时相册
                     finish();
                 } else {
                     getAlbums().removeCurrentAlbum();

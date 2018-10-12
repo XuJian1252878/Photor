@@ -47,7 +47,8 @@ public class Media implements Parcelable, Serializable {
 
     public Media(Context context, Uri mediaUri) {
         this.uri = mediaUri.toString();
-        this.path = null;
+        // https://stackoverflow.com/questions/8885204/how-to-get-the-file-path-from-uri
+        this.path = new File(mediaUri.getPath()).getAbsolutePath();
         this.mimeType = context.getContentResolver().getType(getUri());
     }
 

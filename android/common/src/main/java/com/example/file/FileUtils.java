@@ -749,10 +749,10 @@ public class FileUtils {
                                 Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                                 intent.setData(uri);
                                 context.sendBroadcast(intent);
-                                Log.d("updateMediaStore1", s);
-                                Log.d("updateMediaStore2", Uri.fromFile(file).toString());
-                                Log.d("updateMediaStore3", uri.toString());
-                                Log.d("updateMediaStore4", Environment.getExternalStorageDirectory().getAbsolutePath());
+//                                Log.d("updateMediaStore1", s);
+//                                Log.d("updateMediaStore2", Uri.fromFile(file).toString());
+//                                Log.d("updateMediaStore3", uri.toString());
+//                                Log.d("updateMediaStore4", Environment.getExternalStorageDirectory().getAbsolutePath());
                             }
                         });
             } else {
