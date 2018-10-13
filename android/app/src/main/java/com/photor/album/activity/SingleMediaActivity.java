@@ -61,6 +61,7 @@ import com.photor.util.ColorPalette;
 import com.photor.util.SnackBarHandler;
 import com.photor.util.ThemeHelper;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -74,6 +75,7 @@ import io.realm.Realm;
 import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_IS_SAVED_CROP_RES;
 import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_ORI_IMG_PATH;
 import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_IS_FROM_OPERATE_RESULT;
+import static com.photor.base.activity.util.PhotoOperator.REQUEST_ACTION_EDITIMAGE;
 import static com.photor.util.ActivitySwitchHelper.getContext;
 
 public class SingleMediaActivity extends BaseActivity implements ImageAdapter.OnSingleTap, ImageAdapter.EnterTransition {
@@ -93,6 +95,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
     public static String pathForDescription;  // 相册模式下传递过来的照片路径
     private boolean customUri = false;  // 图片是否是以URI形式传递来的
     private boolean fullScreenMode = false; // 当前是否以全屏模式来显示照片
+    private String imgEditResPath;  // 编辑图片后生成结果图片的位置
 
     // 跟显示系统UI相关
     private Handler handler;
@@ -437,9 +440,44 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
                 cropIntent.putExtra(EXTRA_ORI_IMG_PATH, pathForDescription);
                 startActivity(cropIntent);
                 return true;
+            case R.id.action_edit:
+                imgEditResPath = FileUtils.generateImgEditResPath();  // 生成编辑后结果图片的位置
+                EditImageActivity.start(this, pathForDescription, imgEditResPath, REQUEST_ACTION_EDITIMAGE);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_ACTION_EDITIMAGE:
+                    handleImageAfterEditor(data);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    /**
+     * 处理被编辑之后的照片
+     * @param data
+     */
+    private void handleImageAfterEditor(Intent data) {
+        String newFilePath = data.getStringExtra(EditImageActivity.EXTRA_OUTPUT);
+        boolean isImageEdit = data.getBooleanExtra(EditImageActivity.IMAGE_IS_EDIT, false);
+        if (isImageEdit){
+            Toast.makeText(this, getString(R.string.save_path, newFilePath), Toast.LENGTH_LONG).show();
+            // 扫描新的文件到MediaStore库
+            FileUtils.updateMediaStore(this, new File(newFilePath), null);
+        }else{//未编辑  还是用原来的图片
+            newFilePath = data.getStringExtra(EditImageActivity.FILE_PATH);
+        }
+        // 接下来做显示图片的操作
     }
 
     @Override
