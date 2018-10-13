@@ -2,7 +2,6 @@ package com.photor.album.views;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.res.Resources;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -17,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
@@ -26,7 +24,7 @@ import com.photor.MainApplication;
 import com.photor.R;
 import com.photor.album.entity.Album;
 import com.photor.album.entity.FoldersFileFilter;
-import com.photor.util.ThemeHelper;
+import com.example.theme.ThemeHelper;
 
 import java.io.File;
 import java.util.ArrayList;

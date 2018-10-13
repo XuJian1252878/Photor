@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.theme.ThemeHelper;
 import com.photor.R;
 import com.photor.album.entity.Album;
 

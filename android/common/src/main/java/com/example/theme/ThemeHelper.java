@@ -1,4 +1,4 @@
-package com.photor.util;
+package com.example.theme;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -10,9 +10,9 @@ import android.support.v4.content.ContextCompat;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.common.R;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.typeface.IIcon;
-import com.photor.R;
 
 import java.lang.reflect.Field;
 

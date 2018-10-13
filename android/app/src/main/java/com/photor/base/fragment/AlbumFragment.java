@@ -1047,7 +1047,7 @@ public class AlbumFragment extends Fragment {
                         R.string.delete_photos_message,
                         null,
                         getResources().getString(R.string.move_to_trashbin),
-                        com.photor.util.ThemeHelper.getAccentColor(getContext()));
+                        com.example.theme.ThemeHelper.getAccentColor(getContext()));
 
                 deleteDialog.setNegativeButton(getString(R.string.cancel).toUpperCase(), null);
                 deleteDialog.setPositiveButton(getString(R.string.delete).toUpperCase(), new DialogInterface.OnClickListener() {
@@ -1061,7 +1061,7 @@ public class AlbumFragment extends Fragment {
                 alertDialogDelete.show();
                 AlertDialogsHelper.setButtonTextColor(
                         new int[]{DialogInterface.BUTTON_POSITIVE, DialogInterface.BUTTON_NEGATIVE},
-                        com.photor.util.ThemeHelper.getAccentColor(getContext()),
+                        com.example.theme.ThemeHelper.getAccentColor(getContext()),
                         alertDialogDelete);
                 return true;
             case R.id.action_move:  // 在相册模式下，被选择的图片大于0的时候，move的菜单项才会显示出来
@@ -1137,7 +1137,7 @@ public class AlbumFragment extends Fragment {
 //                                // 设置警告栏按钮的颜色
 //                                AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE,
 //                                        DialogInterface.BUTTON_NEGATIVE, DialogInterface.BUTTON_NEUTRAL},
-//                                        com.photor.util.ThemeHelper.getAccentColor(getContext()),
+//                                        com.example.theme.ThemeHelper.getAccentColor(getContext()),
 //                                        alert);
 //                            }
 //
@@ -1190,7 +1190,7 @@ public class AlbumFragment extends Fragment {
                     AlertDialog alertDialog = alertDialogMoveAll.create();
                     alertDialog.show();
                     AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE, DialogInterface
-                            .BUTTON_NEGATIVE}, com.photor.util.ThemeHelper.getAccentColor(getContext()), alertDialog);
+                            .BUTTON_NEGATIVE}, com.example.theme.ThemeHelper.getAccentColor(getContext()), alertDialog);
                 }
 
                 return true;
@@ -1317,7 +1317,7 @@ public class AlbumFragment extends Fragment {
                 editTextNewName.setSelection(editTextNewName.getText().toString().length());
                 renameDialog.show();
                 AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE,
-                        DialogInterface.BUTTON_NEGATIVE}, com.photor.util.ThemeHelper.getAccentColor(getActivity()), renameDialog);
+                        DialogInterface.BUTTON_NEGATIVE}, com.example.theme.ThemeHelper.getAccentColor(getActivity()), renameDialog);
                 // 初识时首先禁止确认按钮
                 renameDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
                 AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE}, ContextCompat.getColor(getActivity(), R.color.grey), renameDialog);
@@ -1346,7 +1346,7 @@ public class AlbumFragment extends Fragment {
                             // 已经有文字输入
                             renameDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                             AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE},
-                                    com.photor.util.ThemeHelper.getAccentColor(albumFragment.getActivity()),
+                                    com.example.theme.ThemeHelper.getAccentColor(albumFragment.getActivity()),
                                     renameDialog);
                         }
                     }
@@ -2189,7 +2189,7 @@ public class AlbumFragment extends Fragment {
                 // 设置警告栏按钮的颜色
                 AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE,
                                 DialogInterface.BUTTON_NEGATIVE, DialogInterface.BUTTON_NEUTRAL},
-                        com.photor.util.ThemeHelper.getAccentColor(getContext()),
+                        com.example.theme.ThemeHelper.getAccentColor(getContext()),
                         alert);
             }
 

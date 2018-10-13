@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.example.theme.ThemeHelper;
 import com.photor.R;
 
 public class SnackBarHandler {

@@ -59,7 +59,7 @@ import com.photor.util.AlertDialogsHelper;
 import com.photor.util.BasicCallBack;
 import com.photor.util.ColorPalette;
 import com.photor.util.SnackBarHandler;
-import com.photor.util.ThemeHelper;
+import com.example.theme.ThemeHelper;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
@@ -455,6 +455,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_ACTION_EDITIMAGE:
+                    // 图片编辑完成之后
                     handleImageAfterEditor(data);
                     break;
                 default:

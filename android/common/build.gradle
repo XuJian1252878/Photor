@@ -41,6 +41,17 @@ dependencies {
     implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
 
 
+    // 引入 android 图标信息
+    //the core iconcis library (without any widgets)
+    implementation 'com.mikepenz:iconics-core:2.8.4'
+    //this adds all ui view widgets (IconicsButton, IconicsImageView, ...)
+    implementation 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
+    implementation 'com.mikepenz:community-material-typeface:1.5.54.2@aar'
+    implementation 'com.mikepenz:fontawesome-typeface:4.6.0.1@aar'
+    implementation 'com.mikepenz:ionicons-typeface:2.0.1.5@aar'
+    implementation 'org.jetbrains:annotations-java5:15.0'
+
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
