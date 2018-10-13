@@ -147,7 +147,6 @@ set_target_properties(libopencv_imgproc PROPERTIES IMPORTED_LOCATION "${libs}/${
 add_library(libopencv_optflow STATIC IMPORTED )
 set_target_properties(libopencv_optflow PROPERTIES IMPORTED_LOCATION "${libs}/${ANDROID_ABI}/libopencv_optflow.a")
 
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -fexceptions -frtti")
 
 # Creates and names a library, sets it as either STATIC
@@ -164,16 +163,17 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/nanojpeg.c
-             src/main/cpp/mem_utils.c
-             src/main/cpp/bitmap.c
-             src/main/cpp/bicubic_resize.c
-             src/main/cpp/filter.c
-             src/main/cpp/transform.c
-             src/main/cpp/colour_space.c
-             src/main/cpp/matrix.c
-             src/main/cpp/blur.c
-             src/main/cpp/photo_processing.c )
+             src/main/cpp/enhance.cpp
+             src/main/cpp/nanojpeg.cpp
+             src/main/cpp/mem_utils.cpp
+             src/main/cpp/bitmap.cpp
+             src/main/cpp/bicubic_resize.cpp
+             src/main/cpp/filter.cpp
+             src/main/cpp/transform.cpp
+             src/main/cpp/colour_space.cpp
+             src/main/cpp/matrix.cpp
+             src/main/cpp/blur.cpp
+             src/main/cpp/photo_processing.cpp )
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by

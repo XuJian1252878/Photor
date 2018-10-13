@@ -559,21 +559,21 @@ NJ_INLINE void njDecodeSOF(int decodeRed, int decodeGreen, int decodeBlue) {
         c->height = (nj.height * c->ssy + ssymax - 1) / ssymax;
         c->stride = nj.mbwidth * nj.mbsizex * c->ssx / ssxmax;
         if (((c->width < 3) && (c->ssx != ssxmax)) || ((c->height < 3) && (c->ssy != ssymax))) njThrow(NJ_UNSUPPORTED);
-        if (!(c->pixels = njAllocMem(c->stride * (nj.mbheight * nj.mbsizey * c->ssy / ssymax)))) njThrow(NJ_OUT_OF_MEM);
+        if (!(c->pixels = (unsigned char *)njAllocMem(c->stride * (nj.mbheight * nj.mbsizey * c->ssy / ssymax)))) njThrow(NJ_OUT_OF_MEM);
     }
     if (nj.ncomp == 3) {
     	if (decodeRed == 1) {
-    		nj.rchannel = njAllocMem(nj.width * nj.height);
+    		nj.rchannel = (unsigned char *)njAllocMem(nj.width * nj.height);
         	if (!nj.rchannel) njThrow(NJ_OUT_OF_MEM);
     	}
 
     	if (decodeGreen == 1) {
-    		nj.gchannel = njAllocMem(nj.width * nj.height);
+    		nj.gchannel = (unsigned char *)njAllocMem(nj.width * nj.height);
         	if (!nj.gchannel) njThrow(NJ_OUT_OF_MEM);
     	}
 
     	if (decodeBlue == 1) {
-    		nj.bchannel = njAllocMem(nj.width * nj.height);
+    		nj.bchannel = (unsigned char *)njAllocMem(nj.width * nj.height);
         	if (!nj.bchannel) njThrow(NJ_OUT_OF_MEM);
     	}
     }
@@ -740,7 +740,7 @@ NJ_INLINE void njUpsampleH(nj_component_t* c) {
     const int xmax = c->width - 3;
     unsigned char *out, *lin, *lout;
     int x, y;
-    out = njAllocMem((c->width * c->height) << 1);
+    out = (unsigned char *)njAllocMem((c->width * c->height) << 1);
     if (!out) njThrow(NJ_OUT_OF_MEM);
     lin = c->pixels;
     lout = out;
@@ -768,7 +768,7 @@ NJ_INLINE void njUpsampleV(nj_component_t* c) {
     const int w = c->width, s1 = c->stride, s2 = s1 + s1;
     unsigned char *out, *cin, *cout;
     int x, y;
-    out = njAllocMem((c->width * c->height) << 1);
+    out = (unsigned char *)njAllocMem((c->width * c->height) << 1);
     if (!out) njThrow(NJ_OUT_OF_MEM);
     for (x = 0;  x < w;  ++x) {
         cin = &c->pixels[x];

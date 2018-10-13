@@ -46,6 +46,8 @@ void getBitmapRowAsIntegers(Bitmap* bitmap, int y, int* pixels);
 void setBitmapRowFromIntegers(Bitmap* bitmap, int y, int* pixels);
 void deleteBitmap(Bitmap* bitmap);
 int decodeJpegData(char* jpegData, int jpegSize, int maxPixels, Bitmap* bitmap);
+int decodeJpegChannel(char* jpegData, int jpegSize, int channel, unsigned char** channelPixels, int* srcWidth, int* srcHeight);
+int resizeChannel(unsigned char** channelPixels, int srcWidth, int srcHeight, int maxWidth, int maxHeight);
 #endif
 
 

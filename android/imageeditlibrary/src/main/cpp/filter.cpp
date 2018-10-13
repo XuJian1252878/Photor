@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include "filter.h"
 #include "matrix.h"
+#include "blur.h"
 
 #define  LOG_TAG    "filter.c"
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
@@ -315,7 +316,7 @@ int unsharpMask(Bitmap* bitmap, int radius, float amount, int threshold) {
 	}
 
 	float blurRadius = radius/3.0f;
-	resultCode = stackBlur(&blurRadius, (*bitmap).red, (*bitmap).green, (*bitmap).blue, &((*bitmap).width), &((*bitmap).height), blurRed, blurGreen, blurBlue);
+	resultCode = stackBlur(&blurRadius, (*bitmap).red, (*bitmap).green, (*bitmap).blue, (int*)(&((*bitmap).width)), (int*)(&((*bitmap).height)), blurRed, blurGreen, blurBlue);
 	if (resultCode != MEMORY_OK) {
 		freeUnsignedCharArray(&blurRed);
 		freeUnsignedCharArray(&blurGreen);
@@ -495,7 +496,7 @@ int applySahara(Bitmap* bitmap) {
 	}
 
 	float matrix[4][4];
-	identMatrix(matrix);
+	identMatrix((float*)matrix);
 	float saturation = 0.65f;
 	saturateMatrix(matrix, &saturation);
 	applyMatrix(bitmap, matrix);
@@ -520,7 +521,7 @@ int applySahara(Bitmap* bitmap) {
 	}
 
 	float blurRadius = 1.0f;
-	resultCode = stackBlur(&blurRadius, (*bitmap).red, (*bitmap).green, (*bitmap).blue, &((*bitmap).width), &((*bitmap).height), blurRed, blurGreen, blurBlue);
+	resultCode = stackBlur(&blurRadius, (*bitmap).red, (*bitmap).green, (*bitmap).blue, (int*)(&((*bitmap).width)), (int*)(&((*bitmap).height)), blurRed, blurGreen, blurBlue);
 	if (resultCode != MEMORY_OK) {
 		freeUnsignedCharArray(&blurRed);
 		freeUnsignedCharArray(&blurGreen);
@@ -597,7 +598,7 @@ int applyHDR(Bitmap* bitmap) {
 		return resultCode;
 	}
 	float blurRadius = 9.0f;
-	resultCode = stackBlur(&blurRadius, red, green, blue, &((*bitmap).width), &((*bitmap).height), blurRed, blurGreen, blurBlue);
+	resultCode = stackBlur(&blurRadius, red, green, blue, (int*)(&((*bitmap).width)), (int*)(&((*bitmap).height)), blurRed, blurGreen, blurBlue);
 	if (resultCode != MEMORY_OK) {
 		freeUnsignedCharArray(&blurRed);
 		freeUnsignedCharArray(&blurGreen);
@@ -608,7 +609,7 @@ int applyHDR(Bitmap* bitmap) {
 	unsigned int i, j;
 	unsigned char r1, g1, b1, r2, g2, b2;
 	float matrix[4][4];
-	identMatrix(matrix);
+	identMatrix((float*)matrix);
 	float saturation = 1.3f;
 	saturateMatrix(matrix, &saturation);
 	for (i = length; i--;) {
@@ -669,7 +670,7 @@ void applyTestino(Bitmap* bitmap) {
 	}
 
 	float matrix[4][4];
-	identMatrix(matrix);
+	identMatrix((float*)matrix);
 	float saturation = 1.5f;
 	saturateMatrix(matrix, &saturation);
 	applyMatrix(bitmap, matrix);

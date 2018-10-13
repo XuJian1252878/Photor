@@ -25,6 +25,7 @@
 #include "mem_utils.h"
 #include "bitmap.h"
 #include "nanojpeg.h"
+#include "bicubic_resize.h"
 
 #define  LOG_TAG    "bitmap.c"
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
@@ -140,6 +141,7 @@ int initBitmapMemory(Bitmap* bitmap, int width, int height) {
     if (resultCode != MEMORY_OK) {
     	return resultCode;
     }
+	return resultCode;
 }
 
 int decodeJpegData(char* jpegData, int jpegSize, int maxPixels, Bitmap* bitmap) {
@@ -149,7 +151,7 @@ int decodeJpegData(char* jpegData, int jpegSize, int maxPixels, Bitmap* bitmap) 
 	int maxHeight;
 
 	// Decode red channel
-	returnCode = decodeJpegChannel(jpegData, jpegSize, 0, &(*bitmap).red, &(*bitmap).redWidth, &(*bitmap).redHeight);
+	returnCode = decodeJpegChannel(jpegData, jpegSize, 0, &(*bitmap).red, (int*)(&((*bitmap).redWidth)), (int*)(&((*bitmap).redHeight)));
 	if (returnCode != MEMORY_OK) {
 		LOGE("Failed to decode red channel");
 		njDone();
@@ -173,7 +175,7 @@ int decodeJpegData(char* jpegData, int jpegSize, int maxPixels, Bitmap* bitmap) 
 	}
 
 	// Decode green channel
-	returnCode = decodeJpegChannel(jpegData, jpegSize, 1, &(*bitmap).green, &(*bitmap).greenWidth, &(*bitmap).greenHeight);
+	returnCode = decodeJpegChannel(jpegData, jpegSize, 1, &(*bitmap).green, (int*)(&((*bitmap).greenWidth)), (int*)(&((*bitmap).greenHeight)));
 	if (returnCode != MEMORY_OK) {
 		LOGE("Failed to decode green channel");
 		njDone();
@@ -198,7 +200,7 @@ int decodeJpegData(char* jpegData, int jpegSize, int maxPixels, Bitmap* bitmap) 
 	}
 
 	// Decode blue channel
-	returnCode = decodeJpegChannel(jpegData, jpegSize, 2, &(*bitmap).blue, &(*bitmap).blueWidth, &(*bitmap).blueHeight);
+	returnCode = decodeJpegChannel(jpegData, jpegSize, 2, &(*bitmap).blue, (int*)(&((*bitmap).blueWidth)), (int*)(&((*bitmap).blueHeight)));
 	if (returnCode != MEMORY_OK) {
 		LOGE("Failed to decode blue channel");
 		njDone();

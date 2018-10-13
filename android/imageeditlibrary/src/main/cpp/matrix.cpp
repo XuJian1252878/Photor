@@ -121,7 +121,7 @@ void saturateMatrix(float matrix[4][4], float* saturation)
     multiplyMatricies(mmatrix, matrix, matrix);
 }
 
-multiplyMatricies(float a[4][4], float b[4][4], float c[4][4]) {
+void multiplyMatricies(float a[4][4], float b[4][4], float c[4][4]) {
     int x, y;
     float temp[4][4];
 

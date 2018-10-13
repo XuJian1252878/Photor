@@ -17,7 +17,7 @@ android {
             cmake {
                 cppFlags "-std=c++11 -frtti -lz"
 //                cppFlags "-std=c++11", "-frtti", "-fexceptions"
-                abiFilters 'armeabi-v7a', 'x86'
+//                abiFilters 'armeabi-v7a', 'x86'  // 加上这句之后，改成C++编译器的话，运行程序在执行 malloc的时候会出错，很奇怪，估计是和 上面 ndk 的 abiFilters冲突了??
 //                arguments '-DANDROID_STL=gnustl_shared'  // 加了这句会莫名其妙的出错，报 libgnustl_shared.so 文件重复
 //                abiFilters 'armeabi', 'armeabi-v7a', 'mips', 'x86'
             }

@@ -108,10 +108,10 @@ public class PhotoProcessing {
 
     public static native void nativeApplyHDR();
 
-    public static native void nativeLoadResizedJpegBitmap(byte[] jpegData,
+    public static native int nativeLoadResizedJpegBitmap(byte[] jpegData,
                                                           int size, int maxPixels);
 
-    public static native void nativeResizeBitmap(int newWidth, int newHeight);
+    public static native int nativeResizeBitmap(int newWidth, int newHeight);
 
     public static native void handleSmooth(Bitmap bitmap,float smoothValue);
 
@@ -121,7 +121,7 @@ public class PhotoProcessing {
 
     public static native void freeBeautifyMatrix();
 
-    public static native void nativeMosaic(Bitmap src,Bitmap out , int radius);
+    public static native void nativeMosaic(Bitmap src, Bitmap out , int radius);
 
     private  static Bitmap handleMosaicFliter(Bitmap src){
         Bitmap out = null;

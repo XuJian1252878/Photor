@@ -31,7 +31,7 @@ int newIntArray(unsigned int size, int** arrayPointer) {
 
 int newUnsignedIntArray(unsigned int size, unsigned int** arrayPointer) {
 	unsigned int numBytes = size * sizeof(unsigned int);
-	*arrayPointer = (int*) malloc(numBytes);
+	*arrayPointer = (unsigned int*) malloc(numBytes);
 	if (arrayPointer == NULL) {
 		return INT_ARRAY_ERROR;
 	}

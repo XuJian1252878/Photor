@@ -13,4 +13,6 @@ void applyMatrix(Bitmap* bitmap, float matrix[4][4]);
 
 void applyMatrixToPixel(unsigned char* red, unsigned char* green, unsigned char* blue, float matrix[4][4]);
 
+void multiplyMatricies(float a[4][4], float b[4][4], float c[4][4]);
+
 #endif //PHOTOR_MATRIX_H
