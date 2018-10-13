@@ -45,7 +45,7 @@ import com.xinlan.imageeditlibrary.editimage.widget.RedoUndoController;
  * <p>
  * 图片编辑 主页面
  *
- * @author panyi
+ * @author panyi  xujian
  *         <p>
  *         包含 1.贴图 2.滤镜 3.剪裁 4.底图旋转 功能
  *         add new modules

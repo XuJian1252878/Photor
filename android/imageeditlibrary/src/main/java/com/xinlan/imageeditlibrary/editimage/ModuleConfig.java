@@ -2,6 +2,7 @@ package com.xinlan.imageeditlibrary.editimage;
 
 /**
  * Created by panyi on 2017/7/12.
+ * xujian on 2018/10/13
  */
 
 public final class ModuleConfig {
@@ -12,5 +13,6 @@ public final class ModuleConfig {
     public static final int INDEX_ROTATE = 4;
     public static final int INDEX_ADDTEXT = 5;
     public static final int INDEX_PAINT = 6;
-    public static final int INDEX_BEAUTY = 7;//美颜
+    public static final int INDEX_BEAUTY = 7;  //美颜
+    public static final int INDEX_ENHANCE = 8;  //效果增强
 }
