@@ -19,10 +19,10 @@
         <item>色调</item>
         <item>饱和度</item>
         <item>色温</item>
-        <item>tint</item>
-        <item>vignette</item>
+        <item>染色</item>  <!-- tint -->
+        <item>晕影</item>  <!-- vignette -->
         <item>锐化</item>
-        <item>blur</item>
+        <item>虚化</item>
         <item>gamma</item>
     </string-array>
 
