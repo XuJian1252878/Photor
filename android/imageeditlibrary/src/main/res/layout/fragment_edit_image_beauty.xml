@@ -1,7 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#000000"
     android:orientation="horizontal">
 
     <ImageView
@@ -29,8 +28,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/smooth"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textColor="@color/black"
+                android:textSize="14sp" />
 
             <SeekBar
                 android:id="@+id/smooth_value_bar"
@@ -50,8 +49,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/white_skin"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textColor="@color/black"
+                android:textSize="14sp" />
 
             <SeekBar
                 android:id="@+id/white_skin_value_bar"
