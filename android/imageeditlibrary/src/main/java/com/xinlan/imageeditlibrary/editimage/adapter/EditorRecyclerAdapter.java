@@ -33,6 +33,9 @@ public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAd
     private Context context;
     private RecyclerView recyclerView;  // 设置为当前Adapter的Recycler
 
+    public static final String[] cropTitles = {"原始", "1:1", "1:2", "1:3", "2:3", "3:4", "2:1", "3:1", "3:2", "4:3"};
+    public static final float[] cropRatios = {-1f, 1f, 1/2f, 1/3f, 2/3f, 3/4f, 2f, 3f, 3/2f, 4/3f};
+
     private int fragmentMode; // 标记当前是处于哪一个设置fragment
 
     private int currentSelection;  // 当前选中项的下标
@@ -90,6 +93,8 @@ public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAd
 
         if (fragmentMode == EditImageActivity.MODE_STICKERS) {
             holder.itemView.setTag(stickerPath[position]);
+        } else if (fragmentMode == EditImageActivity.MODE_CROP) {
+            holder.itemView.setTag(cropRatios[position]);
         }
 
         int iconImageSize = (int) context.getResources().getDimension(R.dimen.icon_item_image_size_recycler);
@@ -107,6 +112,8 @@ public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAd
             } else {
                 holder.icon.setImageResource(defalutIcon);
             }
+        } else if (fragmentMode == EditImageActivity.MODE_CROP) {
+            holder.icon.setImageResource(R.drawable.ic_crop_image_edit);
         } else {
             // 设置为配置好的图片信息
             holder.icon.setImageResource(iconlist != null ? iconlist.getResourceId(position, defalutIcon) : defalutIcon);
@@ -115,7 +122,13 @@ public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAd
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(iconImageSize, iconImageSize);
         layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
         holder.icon.setLayoutParams(layoutParams);
-        holder.title.setText(titlelist.getString(position));
+
+        if (fragmentMode == EditImageActivity.MODE_CROP) {
+            holder.title.setText(cropTitles[position]);
+        } else {
+            holder.title.setText(titlelist.getString(position));
+        }
+
         LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(midRowSize, midRowSize);
         layoutParams1.gravity = Gravity.CENTER;
         holder.wrapper.setLayoutParams(layoutParams1);
@@ -138,6 +151,11 @@ public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAd
 
     @Override
     public int getItemCount() {
+        // 裁剪
+        if (fragmentMode == EditImageActivity.MODE_CROP) {
+            return cropTitles.length;
+        }
+        // 滤镜、加强
         return titlelist.length();
     }
 

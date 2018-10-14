@@ -47,7 +47,7 @@
 
 
     <string-array name="filter_titles">
-        <item>None</item>
+        <item>Origin</item>
         <item>Sajuno</item>
         <item>Manglow</item>
         <item>Palacia</item>
