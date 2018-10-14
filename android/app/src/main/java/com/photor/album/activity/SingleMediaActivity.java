@@ -57,7 +57,7 @@ import com.photor.base.fragment.AlbumFragment;
 import com.photor.data.TrashBinRealmModel;
 import com.photor.util.AlertDialogsHelper;
 import com.photor.util.BasicCallBack;
-import com.photor.util.ColorPalette;
+import com.example.color.ColorPalette;
 import com.photor.util.SnackBarHandler;
 import com.example.theme.ThemeHelper;
 import com.tbruyelle.rxpermissions2.RxPermissions;

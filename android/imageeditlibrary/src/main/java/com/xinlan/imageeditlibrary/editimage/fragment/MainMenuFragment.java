@@ -13,6 +13,7 @@ import com.xinlan.imageeditlibrary.editimage.ModuleConfig;
  * 工具栏主菜单
  *
  * @author panyi
+ * xujian 2018/10/13
  */
 public class MainMenuFragment extends BaseEditFragment implements View.OnClickListener {
     public static final int INDEX = ModuleConfig.INDEX_MAIN;
@@ -27,6 +28,7 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
     private View mTextBtn;//文字型贴图添加
     private View mPaintBtn;//编辑按钮
     private View mBeautyBtn;//美颜按钮
+    private View enhanceBtn; //增强按钮
 
     public static MainMenuFragment newInstance() {
         MainMenuFragment fragment = new MainMenuFragment();
@@ -57,6 +59,7 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
         mTextBtn = mainView.findViewById(R.id.btn_text);
         mPaintBtn = mainView.findViewById(R.id.btn_paint);
         mBeautyBtn = mainView.findViewById(R.id.btn_beauty);
+        enhanceBtn = mainView.findViewById(R.id.btn_enhance);
 
         stickerBtn.setOnClickListener(this);
         fliterBtn.setOnClickListener(this);
@@ -65,6 +68,7 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
         mTextBtn.setOnClickListener(this);
         mPaintBtn.setOnClickListener(this);
         mBeautyBtn.setOnClickListener(this);
+        enhanceBtn.setOnClickListener(this);
     }
 
     @Override
@@ -91,8 +95,10 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
             onAddTextClick();
         } else if (v == mPaintBtn) {
             onPaintClick();
-        }else if(v == mBeautyBtn){
+        } else if (v == mBeautyBtn) {
             onBeautyClick();
+        } else if (v == enhanceBtn) {
+            onEnhanceClick();
         }
     }
 
@@ -154,9 +160,21 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
         activity.mPaintFragment.onShow();
     }
 
-    private void onBeautyClick(){
+    /**
+     * 美颜模式
+     */
+    private void onBeautyClick() {
         activity.bottomGallery.setCurrentItem(BeautyFragment.INDEX);
         activity.mBeautyFragment.onShow();
+    }
+
+    /**
+     * 增强模式
+     * @author xujian 2018/10/18
+     */
+    private void onEnhanceClick() {
+        activity.bottomGallery.setCurrentItem(EnhanceFragment.INDEX);
+        activity.mEnhanceFragment.onShow();
     }
 
 }// end class

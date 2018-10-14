@@ -37,6 +37,7 @@ import java.util.List;
  * 贴图分类fragment
  *
  * @author panyi
+ * xujian 2018/10/14
  */
 public class StickerFragment extends BaseEditFragment {
     public static final int INDEX = ModuleConfig.INDEX_STICKER;

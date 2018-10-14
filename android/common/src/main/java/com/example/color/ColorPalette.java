@@ -1,11 +1,12 @@
-package com.photor.util;
+package com.example.color;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 
-import com.photor.R;
+import com.example.common.R;
+
 
 public class ColorPalette {
     public static int[] getAccentColors(Context context){

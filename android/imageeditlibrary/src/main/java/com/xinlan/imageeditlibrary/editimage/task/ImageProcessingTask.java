@@ -48,7 +48,7 @@ public class ImageProcessingTask {
     }
 
     private static boolean isEnhance(int effectType) {
-        return (effectType / 300 == 1);
+        return (effectType / 300 == 0);
     }
 
     private static native void nativeEnhanceImage(int mode, int val, long inpAddr, long outAddr);

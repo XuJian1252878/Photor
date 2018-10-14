@@ -7,6 +7,7 @@ import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
 /**
  * Created by panyi on 2017/3/28.
+ * xujian on 2018/10/13
  */
 
 public abstract class BaseEditFragment extends Fragment {

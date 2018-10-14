@@ -727,9 +727,9 @@ void *do_mosaic(void *pix, void *out_pix, unsigned int width, unsigned int heigh
 }
 
 
-
+extern "C"
 JNIEXPORT void JNICALL
-Java_org_fossasia_phimpme_editor_filter_PhotoProcessing_nativeEnhanceImage(JNIEnv *env,
+Java_com_xinlan_imageeditlibrary_editimage_task_ImageProcessingTask_nativeEnhanceImage(JNIEnv *env,
                                                                            jclass type,
                                                                            jint mode,
                                                                            jint val,

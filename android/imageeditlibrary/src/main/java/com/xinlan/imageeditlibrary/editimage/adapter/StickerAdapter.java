@@ -23,6 +23,7 @@ import java.util.List;
  * 贴图分类列表Adapter
  *
  * @author panyi
+ * xujian 2018/10/14
  */
 public class StickerAdapter extends RecyclerView.Adapter<ViewHolder> {
     public DisplayImageOptions imageOption = new DisplayImageOptions.Builder()

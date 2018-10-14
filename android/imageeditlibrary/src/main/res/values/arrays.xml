@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="enhance_icons">
+        <item>@drawable/ic_bright</item>
+        <item>@drawable/ic_contrast</item>
+        <item>@drawable/ic_hue</item>
+        <item>@drawable/ic_saturation</item>
+        <item>@drawable/ic_temp</item>
+        <item>@drawable/ic_tint</item>
+        <item>@drawable/ic_vignette</item>
+        <item>@drawable/ic_sharp</item>
+        <item>@drawable/ic_blur</item>
+        <item>@drawable/ic_gradient_black_24dp</item>
+    </integer-array>
+
+    <string-array name="enhance_titles">
+        <item>亮度</item>
+        <item>对比度</item>
+        <item>色调</item>
+        <item>饱和度</item>
+        <item>色温</item>
+        <item>tint</item>
+        <item>vignette</item>
+        <item>锐化</item>
+        <item>blur</item>
+        <item>gamma</item>
+    </string-array>
+</resources>

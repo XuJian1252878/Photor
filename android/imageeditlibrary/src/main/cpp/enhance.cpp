@@ -11,6 +11,7 @@ extern "C" {
         dst = Mat::zeros( src.size(), src.type() );
         for (y = 0; y < src.rows; y++) {
             for (x = 0; x < src.cols; x++) {
+                // saturate_cast函数的作用即是：当运算完之后，结果为负，则转为0，结果超出255，则为255。
                 dst.at<Vec3b>(y, x)[0] =
                            saturate_cast<uchar>((src.at<Vec3b>(y, x)[0]) + bright);
                 dst.at<Vec3b>(y, x)[1] =
