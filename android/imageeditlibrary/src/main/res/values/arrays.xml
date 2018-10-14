@@ -45,4 +45,33 @@
         <item>表情6</item>
     </string-array>
 
+
+    <string-array name="filter_titles">
+        <item>None</item>
+        <item>Sajuno</item>
+        <item>Manglow</item>
+        <item>Palacia</item>
+        <item>Anax</item>
+        <item>Sepia</item>
+        <item>Cyano</item>
+        <item>B/W</item>
+        <item>Ansel</item>
+        <item>Grain</item>
+        <item>Hist Equal</item>
+        <item>Threshold</item>
+        <item>Negative</item>
+        <item>Green Boost</item>
+        <item>Boost Red</item>
+        <item>Blue Boost</item>
+        <item>Colour Enhance</item>
+        <item>Cyanisation</item>
+        <item>Fade</item>
+        <item>Cartoonify</item>
+        <item>Edgify</item>
+        <item>Pencil Sketch</item>
+        <item>Violet Tone</item>
+        <item>Yellow Enhance</item>
+        <item>Navajo Enhance</item>
+    </string-array>
+
 </resources>

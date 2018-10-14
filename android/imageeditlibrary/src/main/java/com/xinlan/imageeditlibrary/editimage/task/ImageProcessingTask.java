@@ -33,6 +33,8 @@ public class ImageProcessingTask {
 
         if (isEnhance(effectType)) {
             nativeEnhanceImage(effectType % 100, val, inputMat.getNativeObjAddr(), outputMat.getNativeObjAddr());
+        } else {
+            nativeApplyFilter(effectType % 100, val, inputMat.getNativeObjAddr(), outputMat.getNativeObjAddr());
         }
 
         inputMat.release();
@@ -48,9 +50,11 @@ public class ImageProcessingTask {
     }
 
     private static boolean isEnhance(int effectType) {
-        return (effectType / 300 == 0);
+        return (effectType / 200 == 0);
     }
 
     private static native void nativeEnhanceImage(int mode, int val, long inpAddr, long outAddr);
+
+    private static native void nativeApplyFilter(int mode, int val, long inpAddr, long outAddr);
 
 }

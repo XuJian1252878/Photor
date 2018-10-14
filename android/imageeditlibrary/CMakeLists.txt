@@ -173,6 +173,7 @@ add_library( # Sets the name of the library.
              src/main/cpp/colour_space.cpp
              src/main/cpp/matrix.cpp
              src/main/cpp/blur.cpp
+             src/main/cpp/filters.cpp
              src/main/cpp/photo_processing.cpp )
 
 # Searches for a specified prebuilt library and stores the path as a

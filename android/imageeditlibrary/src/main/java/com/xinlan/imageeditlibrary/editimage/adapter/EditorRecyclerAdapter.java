@@ -2,6 +2,7 @@ package com.xinlan.imageeditlibrary.editimage.adapter;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -18,6 +19,9 @@ import android.widget.TextView;
 import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * @author htwxujian@gmail.com
  * @date 2018/10/14 09:32
@@ -33,6 +37,10 @@ public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAd
 
     private int currentSelection;  // 当前选中项的下标
     private OnEditorItemClickListener onEditorItemClickListener;
+
+    private ArrayList<Bitmap> filterThumbs;  // 如果是Filter模式的话，那么应该显示Filter的预览模式
+
+    int defalutIcon = R.drawable.ic_photo_filter;
 
     public interface OnEditorItemClickListener {
         public abstract void onEditorItemClick(int position, View itemView);
@@ -54,9 +62,20 @@ public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAd
                 iconlist = context.getResources().obtainTypedArray(R.array.sticker_icons);
                 titlelist = context.getResources().obtainTypedArray(R.array.sticker_titles);
                 break;
+            case EditImageActivity.MODE_FILTER:
+                titlelist = context.getResources().obtainTypedArray(R.array.filter_titles);
+                break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 设置滤镜效果的缩略图形式
+     * @param filterThumbs
+     */
+    public void setFilterThumbs(ArrayList<Bitmap> filterThumbs) {
+        this.filterThumbs = filterThumbs;
     }
 
     @NonNull
@@ -78,7 +97,20 @@ public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAd
 
         holder.icon.setScaleType(ImageView.ScaleType.FIT_CENTER);
         // 设置icon资源
-        holder.icon.setImageResource(iconlist.getResourceId(position, R.drawable.ic_photo_filter));
+        if (fragmentMode == EditImageActivity.MODE_FILTER) {
+            // 设置为缩略图信息
+            if (filterThumbs != null && filterThumbs.size() > position) {
+//                iconImageSize = (int) context.getResources().getDimension(R.dimen.icon_item_image_size_filter_preview);
+//                midRowSize = (int) context.getResources().getDimension(R.dimen.editor_filter_mid_row_size);
+                holder.icon.setImageBitmap(filterThumbs.get(position));
+//                holder.icon.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            } else {
+                holder.icon.setImageResource(defalutIcon);
+            }
+        } else {
+            // 设置为配置好的图片信息
+            holder.icon.setImageResource(iconlist != null ? iconlist.getResourceId(position, defalutIcon) : defalutIcon);
+        }
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(iconImageSize, iconImageSize);
         layoutParams.gravity = Gravity.CENTER_HORIZONTAL;

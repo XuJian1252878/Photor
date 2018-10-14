@@ -1,27 +1,33 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ViewFlipper android:id="@+id/flipper"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="horizontal" >
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/bottom_banner_height"
+    android:flipInterval="1000">
 
-    <ImageView
-        android:id="@+id/back_to_main"
-        android:layout_width="@dimen/icon_item_image_size_recycler"
-        android:layout_height="@dimen/icon_item_image_size_recycler"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/image_edit_back" />
 
-    <HorizontalScrollView
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1" >
+        android:orientation="horizontal" >
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/back_to_main"
+            android:layout_width="@dimen/icon_item_image_size_recycler"
+            android:layout_height="@dimen/icon_item_image_size_recycler"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/image_edit_back" />
+
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/filter_group"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:orientation="horizontal" >
-        </LinearLayout>
-    </HorizontalScrollView>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:overScrollMode="never"
+            android:scrollbars="none" />
+    </LinearLayout>
 
-</LinearLayout>
+    <include layout="@layout/fragment_editor_slider"/>
+
+</ViewFlipper>
