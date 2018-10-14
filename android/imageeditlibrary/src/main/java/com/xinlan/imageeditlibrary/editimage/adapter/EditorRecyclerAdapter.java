@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.xinlan.imageeditlibrary.R;
+import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
 /**
  * @author htwxujian@gmail.com
@@ -24,8 +25,11 @@ import com.xinlan.imageeditlibrary.R;
 public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAdapter.ViewHolder> {
 
     private TypedArray iconlist, titlelist;  // 每一个小项的type icon
+    public static final String[] stickerPath = {"stickers/type1", "stickers/type2", "stickers/type3", "stickers/type4", "stickers/type5", "stickers/type6"};
     private Context context;
     private RecyclerView recyclerView;  // 设置为当前Adapter的Recycler
+
+    private int fragmentMode; // 标记当前是处于哪一个设置fragment
 
     private int currentSelection;  // 当前选中项的下标
     private OnEditorItemClickListener onEditorItemClickListener;
@@ -34,13 +38,25 @@ public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAd
         public abstract void onEditorItemClick(int position, View itemView);
     }
 
-    public EditorRecyclerAdapter(Context context, RecyclerView recyclerView,
+    public EditorRecyclerAdapter(Context context, RecyclerView recyclerView, int fragmentMode,
                                  OnEditorItemClickListener onEditorItemClickListener) {
         this.context = context;
         this.recyclerView = recyclerView;
+        this.fragmentMode = fragmentMode;
         this.onEditorItemClickListener = onEditorItemClickListener;
-        iconlist = context.getResources().obtainTypedArray(R.array.enhance_icons);
-        titlelist = context.getResources().obtainTypedArray(R.array.enhance_titles);
+
+        switch (fragmentMode) {
+            case EditImageActivity.MODE_ENHANCE:
+                iconlist = context.getResources().obtainTypedArray(R.array.enhance_icons);
+                titlelist = context.getResources().obtainTypedArray(R.array.enhance_titles);
+                break;
+            case EditImageActivity.MODE_STICKERS:
+                iconlist = context.getResources().obtainTypedArray(R.array.sticker_icons);
+                titlelist = context.getResources().obtainTypedArray(R.array.sticker_titles);
+                break;
+            default:
+                break;
+        }
     }
 
     @NonNull
@@ -52,6 +68,11 @@ public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAd
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+
+        if (fragmentMode == EditImageActivity.MODE_STICKERS) {
+            holder.itemView.setTag(stickerPath[position]);
+        }
+
         int iconImageSize = (int) context.getResources().getDimension(R.dimen.icon_item_image_size_recycler);
         int midRowSize = (int) context.getResources().getDimension(R.dimen.editor_mid_row_size);
 
@@ -77,7 +98,7 @@ public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAd
             @Override
             public void onClick(View view) {
                 highlightSelectedOption(position, view);
-                onEditorItemClickListener.onEditorItemClick(position, view);
+                if (onEditorItemClickListener != null) onEditorItemClickListener.onEditorItemClick(position, view);
                 itemClicked(position, view);
             }
         });
@@ -126,6 +147,12 @@ public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAd
 
     private void itemClicked(int position, View view) {
         // 设置 滑动栏的 出现消失之类
+        switch(fragmentMode) {
+            case EditImageActivity.MODE_STICKERS:
+                break;
+            default:
+                break;
+        }
     }
 
 }

@@ -125,7 +125,8 @@ public class EnhanceFragment extends BaseEditFragment {
         enhanceTypeView.setLayoutManager(layoutManager);
 
         EditorRecyclerAdapter editorRecyclerAdapter = new EditorRecyclerAdapter(getContext(),
-                enhanceTypeView, new EditorRecyclerAdapter.OnEditorItemClickListener() {
+                enhanceTypeView,
+                EditImageActivity.MODE_ENHANCE, new EditorRecyclerAdapter.OnEditorItemClickListener() {
             @Override
             public void onEditorItemClick(int position, View itemView) {
                 // 当某一个增强项被点击之后

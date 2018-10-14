@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@color/main_backgroud"
+    android:background="@color/white70"
     android:padding="8dp"
     android:orientation="horizontal" >
 

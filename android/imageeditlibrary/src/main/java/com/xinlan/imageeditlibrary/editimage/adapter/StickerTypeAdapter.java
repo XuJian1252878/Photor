@@ -38,8 +38,8 @@ public class StickerTypeAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         public ImageHolder(View itemView) {
             super(itemView);
-            this.icon = (ImageView) itemView.findViewById(R.id.icon);
-            this.text = (TextView) itemView.findViewById(R.id.text);
+            this.icon = (ImageView) itemView.findViewById(R.id.editor_item_image);
+            this.text = (TextView) itemView.findViewById(R.id.editor_item_title);
         }
     }// end inner class
 
@@ -57,7 +57,7 @@ public class StickerTypeAdapter extends RecyclerView.Adapter<ViewHolder> {
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewtype) {
         View v = null;
         v = LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.view_sticker_type_item, parent, false);
+                R.layout.editor_iconitem, parent, false);
         ImageHolder holer = new ImageHolder(v);
         return holer;
     }
@@ -71,7 +71,7 @@ public class StickerTypeAdapter extends RecyclerView.Adapter<ViewHolder> {
         String name = stickerPathName[position];
         imageHoler.text.setText(name);
         // TODO
-        //imageHoler.icon.setImageResource(typeIcon[position]);
+        imageHoler.icon.setImageResource(typeIcon[position]);
         imageHoler.text.setTag(stickerPath[position]);
         imageHoler.text.setOnClickListener(mImageClick);
     }

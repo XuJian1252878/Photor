@@ -12,8 +12,8 @@
 
         <ImageView
             android:id="@+id/back_to_main"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/icon_item_image_size_recycler"
+            android:layout_height="@dimen/icon_item_image_size_recycler"
             android:layout_gravity="center_vertical"
             android:src="@drawable/image_edit_back"/>
 

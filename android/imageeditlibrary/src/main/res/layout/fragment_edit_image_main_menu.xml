@@ -10,93 +10,220 @@
         android:layout_height="fill_parent"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/btn_paint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/image_edit_menu_margin"
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="?android:attr/selectableItemBackground"
             android:gravity="center"
-            android:text="@string/edit"
-            android:textColor="@color/white"
-            android:textSize="@dimen/image_edit_text_size"/>
+            android:layout_gravity="center_vertical"
+            android:layout_width="@dimen/editor_mid_row_size"
+            android:layout_height="@dimen/editor_mid_row_size" >
+            <ImageView
+                android:id="@+id/btn_paint"
+                android:layout_width="@dimen/icon_item_image_size_recycler"
+                android:layout_height="@dimen/icon_item_image_size_recycler"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_horizontal"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_paint_image_edit"
+                />
 
-        <TextView
-            android:id="@+id/btn_stickers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/image_edit_menu_margin"
-            android:gravity="center"
-            android:text="@string/stickers"
-            android:textColor="@color/white"
-            android:textSize="@dimen/image_edit_text_size"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="@dimen/icon_item_title_size"
+                android:text="@string/edit"/>
 
-        <TextView
-            android:id="@+id/btn_filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/image_edit_menu_margin"
-            android:gravity="center"
-            android:text="@string/filter"
-            android:textColor="@color/white"
-            android:textSize="@dimen/image_edit_text_size"/>
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/btn_crop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/image_edit_menu_margin"
-            android:gravity="center"
-            android:text="@string/crop"
-            android:textColor="@color/white"
-            android:textSize="@dimen/image_edit_text_size"/>
 
-        <TextView
-            android:id="@+id/btn_rotate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/image_edit_menu_margin"
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="?android:attr/selectableItemBackground"
             android:gravity="center"
-            android:text="@string/rotate"
-            android:textColor="@color/white"
-            android:textSize="@dimen/image_edit_text_size"/>
+            android:layout_gravity="center_vertical"
+            android:layout_width="@dimen/editor_mid_row_size"
+            android:layout_height="@dimen/editor_mid_row_size" >
+            <ImageView
+                android:id="@+id/btn_stickers"
+                android:layout_width="@dimen/icon_item_image_size_recycler"
+                android:layout_height="@dimen/icon_item_image_size_recycler"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_horizontal"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_sticker"
+                />
 
-        <TextView
-            android:id="@+id/btn_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/image_edit_menu_margin"
-            android:gravity="center"
-            android:text="@string/text"
-            android:textColor="@color/white"
-            android:textSize="@dimen/image_edit_text_size"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="@dimen/icon_item_title_size"
+                android:text="@string/stickers"/>
 
-        <TextView
-            android:id="@+id/btn_beauty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/image_edit_menu_margin"
-            android:gravity="center"
-            android:text="@string/beauty"
-            android:textColor="@color/white"
-            android:textSize="@dimen/image_edit_text_size"/>
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/btn_enhance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/image_edit_menu_margin"
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="?android:attr/selectableItemBackground"
             android:gravity="center"
-            android:text="@string/enhance"
-            android:textColor="@color/white"
-            android:textSize="@dimen/image_edit_text_size"/>
+            android:layout_gravity="center_vertical"
+            android:layout_width="@dimen/editor_mid_row_size"
+            android:layout_height="@dimen/editor_mid_row_size" >
+            <ImageView
+                android:id="@+id/btn_filter"
+                android:layout_width="@dimen/icon_item_image_size_recycler"
+                android:layout_height="@dimen/icon_item_image_size_recycler"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_filter"
+                android:background="@android:color/transparent"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="@dimen/icon_item_title_size"
+                android:text="@string/filter"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"
+            android:layout_width="@dimen/editor_mid_row_size"
+            android:layout_height="@dimen/editor_mid_row_size" >
+            <ImageView
+                android:id="@+id/btn_crop"
+                android:layout_width="@dimen/icon_item_image_size_recycler"
+                android:layout_height="@dimen/icon_item_image_size_recycler"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_crop_image_edit"
+                android:background="@android:color/transparent"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="@dimen/icon_item_title_size"
+                android:text="@string/crop"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"
+            android:layout_width="@dimen/editor_mid_row_size"
+            android:layout_height="@dimen/editor_mid_row_size" >
+            <ImageView
+                android:id="@+id/btn_rotate"
+                android:layout_width="@dimen/icon_item_image_size_recycler"
+                android:layout_height="@dimen/icon_item_image_size_recycler"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_rotate"
+                android:background="@android:color/transparent"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="@dimen/icon_item_title_size"
+                android:text="@string/rotate"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"
+            android:layout_width="@dimen/editor_mid_row_size"
+            android:layout_height="@dimen/editor_mid_row_size" >
+            <ImageView
+                android:id="@+id/btn_text"
+                android:layout_width="@dimen/icon_item_image_size_recycler"
+                android:layout_height="@dimen/icon_item_image_size_recycler"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_write"
+                android:background="@android:color/transparent"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="@dimen/icon_item_title_size"
+                android:text="@string/text"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"
+            android:layout_width="@dimen/editor_mid_row_size"
+            android:layout_height="@dimen/editor_mid_row_size" >
+            <ImageView
+                android:id="@+id/btn_beauty"
+                android:layout_width="@dimen/icon_item_image_size_recycler"
+                android:layout_height="@dimen/icon_item_image_size_recycler"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_filter"
+                android:background="@android:color/transparent"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="@dimen/icon_item_title_size"
+                android:text="@string/beauty"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"
+            android:layout_width="@dimen/editor_mid_row_size"
+            android:layout_height="@dimen/editor_mid_row_size" >
+            <ImageView
+                android:id="@+id/btn_enhance"
+                android:layout_width="@dimen/icon_item_image_size_recycler"
+                android:layout_height="@dimen/icon_item_image_size_recycler"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_enhance"
+                android:background="@android:color/transparent"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="@dimen/icon_item_title_size"
+                android:text="@string/enhance"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 </HorizontalScrollView>

@@ -20,6 +20,7 @@ import com.xinlan.imageeditlibrary.BaseActivity;
 import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 import com.xinlan.imageeditlibrary.editimage.ModuleConfig;
+import com.xinlan.imageeditlibrary.editimage.adapter.EditorRecyclerAdapter;
 import com.xinlan.imageeditlibrary.editimage.adapter.StickerAdapter;
 import com.xinlan.imageeditlibrary.editimage.adapter.StickerTypeAdapter;
 import com.xinlan.imageeditlibrary.editimage.model.StickerBean;
@@ -96,7 +97,15 @@ public class StickerFragment extends BaseEditFragment {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
         mLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         typeList.setLayoutManager(mLayoutManager);
-        typeList.setAdapter(new StickerTypeAdapter(this));
+        typeList.setAdapter(new EditorRecyclerAdapter(getContext(),
+                typeList,
+                EditImageActivity.MODE_STICKERS, new EditorRecyclerAdapter.OnEditorItemClickListener() {
+            @Override
+            public void onEditorItemClick(int position, View itemView) {
+                String data = (String) itemView.getTag();
+                activity.mStickerFragment.swipToStickerDetails(data);
+            }
+        }));
         backToType = mainView.findViewById(R.id.back_to_type);// back按钮
 
         stickerList = (RecyclerView) mainView.findViewById(R.id.stickers_list);

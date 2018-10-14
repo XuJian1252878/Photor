@@ -25,4 +25,24 @@
         <item>blur</item>
         <item>gamma</item>
     </string-array>
+
+
+    <integer-array name="sticker_icons">
+        <item>@drawable/ic_facial</item>
+        <item>@drawable/ic_hearts</item>
+        <item>@drawable/ic_objects</item>
+        <item>@drawable/ic_comments</item>
+        <item>@drawable/ic_wishes</item>
+        <item>@drawable/ic_hashtag</item>
+    </integer-array>
+
+    <string-array name="sticker_titles">
+        <item>表情1</item>
+        <item>表情2</item>
+        <item>表情3</item>
+        <item>表情4</item>
+        <item>表情5</item>
+        <item>表情6</item>
+    </string-array>
+
 </resources>

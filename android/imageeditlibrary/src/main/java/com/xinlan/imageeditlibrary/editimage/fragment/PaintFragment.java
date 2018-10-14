@@ -33,6 +33,7 @@ import com.xinlan.imageeditlibrary.editimage.view.PaintModeView;
  * custom draw mode panel
  *
  * @author panyi
+ * xujian 2018/10/14
  */
 public class PaintFragment extends BaseEditFragment implements View.OnClickListener, ColorListAdapter.IColorListAction {
     public static final int INDEX = ModuleConfig.INDEX_PAINT;
@@ -190,7 +191,6 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
         }
 
         mStokenWidthSeekBar.setMax(mPaintModeView.getMeasuredHeight());
-
         mStokenWidthSeekBar.setProgress((int) mPaintModeView.getStokenWidth());
 
         mStokenWidthSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
