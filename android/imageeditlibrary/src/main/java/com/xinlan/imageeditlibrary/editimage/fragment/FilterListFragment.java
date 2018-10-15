@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -95,6 +96,7 @@ public class FilterListFragment extends BaseEditFragment {
                 // 说明取消了当前的滤镜结果
                 fliterBit = currentBitmap;
                 activity.mainImage.setImageBitmap(currentBitmap);
+                activity.setBottomGalleryHeight(R.dimen.editor_filter_mid_row_size);
             }
         });
 
@@ -106,6 +108,7 @@ public class FilterListFragment extends BaseEditFragment {
                 // 说明采用了当前的滤镜结果
                 currentBitmap = fliterBit;
                 activity.mainImage.setImageBitmap(currentBitmap);
+                activity.setBottomGalleryHeight(R.dimen.editor_filter_mid_row_size);
             }
         });
 
@@ -141,6 +144,7 @@ public class FilterListFragment extends BaseEditFragment {
 
     @Override
     public void onShow() {
+        activity.setBottomGalleryHeight(R.dimen.editor_filter_mid_row_size);  // 设置滤镜预览的高度信息
         activity.mode = EditImageActivity.MODE_FILTER;
         activity.mFilterListFragment.setCurrentBitmap(activity.getMainBit());
         activity.mainImage.setImageBitmap(activity.getMainBit());
@@ -156,6 +160,7 @@ public class FilterListFragment extends BaseEditFragment {
      */
     @Override
     public void backToMain() {
+        activity.setBottomGalleryHeight(R.dimen.bottom_banner_height);
         currentBitmap = activity.getMainBit();
         fliterBit = null;
         activity.mainImage.setImageBitmap(activity.getMainBit());// 返回原图
@@ -212,6 +217,7 @@ public class FilterListFragment extends BaseEditFragment {
                 swipToFilterProgress(position);  // 显示滑动条按钮
                 // 设置被点击时的滤镜效果（初始被点击时为全滤镜效果）
                 new FilterImageTask(position, 100).execute();
+                activity.setBottomGalleryHeight(R.dimen.bottom_banner_height);
             }
         });
         adapter.setFilterThumbs(filterThumbs);  // 设置缩略图信息

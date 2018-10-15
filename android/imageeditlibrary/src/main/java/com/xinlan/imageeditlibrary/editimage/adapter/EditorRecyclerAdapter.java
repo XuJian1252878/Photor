@@ -105,10 +105,10 @@ public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAd
         if (fragmentMode == EditImageActivity.MODE_FILTER) {
             // 设置为缩略图信息
             if (filterThumbs != null && filterThumbs.size() > position) {
-//                iconImageSize = (int) context.getResources().getDimension(R.dimen.icon_item_image_size_filter_preview);
-//                midRowSize = (int) context.getResources().getDimension(R.dimen.editor_filter_mid_row_size);
+                iconImageSize = (int) context.getResources().getDimension(R.dimen.icon_item_image_size_filter_preview);
+                midRowSize = (int) context.getResources().getDimension(R.dimen.editor_filter_mid_row_size);
                 holder.icon.setImageBitmap(filterThumbs.get(position));
-//                holder.icon.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                holder.icon.setScaleType(ImageView.ScaleType.CENTER_CROP);
             } else {
                 holder.icon.setImageResource(defalutIcon);
             }

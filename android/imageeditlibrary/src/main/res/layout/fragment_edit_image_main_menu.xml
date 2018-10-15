@@ -3,11 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:scrollbars="none"
     android:layout_width="wrap_content"
-    android:layout_height="fill_parent">
+    android:layout_height="@dimen/bottom_banner_height">
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
         android:orientation="horizontal">
 
         <LinearLayout

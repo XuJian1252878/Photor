@@ -11,11 +11,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.xinlan.imageeditlibrary.BaseActivity;
@@ -114,6 +116,7 @@ public class FrameFragment extends BaseEditFragment {
 
     @Override
     public void onShow() {
+        activity.setBottomGalleryHeight(R.dimen.editor_frame_mid_row_size);
         activity.mode = EditImageActivity.MODE_FRAME;
         activity.bannerFlipper.showNext();
         // 设置主页面显示的图片信息
@@ -140,6 +143,7 @@ public class FrameFragment extends BaseEditFragment {
 
     @Override
     public void backToMain() {
+        activity.setBottomGalleryHeight(R.dimen.bottom_banner_height);
         setVisibility(false);
         activity.mode = EditImageActivity.MODE_NONE;
         activity.mainImage.setImageBitmap(activity.getMainBit());
@@ -193,8 +197,8 @@ public class FrameFragment extends BaseEditFragment {
                     in = assetManager.open(frameFolder + File.separator + file + ".png");  // 相框文件是以数字直接命名的
                     // 创建一个新的、缩放后的bitmap
                     tempBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeStream(in),
-                            (int)getResources().getDimension(R.dimen.icon_item_image_size_recycler),
-                            (int)getResources().getDimension(R.dimen.icon_item_image_size_recycler),
+                            140,
+                            160,
                             false);
                     arrayList.add(tempBitmap);
                 }
@@ -230,6 +234,12 @@ public class FrameFragment extends BaseEditFragment {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+
+            int frameImageSize = (int)getResources().getDimension(R.dimen.icon_item_image_size_frame_preview);
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(frameImageSize, frameImageSize);
+            layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+            holder.imageView.setLayoutParams(layoutParams);
             holder.imageView.setImageBitmap(arrayList.get(position));
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -244,6 +254,8 @@ public class FrameFragment extends BaseEditFragment {
                     }
                 }
             });
+
+
         }
 
         @Override

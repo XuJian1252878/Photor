@@ -2,7 +2,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/bottom_banner_height"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/bottom_banner_height"
     android:flipInterval="1000">
 
 
@@ -10,6 +11,8 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:gravity="center_vertical"
         android:orientation="horizontal" >
 
         <ImageView

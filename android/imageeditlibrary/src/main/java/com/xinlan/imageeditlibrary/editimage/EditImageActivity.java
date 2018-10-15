@@ -16,6 +16,7 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
@@ -521,6 +522,16 @@ public class EditImageActivity extends BaseActivity {
 
     public Bitmap getMainBit() {
         return mainBitmap;
+    }
+
+    /**
+     * 设置底部操作栏的高度信息，因为滤镜需要显示预览界面，因此操作栏底部的高度将会变化
+     * @param id
+     */
+    public void setBottomGalleryHeight(int id) {
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) bottomGallery.getLayoutParams();
+        layoutParams.height = (int)getResources().getDimension(id);
+        bottomGallery.setLayoutParams(layoutParams);
     }
 
 }// end class
