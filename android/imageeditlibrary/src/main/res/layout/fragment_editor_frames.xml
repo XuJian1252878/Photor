@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/bottom_banner_height"
+    android:layout_gravity="center_vertical"
+    android:background="@color/white"
+    android:gravity="center_vertical">
+
+    <ImageButton
+        android:id="@+id/cancel"
+        android:layout_width="@dimen/icon_item_image_size_recycler"
+        android:layout_height="@dimen/icon_item_image_size_recycler"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@color/white"
+        android:src="@drawable/image_edit_back"
+        android:scaleType="fitCenter"
+        android:visibility="gone" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/frameRecyler"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/done"
+        android:layout_toRightOf="@+id/cancel"
+        android:layout_weight="0.5"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        android:gravity="center">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <ImageButton
+        android:id="@+id/done"
+        android:layout_width="@dimen/icon_item_image_size_recycler"
+        android:layout_height="@dimen/icon_item_image_size_recycler"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@color/white"
+        android:scaleType="fitCenter"
+        android:visibility="gone" />
+
+</RelativeLayout>

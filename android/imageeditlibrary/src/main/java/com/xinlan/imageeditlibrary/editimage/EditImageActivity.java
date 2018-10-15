@@ -26,6 +26,7 @@ import com.xinlan.imageeditlibrary.editimage.fragment.BeautyFragment;
 import com.xinlan.imageeditlibrary.editimage.fragment.CropFragment;
 import com.xinlan.imageeditlibrary.editimage.fragment.EnhanceFragment;
 import com.xinlan.imageeditlibrary.editimage.fragment.FilterListFragment;
+import com.xinlan.imageeditlibrary.editimage.fragment.FrameFragment;
 import com.xinlan.imageeditlibrary.editimage.fragment.MainMenuFragment;
 import com.xinlan.imageeditlibrary.editimage.fragment.PaintFragment;
 import com.xinlan.imageeditlibrary.editimage.fragment.RotateFragment;
@@ -53,7 +54,7 @@ import com.xinlan.imageeditlibrary.editimage.widget.RedoUndoController;
  */
 public class EditImageActivity extends BaseActivity {
 
-    public static final int BOTTOM_GALLAY_PART_COUNT = 9;  // 底部导航栏的总部分数
+    public static final int BOTTOM_GALLAY_PART_COUNT = 10;  // 底部导航栏的总部分数
 
     public static final String FILE_PATH = "file_path";
     public static final String EXTRA_OUTPUT = "extra_output";
@@ -70,6 +71,7 @@ public class EditImageActivity extends BaseActivity {
     public static final int MODE_PAINT = 6;//绘制模式
     public static final int MODE_BEAUTY = 7;//美颜模式
     public static final int MODE_ENHANCE = 8;// 加强模式
+    public static final int MODE_FRAME = 9; // 相框模式
 
     public String filePath;// 需要编辑图片路径
     public String saveFilePath;// 生成的新图片路径
@@ -107,6 +109,7 @@ public class EditImageActivity extends BaseActivity {
     public PaintFragment mPaintFragment;//绘制模式Fragment
     public BeautyFragment mBeautyFragment;//美颜模式Fragment
     public EnhanceFragment mEnhanceFragment;//加强模式Fragment
+    public FrameFragment mFrameFragment;// 相框模式Fragment
     private SaveImageTask mSaveImageTask;
 
     private RedoUndoController mRedoUndoController;//撤销操作
@@ -187,6 +190,7 @@ public class EditImageActivity extends BaseActivity {
         mPaintFragment = PaintFragment.newInstance();
         mBeautyFragment = BeautyFragment.newInstance();
         mEnhanceFragment = EnhanceFragment.newInstance();
+        mFrameFragment = FrameFragment.newInstance();
 
         bottomGallery.setAdapter(mBottomGalleryAdapter);
 
@@ -244,6 +248,8 @@ public class EditImageActivity extends BaseActivity {
                     return mBeautyFragment;
                 case EnhanceFragment.INDEX: // 加强
                     return mEnhanceFragment;
+                case FrameFragment.INDEX:
+                    return mFrameFragment; // 相框
             }//end switch
             return MainMenuFragment.newInstance();
         }
@@ -310,6 +316,9 @@ public class EditImageActivity extends BaseActivity {
             case MODE_ENHANCE:
                 mEnhanceFragment.backToMain();
                 return;
+            case MODE_FRAME:
+                mFrameFragment.backToMain();
+                return;
         }// end switch
 
         if (canAutoExit()) {
@@ -365,6 +374,9 @@ public class EditImageActivity extends BaseActivity {
                     break;
                 case MODE_ENHANCE:
                     mEnhanceFragment.applyEnhanceImage();
+                    break;
+                case MODE_FRAME:
+                    mFrameFragment.applyFrame();
                     break;
                 default:
                     break;

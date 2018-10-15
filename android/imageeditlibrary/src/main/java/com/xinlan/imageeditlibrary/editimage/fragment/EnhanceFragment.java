@@ -179,6 +179,7 @@ public class EnhanceFragment extends BaseEditFragment {
     @Override
     public void backToMain() {
         activity.mode = EditImageActivity.MODE_NONE;
+        activity.mainImage.setImageBitmap(currentBitmap);
         activity.bottomGallery.setCurrentItem(0);  // 默认选择第0项，也就是主页面菜单项（那么当前的ViewPager的Fragment将会自动消失）
         activity.bannerFlipper.showPrevious(); // 从 应用 -> 保存
     }

@@ -29,6 +29,7 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
     private View mPaintBtn;//编辑按钮
     private View mBeautyBtn;//美颜按钮
     private View enhanceBtn; //增强按钮
+    private View frameBtn; // 相框按钮
 
     public static MainMenuFragment newInstance() {
         MainMenuFragment fragment = new MainMenuFragment();
@@ -60,6 +61,7 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
         mPaintBtn = mainView.findViewById(R.id.btn_paint);
         mBeautyBtn = mainView.findViewById(R.id.btn_beauty);
         enhanceBtn = mainView.findViewById(R.id.btn_enhance);
+        frameBtn = mainView.findViewById(R.id.btn_frame);
 
         stickerBtn.setOnClickListener(this);
         fliterBtn.setOnClickListener(this);
@@ -69,6 +71,7 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
         mPaintBtn.setOnClickListener(this);
         mBeautyBtn.setOnClickListener(this);
         enhanceBtn.setOnClickListener(this);
+        frameBtn.setOnClickListener(this);
     }
 
     @Override
@@ -99,6 +102,8 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
             onBeautyClick();
         } else if (v == enhanceBtn) {
             onEnhanceClick();
+        } else if (v == frameBtn) {
+            onFrameClick();
         }
     }
 
@@ -170,11 +175,20 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
 
     /**
      * 增强模式
-     * @author xujian 2018/10/18
+     * @author xujian 2018/10/14
      */
     private void onEnhanceClick() {
         activity.bottomGallery.setCurrentItem(EnhanceFragment.INDEX);
         activity.mEnhanceFragment.onShow();
+    }
+
+    /**
+     * 相框模式
+     * @author xujian 2018/10/15
+     */
+    private void onFrameClick() {
+        activity.bottomGallery.setCurrentItem(FrameFragment.INDEX);
+        activity.mFrameFragment.onShow();
     }
 
 }// end class
