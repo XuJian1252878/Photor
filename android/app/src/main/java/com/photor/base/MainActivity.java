@@ -48,12 +48,15 @@ public class MainActivity extends BaseActivity {
     private MainAcitvityViewPager mMainViewPager; // 主页面的ViewPager
     private int previousBtmNavItemId = -1; // 上一次下部导航栏所在的item的下标
 
-    // 当前被选中的album信息
-    private Album album;
-
     // Used to load the 'native-lib' library on application startup.
     static {
-        System.loadLibrary("native-lib");
+        // opencv 测试
+        if (!OpenCVLoader.initDebug()) {
+            Log.e("MainActivity Jni", "  OpenCVLoader.initDebug(), not working.");
+        } else {
+            Log.d("MainActivity Jni", "  OpenCVLoader.initDebug(), working.");
+            System.loadLibrary("native-lib");
+        }
     }
 
     /**
@@ -68,15 +71,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        requestPermission();
-
-        // opencv 测试
-        if (!OpenCVLoader.initDebug()) {
-            Log.e(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), not working.");
-        } else {
-            Log.d(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), working.");
-        }
-
+        initUI(); // 初始化MainActivity的UI信息
         // Jni 测试
         Log.d("jni output", "Jni output: " + stringFromJNI());
     }
@@ -86,33 +81,6 @@ public class MainActivity extends BaseActivity {
         // 加载位于屏幕右上角的菜单信息（右上角的三竖点）
         getMenuInflater().inflate(R.menu.top_tool_bar_menu, menu);
         return true;
-    }
-
-    /**
-     * 检查应用的权限开启信息
-     * @return
-     */
-    private boolean requestPermission() {
-        Disposable disposable = new RxPermissions(this).requestEach(
-                Manifest.permission.CAMERA,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                .subscribe(permission -> { // will emit 2 Permission objects
-                    if (permission.granted) {
-                        // `permission.name` is granted !
-                        initUI(); // 初始化MainActivity的UI信息
-                        // 初始化加载相册信息
-                        new PrefetchAlbumsData().execute();
-                    } else if (permission.shouldShowRequestPermissionRationale) {
-                        // Denied permission without ask never again
-                    } else {
-                        // Denied permission with ask never again
-                        // Need to go to the settings
-                    }
-                });
-        return disposable.isDisposed();
     }
 
     @Override
@@ -258,43 +226,4 @@ public class MainActivity extends BaseActivity {
                 });
     }
 
-    // 加载相册信息
-    private class PrefetchAlbumsData extends AsyncTask<Boolean, Boolean, Boolean> {
-        HandlingAlbums albums = ((MainApplication) MainActivity.this.getApplication()).getAlbums();
-        @Override
-        protected Boolean doInBackground(Boolean... booleans) {
-            albums.restoreBackup(MainActivity.this);
-            if (albums.dispAlbums.size() == 0) {
-                // 加载全部的相册信息
-                albums.loadAlbums(MainActivity.this.getApplicationContext(), false);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if (result) {
-                albums.saveBackup(getApplicationContext());
-            }
-            super.onPostExecute(result);
-        }
-    }
-
-    // 加载照片信息
-    private class PrefetchPhotosData extends AsyncTask<Void, Void, Void> {
-        HandlingAlbums albums = ((MainApplication) MainActivity.this.getApplication()).getAlbums();
-        @Override
-        protected Void doInBackground(Void... voids) {
-            album.updatePhotos(MainActivity.this);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            //
-            albums.addAlbum(0, album);
-        }
-    }
 }
