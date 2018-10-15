@@ -114,4 +114,7 @@
     <string name="position">position</string>
     <string name="allMediaSize">size</string>
 
+    <string name="press_back_again_to_exit">再次点击返回键退出程序</string>
+    <string name="exit">退出</string>
+
 </resources>

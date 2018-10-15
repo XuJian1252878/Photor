@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -32,6 +33,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,6 +42,7 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,6 +69,7 @@ import com.photor.album.utils.ThemeHelper;
 import com.photor.album.views.CustomScrollBarRecyclerView;
 import com.photor.album.views.GridSpacingItemDecoration;
 import com.photor.album.views.SelectAlbumBottomSheet;
+import com.photor.base.MainActivity;
 import com.photor.data.TrashBinRealmModel;
 import com.photor.util.ActivitySwitchHelper;
 import com.photor.util.AlertDialogsHelper;
@@ -128,7 +132,7 @@ public class AlbumFragment extends Fragment {
     private boolean editMode = false;
     private boolean hidenav = false;  // 隐藏底部的导航栏
 
-    // 关于顶部导航栏的对话框信息
+    // 关于顶部导航栏, 显示actionbar的动画
     private boolean checkForReveal = true;
 
     // 左边的拉出按钮信息
@@ -710,7 +714,13 @@ public class AlbumFragment extends Fragment {
      * @return
      */
     public Album getAlbum() {
-        return ((MainApplication) this.getContext().getApplicationContext()).getAlbum();
+        Album album = null;
+        try {
+            album = ((MainApplication) this.getContext().getApplicationContext()).getAlbum();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return album;
     }
 
     /**
@@ -718,14 +728,22 @@ public class AlbumFragment extends Fragment {
      * @return
      */
     private HandlingAlbums getAlbums() {
-        return ((MainApplication)this.getContext().getApplicationContext()).getAlbums();
+        HandlingAlbums handlingAlbums = null;
+        try {
+            handlingAlbums = ((MainApplication)this.getContext().getApplicationContext()).getAlbums();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return handlingAlbums;
     }
 
 
     public void populateAlbum() {
         albList = new ArrayList<>();
-        for (Album album : getAlbums().dispAlbums) {
-            albList.add(album);
+        if (getAlbums() != null) {
+            for (Album album : getAlbums().dispAlbums) {
+                albList.add(album);
+            }
         }
     }
 
@@ -798,6 +816,32 @@ public class AlbumFragment extends Fragment {
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
                 | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+    }
+
+    /**
+     * 当前显示Album界面的时候，键盘上的返回键被按下
+     */
+    public void onAlbumBackPress() {
+        checkForReveal = true;
+        if (editMode && all_photos) {
+            clearSelectedPhotos();  // 清除全局被选中的照片信息
+        }
+        getNavigationBar(); // 显示底部导航栏信息
+        if (editMode) {
+            finishEditMode();  // 根据不同 相册模式清除已经选中的照片
+        } else {
+            if (albumsMode) {
+                // 如果是相册模式
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                } else {
+                    ((MainActivity)getActivity()).doubleBackToExitPressedOnce();
+                }
+            } else {
+                // 不是album模式的，返回album模式作为根
+                displayAlbums();
+            }
+        }
     }
 
     /**

@@ -16,7 +16,7 @@ public class FragmentDataGenerator {
 
     public static final int MAIN_FRAGMENT_PARTS = 4;
 
-    private static Fragment[] FRAGMENTS = new Fragment[MAIN_FRAGMENT_PARTS];
+    public static final Fragment[] FRAGMENTS = new Fragment[MAIN_FRAGMENT_PARTS];
 
     public static void collectFragmentForViewPager(Fragment fragment, int position) {
         FRAGMENTS[position] = fragment;

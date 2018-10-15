@@ -2,6 +2,7 @@ package com.photor.base;
 
 import android.Manifest;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -47,6 +49,7 @@ public class MainActivity extends BaseActivity {
     private DrawerLayout mDrawerLayout;
     private MainAcitvityViewPager mMainViewPager; // 主页面的ViewPager
     private int previousBtmNavItemId = -1; // 上一次下部导航栏所在的item的下标
+    private boolean doubleBackToExitPressedOnce = false; // 处理返回键被按下时的boolean
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -226,4 +229,61 @@ public class MainActivity extends BaseActivity {
                 });
     }
 
+    // 当返回键按下的时候
+    @Override
+    public void onBackPressed() {
+        int curBottomNavIndex = mMainViewPager.getCurrentItem();
+        if (curBottomNavIndex == BottomNavigationEnum.RESOURCE.getNavItemIndex()) {
+            // 是相册导航栏的返回键信息
+            AlbumFragment albumFragment = (AlbumFragment) FragmentDataGenerator.FRAGMENTS[curBottomNavIndex];
+            // 设置backPress的点击信息
+            albumFragment.onAlbumBackPress();
+        } else {
+            doubleBackToExitPressedOnce();
+        }
+    }
+
+    /**
+     * 再点击一次返回键退出程序
+     */
+    public void doubleBackToExitPressedOnce() {
+        if (doubleBackToExitPressedOnce && isTaskRoot()) {
+            finish();
+        } else if (isTaskRoot()) {
+            doubleBackToExitPressedOnce = true;
+            // root view of your activity
+            View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
+            Snackbar snackbar = Snackbar
+                    .make(rootView, R.string.press_back_again_to_exit, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.exit, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            // 关闭当前activity所在栈中的所有的activity
+                            finishAffinity();
+                        }
+                    })
+                    .setActionTextColor(com.example.theme.ThemeHelper.getAccentColor(this));
+            // 设置Snackbar显示在底部导航栏之上
+            View sbView = snackbar.getView();
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)sbView.getLayoutParams();
+            params.setMargins(
+                    params.leftMargin,
+                    params.topMargin,
+                    params.rightMargin,
+                    params.bottomMargin + mBottomNavigationView.getHeight()
+            );
+            sbView.setLayoutParams(params);
+            snackbar.show();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+        } else {
+            // no
+            onBackPressed();
+        }
+    }
 }
