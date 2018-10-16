@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.example.preference.PreferenceUtil;
 import com.example.theme.ThemeHelper;
 import com.photor.MainApplication;
 import com.photor.R;
@@ -31,21 +32,27 @@ public class SplashActivity extends BaseActivity {
 
     @BindView(R.id.splash_bg)
     protected RelativeLayout splashBg;
-//    @BindView(R.id.banner_guide_background)
-//    protected BGABanner mBackgroundBanner;
-//    @BindView(R.id.banner_guide_foreground)
-//    protected BGABanner mForegroundBanner;
-
-    private Intent nextIntent = null;  // 指定跳转到MainActivity的Intent
+    @BindView(R.id.banner_guide_background)
+    protected BGABanner mBackgroundBanner;
+    @BindView(R.id.banner_guide_foreground)
+    protected BGABanner mForegroundBanner;
+    @BindView(R.id.splash_banner)
+    protected RelativeLayout splashBannerLayout;
+    @BindView(R.id.splash_logo)
+    protected RelativeLayout splashLogoLayout;
 
     // 当前被选中的album信息
     private Album album;
+    private PreferenceUtil SP;
+    private Intent nextIntent = null;  // 指定跳转到MainActivity的Intent
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
+        SP = PreferenceUtil.getInstance(getApplicationContext());
 
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE  // 稳定布局，主要是在全屏和非全屏切换时，布局不要有大的变化。一般和View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN、View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION搭配使用。
@@ -65,32 +72,42 @@ public class SplashActivity extends BaseActivity {
             }
         });
 
-//        setUpGuideBanner();
+        boolean isFirstTimeEnterApp = SP.getBoolean(getResources().getString(R.string.is_first_time_to_enter_app), true);
+        if (isFirstTimeEnterApp) {
+            // 第一次进入app
+            SP.putBoolean(getResources().getString(R.string.is_first_time_to_enter_app), false);
+            splashBannerLayout.setVisibility(View.VISIBLE);
+            splashLogoLayout.setVisibility(View.GONE);
+            setUpGuideBanner();
+        } else {
+            splashBannerLayout.setVisibility(View.GONE);
+            splashLogoLayout.setVisibility(View.VISIBLE);
+        }
     }
 
-//    private void setUpGuideBanner() {
-//        // 设置启动动画信息
-//        mForegroundBanner.setEnterSkipViewIdAndDelegate(R.id.btn_guide_enter, R.id.tv_guide_skip, new BGABanner.GuideDelegate() {
-//            @Override
-//            public void onClickEnterOrSkip() {
-//                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-//                finish();
-//            }
-//        });
-//
-//        // Bitmap 的宽高在 maxWidth maxHeight 和 minWidth minHeight 之间
-//        BGALocalImageSize localImageSize = new BGALocalImageSize(720, 1280, 320, 640);
-//        // 设置数据源
-//        mBackgroundBanner.setData(localImageSize, ImageView.ScaleType.CENTER_CROP,
-//                R.drawable.uoko_guide_background_1,
-//                R.drawable.uoko_guide_background_2,
-//                R.drawable.uoko_guide_background_3);
-//
-//        mForegroundBanner.setData(localImageSize, ImageView.ScaleType.CENTER_CROP,
-//                R.drawable.uoko_guide_foreground_1,
-//                R.drawable.uoko_guide_foreground_2,
-//                R.drawable.uoko_guide_foreground_3);
-//    }
+    private void setUpGuideBanner() {
+        // 设置启动动画信息
+        mForegroundBanner.setEnterSkipViewIdAndDelegate(R.id.btn_guide_enter, R.id.tv_guide_skip, new BGABanner.GuideDelegate() {
+            @Override
+            public void onClickEnterOrSkip() {
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                finish();
+            }
+        });
+
+        // Bitmap 的宽高在 maxWidth maxHeight 和 minWidth minHeight 之间
+        BGALocalImageSize localImageSize = new BGALocalImageSize(720, 1280, 320, 640);
+        // 设置数据源
+        mBackgroundBanner.setData(localImageSize, ImageView.ScaleType.CENTER_CROP,
+                R.drawable.uoko_guide_background_1,
+                R.drawable.uoko_guide_background_2,
+                R.drawable.uoko_guide_background_3);
+
+        mForegroundBanner.setData(localImageSize, ImageView.ScaleType.CENTER_CROP,
+                R.drawable.uoko_guide_foreground_1,
+                R.drawable.uoko_guide_foreground_2,
+                R.drawable.uoko_guide_foreground_3);
+    }
 
 
     @Override
@@ -98,7 +115,7 @@ public class SplashActivity extends BaseActivity {
         super.onResume();
 
         // 如果开发者的引导页主题是透明的，需要在界面可见时给背景 Banner 设置一个白色背景，避免滑动过程中两个 Banner 都设置透明度后能看到 Launcher
-//        mBackgroundBanner.setBackgroundResource(android.R.color.white);
+        mBackgroundBanner.setBackgroundResource(android.R.color.white);
     }
 
     /**
