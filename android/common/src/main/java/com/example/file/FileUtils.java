@@ -313,11 +313,18 @@ public class FileUtils {
 
             for (String imgPath: selectedImgPaths) {
                 // 每一张图片都占有pdf文件的一页
+                document.newPage();
                 Image image = Image.getInstance(imgPath);
                 float scaleWidth = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin() - 0) / image.getWidth()) * 100;
                 float scaleHeight = ((document.getPageSize().getHeight() - document.topMargin() - document.bottomMargin() - 0) / image.getHeight()) * 100;
                 image.scalePercent(scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
-                image.setAlignment(Image.ALIGN_CENTER|Image.ALIGN_TOP);
+
+                float scale = (scaleWidth < scaleHeight ? scaleWidth / 100f : scaleHeight / 100f);
+                float x = (document.getPageSize().getWidth() - image.getWidth() * scale) / 2f;
+                float y = (document.getPageSize().getHeight() - image.getHeight() * scale) / 2f;
+
+//                image.setAlignment(Image.ALIGN_CENTER);
+                image.setAbsolutePosition(x, y);
 
                 document.add(image);
             }
