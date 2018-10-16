@@ -49,6 +49,7 @@ import com.example.file.FileUtils;
 import com.example.strings.StringUtils;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.orhanobut.logger.Logger;
 import com.photor.MainApplication;
 import com.photor.R;
 import com.photor.album.activity.PdfPreviewActivity;
@@ -192,6 +193,8 @@ public class AlbumFragment extends Fragment {
         albumFragment = this;
         rvAlbums = rootView.findViewById(R.id.grid_albums);
         rvMedia  = rootView.findViewById(R.id.grid_photos);
+
+        Logger.d("AlbumFragment: onCreateView");
 
         initUI();
         // 加载在纯照片模式下的所有照片信息（需要存储权限看能读取数据库中的照片信息）[切换全部照片的模式时使用到]
@@ -1034,7 +1037,7 @@ public class AlbumFragment extends Fragment {
         menu.findItem(R.id.delete_action).setVisible((!albumsMode || editMode) && (!all_photos || editMode));  // 在editMode，或者 显示某一个相册下照片的时候显示删除按钮
 
         // 在编辑模式下显示转换为pdf的选项
-        menu.findItem(R.id.action_to_pdf).setVisible(editMode || (editMode && albumsMode && getAlbums().getSelectedCount() == 0));
+        menu.findItem(R.id.action_to_pdf).setVisible( (editMode && albumsMode && getAlbums().getSelectedCount() == 1) || (editMode && !albumsMode) );
 
         super.onPrepareOptionsMenu(menu);
     }
