@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -67,6 +68,12 @@ public class PdfPreviewActivity extends BaseActivity {
         }
 
         setSupportActionBar(toolbar);
+        // 获得当前ActionBar的实例
+        ActionBar actionBar = getSupportActionBar();  // 当前ActionBar已经跟Toolbar结合到一起了
+        if (actionBar != null) {
+            // 让Activity中的导航栏按钮显示出来
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
@@ -78,6 +85,9 @@ public class PdfPreviewActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
             case R.id.pickFile:
                 pickFile();
                 return true;

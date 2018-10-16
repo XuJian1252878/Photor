@@ -1,6 +1,9 @@
 package com.photor.util;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -179,6 +182,22 @@ public class AlertDialogsHelper {
         for (int button: buttons) {
             alertDialog.getButton(button).setTextColor(color);
         }
+    }
+
+
+    /**
+     * 获得处理进度条信息
+     * @param context
+     * @param title
+     * @param canCancel
+     * @return
+     */
+    public static Dialog getLoadingDialog(Context context, String title,
+                                          boolean canCancel) {
+        ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setCancelable(canCancel);
+        dialog.setMessage(title);
+        return dialog;
     }
 
 }

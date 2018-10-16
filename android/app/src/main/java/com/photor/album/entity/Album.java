@@ -161,13 +161,13 @@ public class Album {
         return selected;
     }
 
-    public Media getMedia(int index) { return medias.get(index); }
+    public Media getAllMediaUnderAlbum(int index) { return medias.get(index); }
 
     public void setCurrentPhotoIndex(int index){ currentMediaIndex = index; }
 
     public void setCurrentPhotoIndex(Media m){ setCurrentPhotoIndex(medias.indexOf(m)); }
 
-    public Media getCurrentMedia() { return getMedia(currentMediaIndex); }
+    public Media getCurrentMedia() { return getAllMediaUnderAlbum(currentMediaIndex); }
 
     public int getCurrentMediaIndex() { return currentMediaIndex; }
 
@@ -365,12 +365,12 @@ public class Album {
 
 
     public void updatePhotos(Context context) {
-        medias = getMedia(context);
+        medias = getAllMediaUnderAlbum(context);
         sortPhotos();
         setCount(medias.size());
     }
 
-    private ArrayList<Media> getMedia(Context context) {
+    public ArrayList<Media> getAllMediaUnderAlbum(Context context) {
         PreferenceUtil SP = PreferenceUtil.getInstance(context);
         ArrayList<Media> mediaArrayList = new ArrayList<Media>();
 

@@ -26,6 +26,10 @@ import android.util.Log;
 import com.example.common.R;
 import com.example.preference.PreferenceUtil;
 import com.example.strings.StringUtils;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -39,6 +43,7 @@ import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -281,6 +286,49 @@ public class FileUtils {
 
             File pdf = new File(pdfDirFile, pdfFileName);
             return pdf.getAbsolutePath();
+        }
+        return null;
+    }
+
+
+    /**
+     * 将传入路径的img全部转化到一个pdf文件中
+     * @param selectedImgPaths
+     * @return
+     */
+    public static String generateImgsToPdf(Context context, List<String> selectedImgPaths) {
+        if (selectedImgPaths == null || selectedImgPaths.size() == 0) {
+            return null;
+        }
+        try {
+            String pdfPath = generateImgPdfResPath();
+            File pdfFile = new File(pdfPath);
+            if (!pdfFile.exists()) {
+                pdfFile.createNewFile();
+            }
+
+            Document document = new Document();
+            PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
+            document.open();
+
+            for (String imgPath: selectedImgPaths) {
+                // 每一张图片都占有pdf文件的一页
+                Image image = Image.getInstance(imgPath);
+                float scaleWidth = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin() - 0) / image.getWidth()) * 100;
+                float scaleHeight = ((document.getPageSize().getHeight() - document.topMargin() - document.bottomMargin() - 0) / image.getHeight()) * 100;
+                image.scalePercent(scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
+                image.setAlignment(Image.ALIGN_CENTER|Image.ALIGN_TOP);
+
+                document.add(image);
+            }
+
+            document.close();
+            FileUtils.updateMediaStore(context, new File(pdfPath), null);
+            return pdfPath;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            e.printStackTrace();
         }
         return null;
     }

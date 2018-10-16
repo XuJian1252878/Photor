@@ -22,6 +22,7 @@
     <string name="share">分享到</string>
     <string name="select_all">选择全部</string>
     <string name="delete">删除</string>
+    <string name="to_pdf">生成pdf文件</string>
 
     <string name="trashbin_move">图片已移至垃圾箱中</string>
     <string name="trashbin_move_onefile">图片已移至垃圾箱中</string>
@@ -121,6 +122,8 @@
     <string name="is_first_time_to_enter_app">is_first_time_to_enter_app</string>
     <string name="pick_file">选择文件</string>
     <string name="toast_pick_file_error">读取文件信息错误</string>
+
+    <string name="loading">处理中</string>
 
 
 </resources>

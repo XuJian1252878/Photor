@@ -104,6 +104,13 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_to_pdf"
+        android:title="@string/to_pdf"
+        android:icon="@drawable/ic_pdf"
+        app:showAsAction="always" />
+
+
+    <item
         android:id="@+id/backup"
         android:icon="@drawable/ic_backup"
         android:title="@string/main_activity_action_menu_item_backup"

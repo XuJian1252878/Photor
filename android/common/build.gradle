@@ -50,6 +50,8 @@ dependencies {
     implementation 'com.mikepenz:fontawesome-typeface:4.6.0.1@aar'
     implementation 'com.mikepenz:ionicons-typeface:2.0.1.5@aar'
     implementation 'org.jetbrains:annotations-java5:15.0'
+    // iText 图片转化为 pdf的库
+    implementation 'com.itextpdf:itextg:5.5.10'
 
 
     testImplementation 'junit:junit:4.12'

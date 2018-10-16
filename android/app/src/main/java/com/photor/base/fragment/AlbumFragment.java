@@ -3,6 +3,7 @@ package com.photor.base.fragment;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -15,7 +16,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -33,7 +33,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,7 +41,6 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +51,7 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.photor.MainApplication;
 import com.photor.R;
+import com.photor.album.activity.PdfPreviewActivity;
 import com.photor.album.activity.SingleMediaActivity;
 import com.photor.album.adapter.AlbumsAdapter;
 import com.photor.album.adapter.MediaAdapter;
@@ -82,6 +81,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -89,6 +89,7 @@ import io.reactivex.disposables.Disposable;
 import io.realm.Realm;
 
 import static com.photor.album.entity.SortingMode.DATE;
+import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_TO_PDF_PATH;
 
 /**
  * Created by xujian on 2018/2/26.
@@ -1032,6 +1033,9 @@ public class AlbumFragment extends Fragment {
         // 控制各种菜单项是否显示
         menu.findItem(R.id.delete_action).setVisible((!albumsMode || editMode) && (!all_photos || editMode));  // 在editMode，或者 显示某一个相册下照片的时候显示删除按钮
 
+        // 在编辑模式下显示转换为pdf的选项
+        menu.findItem(R.id.action_to_pdf).setVisible(editMode || (editMode && albumsMode && getAlbums().getSelectedCount() == 0));
+
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -1440,11 +1444,84 @@ public class AlbumFragment extends Fragment {
                     }
                 });
                 return true;
+            case R.id.action_to_pdf:
+                // 转化为pdf
+                new GeneratePdfTask(albumFragment).execute();
+                return true;
             default:
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * 产生pdf文件的任务
+     */
+    private static class GeneratePdfTask extends AsyncTask<Void, Integer, String> {
+
+        private WeakReference<AlbumFragment> reference;
+        private Dialog dialog;
+
+        public GeneratePdfTask(AlbumFragment albumFragment) {
+            this.reference = new WeakReference<AlbumFragment>(albumFragment);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            AlbumFragment albumFragment = reference.get();
+            dialog = AlertDialogsHelper.getLoadingDialog(albumFragment.getContext(),
+                    albumFragment.getResources().getString(R.string.loading),
+                    false);
+            dialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            AlbumFragment albumFragment = reference.get();
+            // 转化为pdf
+            if (albumFragment.editMode) {
+                List<String> selectImgPath = new ArrayList<>();
+                List<Media> selectedMediasTemp = null;
+                if (albumFragment.albumsMode) {
+                    // no 有些相册里面有几百张照片 后台任务
+                    selectedMediasTemp = albumFragment.getAlbums().getSelectedAlbum(0).getAllMediaUnderAlbum(albumFragment.getContext());
+                } else {
+                    if (albumFragment.all_photos) {
+                        // 全部照片模式下
+                        selectedMediasTemp = albumFragment.selectedMedias;
+                    } else {
+                        // 某一个相册中选择了几张照片
+                        selectedMediasTemp = albumFragment.getAlbum().getSelectedMedia();
+                    }
+                }
+                // 收集被选择的照片的路径信息
+                for (Media media: selectedMediasTemp) {
+                    selectImgPath.add(media.getPath());
+                }
+
+                // 将img全部转化到一个pdf文件中
+                String pdfPath = FileUtils.generateImgsToPdf(albumFragment.getActivity(), selectImgPath);
+                return pdfPath;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String pdfPath) {
+            super.onPostExecute(pdfPath);
+            AlbumFragment albumFragment = reference.get();
+            // 结束编辑模式
+            albumFragment.finishEditMode();
+            dialog.dismiss();
+
+            // 显示生成的pdf文件信息，开启pdf预览界面
+            Intent intent = new Intent(albumFragment.getActivity(), PdfPreviewActivity.class);
+            intent.setData(Uri.fromFile(new File(pdfPath)));
+            intent.putExtra(EXTRA_PHOTO_TO_PDF_PATH, pdfPath);
+            albumFragment.startActivity(intent);
+        }
     }
 
     /**

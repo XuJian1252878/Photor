@@ -31,12 +31,12 @@ public class AlbumsComparators {
                 switch (sortingOrder) {
                     case ASCENDING:
                         if (a1.isPinned() == a2.isPinned())
-                            return a1.getMedia(0).getDateModified().compareTo(a2.getMedia(0).getDateModified());
+                            return a1.getAllMediaUnderAlbum(0).getDateModified().compareTo(a2.getAllMediaUnderAlbum(0).getDateModified());
                         return a1.isPinned() ? -1 : 1;
 
                     case DESCENDING: default:
                         if (a1.isPinned() == a2.isPinned())
-                            return a2.getMedia(0).getDateModified().compareTo(a1.getMedia(0).getDateModified());
+                            return a2.getAllMediaUnderAlbum(0).getDateModified().compareTo(a1.getAllMediaUnderAlbum(0).getDateModified());
                         return a2.isPinned() ? 1 : -1;
                 }
             }
