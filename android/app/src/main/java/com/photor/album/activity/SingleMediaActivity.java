@@ -44,6 +44,10 @@ import android.widget.ViewSwitcher;
 
 import com.example.file.FileUtils;
 import com.example.preference.PreferenceUtil;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.photor.BuildConfig;
 import com.photor.R;
@@ -53,6 +57,7 @@ import com.photor.album.utils.Measure;
 import com.photor.album.views.PagerRecyclerView;
 import com.photor.base.activity.BaseActivity;
 import com.photor.base.activity.PhotoExifDetailActivity;
+import com.photor.base.activity.util.PhotoOperator;
 import com.photor.base.fragment.AlbumFragment;
 import com.photor.data.TrashBinRealmModel;
 import com.photor.util.AlertDialogsHelper;
@@ -64,6 +69,9 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -75,6 +83,7 @@ import io.realm.Realm;
 import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_IS_SAVED_CROP_RES;
 import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_ORI_IMG_PATH;
 import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_IS_FROM_OPERATE_RESULT;
+import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_TO_PDF_PATH;
 import static com.photor.base.activity.util.PhotoOperator.REQUEST_ACTION_EDITIMAGE;
 import static com.photor.util.ActivitySwitchHelper.getContext;
 
@@ -409,6 +418,13 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // 加载导航栏的菜单信息
+        getMenuInflater().inflate(R.menu.menu_nav_view_pager, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
@@ -444,8 +460,53 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
                 imgEditResPath = FileUtils.generateImgEditResPath();  // 生成编辑后结果图片的位置
                 EditImageActivity.start(this, pathForDescription, imgEditResPath, REQUEST_ACTION_EDITIMAGE);
                 return true;
+            case R.id.action_to_pdf:
+                // 生成pdf文件
+                imageToPdf();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * 转化当前的图片文件至pdf
+     */
+    private void imageToPdf() {
+        try {
+
+            // 转化当前的图片文件至pdf
+            String pdfPath = FileUtils.generateImgPdfResPath();
+            File pdfFile = new File(pdfPath);
+            if (!pdfFile.exists()) {
+                pdfFile.createNewFile();
+            }
+            Document document = new Document();
+            PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
+            document.open();
+
+            Image image = Image.getInstance(pathForDescription); // 获得当前图片的对象
+            float scaleWidth = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin() - 0) / image.getWidth()) * 100;
+            float scaleHeight = ((document.getPageSize().getHeight() - document.topMargin() - document.bottomMargin() - 0) / image.getHeight()) * 100;
+            image.scalePercent(scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
+            image.setAlignment(Image.ALIGN_CENTER|Image.ALIGN_TOP);
+
+            document.add(image);
+            document.close();
+            FileUtils.updateMediaStore(this, new File(pdfPath), null);
+
+            // 开启pdf文件预览页面
+            Intent intent = new Intent(SingleMediaActivity.this, PdfPreviewActivity.class);
+            intent.setData(Uri.fromFile(new File(pdfPath)));
+            intent.putExtra(EXTRA_PHOTO_TO_PDF_PATH, pdfPath);
+            startActivity(intent);
+
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_to_pdf"
+        android:orderInCategory="0"
+        android:title="@string/share"
+        android:icon="@drawable/ic_pdf"
+        app:showAsAction="always" />
+
+</menu>

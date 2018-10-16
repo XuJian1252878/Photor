@@ -118,6 +118,9 @@
 
         <!-- 图片裁剪页面 -->
         <activity android:name=".album.activity.ImageCropActivity" />
+
+        <!-- pdf 浏览页面Activity -->
+        <activity android:name=".album.activity.PdfPreviewActivity" />
     </application>
 
 </manifest>

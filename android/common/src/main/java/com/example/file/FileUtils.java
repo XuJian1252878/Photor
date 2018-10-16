@@ -242,10 +242,10 @@ public class FileUtils {
 
     public static String generateImgEditResPath() {
         if (TextUtils.equals(Environment.getExternalStorageState(), Environment.MEDIA_MOUNTED)) {
-            String cropDirStr = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/photor_edit";
-            File cropDirFile = new File(cropDirStr);
-            if (!cropDirFile.exists()) {
-                if (!cropDirFile.mkdirs()) {
+            String editDirStr = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/photor_edit";
+            File editDirFile = new File(editDirStr);
+            if (!editDirFile.exists()) {
+                if (!editDirFile.mkdirs()) {
                     Log.e("generateImgEditResPath", "make edit image dir error!!!");
                     return null;
                 }
@@ -254,8 +254,33 @@ public class FileUtils {
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
             String imgFileName = "JPEG_" + timeStamp + ".jpg";
 
-            File image = new File(cropDirFile, imgFileName);
+            File image = new File(editDirFile, imgFileName);
             return image.getAbsolutePath();
+        }
+        return null;
+    }
+
+
+    /**
+     * 生成pdf文件的路径
+     * @return
+     */
+    public static String generateImgPdfResPath() {
+        if (TextUtils.equals(Environment.getExternalStorageState(), Environment.MEDIA_MOUNTED)) {
+            String pdfDirStr = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/photor_pdf";
+            File pdfDirFile = new File(pdfDirStr);
+            if (!pdfDirFile.exists()) {
+                if (!pdfDirFile.mkdirs()) {
+                    Log.e("generateImgPdfResPath", "make edit image dir error!!!");
+                    return null;
+                }
+            }
+
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+            String pdfFileName = "PDF_" + timeStamp + ".pdf";
+
+            File pdf = new File(pdfDirFile, pdfFileName);
+            return pdf.getAbsolutePath();
         }
         return null;
     }
