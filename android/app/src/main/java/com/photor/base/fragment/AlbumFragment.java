@@ -194,7 +194,6 @@ public class AlbumFragment extends Fragment {
         rvAlbums = rootView.findViewById(R.id.grid_albums);
         rvMedia  = rootView.findViewById(R.id.grid_photos);
 
-        Logger.d("AlbumFragment: onCreateView");
 
         initUI();
         // 加载在纯照片模式下的所有照片信息（需要存储权限看能读取数据库中的照片信息）[切换全部照片的模式时使用到]
@@ -202,7 +201,7 @@ public class AlbumFragment extends Fragment {
         // 设置每一个相册的默认排序方式
         new SortModeSet(albumFragment).execute(DATE);
         // 进行相册数据的预加载
-        displayData(savedInstanceState);
+//        displayData(savedInstanceState);  // onResume里面会进行相册加载，这里在进行的话，会照成相册长按选择失效
         // 检查当前可显示的album信息是否为空
         checkNothing();
         // 填充当前已有的album信息

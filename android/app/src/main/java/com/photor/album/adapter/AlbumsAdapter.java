@@ -29,6 +29,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.iconics.view.IconicsImageView;
+import com.orhanobut.logger.Logger;
 import com.photor.MainApplication;
 import com.photor.R;
 import com.photor.album.entity.Album;
@@ -131,8 +132,8 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
         // 因为改写了Album的equals，所以两个Album List中对应位置的Album的封面路径不一样的时候
         // 说明该Album的封面数据有更新，需要更新Album信息（相册有新增或者删除的情况）
 //        if( ((MainApplication)context.getApplicationContext()).getAlbums().dispAlbums.equals(asd) ) {
-////            return;
-////        }
+//            return;
+//        }
         ((MainApplication)context.getApplicationContext()).getAlbums().dispAlbums = asd;
         notifyDataSetChanged();
     }
