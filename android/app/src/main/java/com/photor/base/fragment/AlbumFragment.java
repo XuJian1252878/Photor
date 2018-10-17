@@ -214,6 +214,7 @@ public class AlbumFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        setUpUI();
 
         if (all_photos) {
             // 照片模式下
@@ -695,6 +696,22 @@ public class AlbumFragment extends Fragment {
         nothingToShow.setVisibility((albumsMode && getAlbums().dispAlbums.size() == 0) ||
                 (!albumsMode && getAlbum().getMedias().size() == 0) ? View.VISIBLE : View.GONE);
         starImageView.setVisibility(View.GONE);
+    }
+
+    private void setUpUI() {
+        /**
+         * 设置下拉滑动条的颜色
+         */
+        swipeRefreshLayout.setColorSchemeColors(com.example.theme.ThemeHelper.getAccentColor(getActivity()));
+        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(com.example.theme.ThemeHelper.getBackgroundColor(getActivity()));
+
+        /**
+         * 设置两个RecyclerView的滚动条背景、背景颜色
+         */
+        rvAlbums.setBackgroundColor(com.example.theme.ThemeHelper.getBackgroundColor(getActivity()));
+        rvMedia.setBackgroundColor(com.example.theme.ThemeHelper.getBackgroundColor(getActivity()));
+        rvAlbums.setScrollBarColor(com.example.theme.ThemeHelper.getPrimaryColor(getActivity()));
+        rvMedia.setScrollBarColor(com.example.theme.ThemeHelper.getPrimaryColor(getActivity()));
     }
 
 

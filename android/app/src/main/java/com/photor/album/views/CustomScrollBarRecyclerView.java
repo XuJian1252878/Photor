@@ -33,6 +33,7 @@ public class CustomScrollBarRecyclerView extends RecyclerView {
      * Called by Android {@link android.view.View#onDrawScrollBars(Canvas)}
      **/
     protected void onDrawHorizontalScrollBar(Canvas canvas, Drawable scrollBar, int l, int t, int r, int b) {
+        // scrollBarColor 源图片颜色，drawable中设置的是目标的颜色（SRC_ATOP 相交处显示源图片颜色，所以最终显示蓝色）
         scrollBar.setColorFilter(scrollBarColor, PorterDuff.Mode.SRC_ATOP);
         scrollBar.setBounds(l, t, r, b);
         scrollBar.draw(canvas);
