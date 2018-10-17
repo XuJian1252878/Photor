@@ -104,9 +104,11 @@ public class PdfPreviewActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch(requestCode) {
             case REQUEST_ACTION_PDF_FILE:
-                Uri uri = data.getData();
-                if (uri != null) {
-                    displayPdfFromUri(uri);
+                if (data != null) {
+                    Uri uri = data.getData();
+                    if (uri != null) {
+                        displayPdfFromUri(uri);
+                    }
                 }
                 break;
             default:
