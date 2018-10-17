@@ -247,8 +247,10 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     // 引入sketch imageview
-    implementation (name:'sketch-2.6.1', ext:'aar')
-    implementation (name:'sketch-gif-2.6.1', ext:'aar')
+//    implementation (name:'sketch-2.6.1', ext:'aar')
+//    implementation (name:'sketch-gif-2.6.1', ext:'aar')
+    implementation 'me.panpf:sketch:2.6.1'
+    implementation 'me.panpf:sketch-gif:2.6.1'
     // 引入启动页
     implementation 'cn.bingoogolapple:bga-banner:2.2.4@aar'
     implementation 'com.android.support:support-v4:27.1.1'

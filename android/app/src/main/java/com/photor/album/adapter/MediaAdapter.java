@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import me.panpf.sketch.SketchImageView;
 
 import static com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions.withCrossFade;
 
@@ -81,6 +82,10 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
         holder.path.setVisibility(View.GONE);
         holder.icon.setVisibility(View.GONE);
 
+        holder.imageView.getOptions().setDecodeGifImage(true);  // 开启gif播放模式
+        holder.imageView.setShowGifFlagEnabled(R.drawable.ic_gif);
+        holder.imageView.setClickPlayGifEnabled(R.drawable.ic_gif_play);
+
         if (f.isSelected()) {
             // 设置图片被选择的时候，图片预览布局上显示出已经选择的图标
             holder.icon.setIcon(CommunityMaterial.Icon.cmd_check);
@@ -117,7 +122,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.photo_preview)
-        protected ImageView imageView;
+        protected SketchImageView imageView;
         @BindView(R.id.media_card_layout)
         protected View layout;
         @BindView(R.id.photo_path)

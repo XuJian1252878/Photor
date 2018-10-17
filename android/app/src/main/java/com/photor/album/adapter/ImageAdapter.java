@@ -29,6 +29,8 @@ import com.photor.util.BasicCallBack;
 import java.util.ArrayList;
 import java.util.zip.Inflater;
 
+import me.panpf.sketch.SketchImageView;
+
 import static com.photor.util.ActivitySwitchHelper.context;
 import static com.photor.util.ActivitySwitchHelper.getContext;
 
@@ -124,12 +126,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView imageView;
+        private SketchImageView imageView;
         private LinearLayout layout;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            imageView = new ImageView(getContext());
+            imageView = new SketchImageView(getContext());
+            imageView.setZoomEnabled(true);  // 开启手势缩放
+            imageView.getZoomer().setReadMode(true); // 开启阅读模式
+            imageView.getOptions().setDecodeGifImage(true);  // 开启gif播放模式
             imageView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
