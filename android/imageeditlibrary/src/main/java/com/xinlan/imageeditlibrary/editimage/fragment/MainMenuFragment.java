@@ -30,6 +30,7 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
     private View mBeautyBtn;//美颜按钮
     private View enhanceBtn; //增强按钮
     private View frameBtn; // 相框按钮
+    private View chartletBtn; // 相册贴图按钮
 
     public static MainMenuFragment newInstance() {
         MainMenuFragment fragment = new MainMenuFragment();
@@ -62,6 +63,7 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
         mBeautyBtn = mainView.findViewById(R.id.btn_beauty);
         enhanceBtn = mainView.findViewById(R.id.btn_enhance);
         frameBtn = mainView.findViewById(R.id.btn_frame);
+        chartletBtn = mainView.findViewById(R.id.btn_chartlet);
 
         stickerBtn.setOnClickListener(this);
         fliterBtn.setOnClickListener(this);
@@ -72,6 +74,7 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
         mBeautyBtn.setOnClickListener(this);
         enhanceBtn.setOnClickListener(this);
         frameBtn.setOnClickListener(this);
+        chartletBtn.setOnClickListener(this);
     }
 
     @Override
@@ -104,6 +107,8 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
             onEnhanceClick();
         } else if (v == frameBtn) {
             onFrameClick();
+        } else if (v == chartletBtn) {
+            onChartletClick();
         }
     }
 
@@ -189,6 +194,15 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
     private void onFrameClick() {
         activity.bottomGallery.setCurrentItem(FrameFragment.INDEX);
         activity.mFrameFragment.onShow();
+    }
+
+    /**
+     * 相册贴图模式
+     * @author xujian 2018/10/17
+     */
+    private void onChartletClick() {
+        activity.bottomGallery.setCurrentItem(ChartletFragment.INDEX);
+        activity.mChartletFragment.onShow();
     }
 
 }// end class

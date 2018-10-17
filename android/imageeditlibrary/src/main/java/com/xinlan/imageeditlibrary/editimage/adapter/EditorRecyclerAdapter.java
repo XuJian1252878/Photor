@@ -29,10 +29,13 @@ import java.util.Arrays;
 public class EditorRecyclerAdapter extends RecyclerView.Adapter<EditorRecyclerAdapter.ViewHolder> {
 
     private TypedArray iconlist, titlelist;  // 每一个小项的type icon
+    // 贴图模式下配置
     public static final String[] stickerPath = {"stickers/type1", "stickers/type2", "stickers/type3", "stickers/type4", "stickers/type5", "stickers/type6"};
+
     private Context context;
     private RecyclerView recyclerView;  // 设置为当前Adapter的Recycler
 
+    // 裁剪模式下的配置
     public static final String[] cropTitles = {"原始", "1:1", "1:2", "1:3", "2:3", "3:4", "2:1", "3:1", "3:2", "4:3"};
     public static final float[] cropRatios = {-1f, 1f, 1/2f, 1/3f, 2/3f, 3/4f, 2f, 3f, 3/2f, 4/3f};
 

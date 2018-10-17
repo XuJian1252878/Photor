@@ -235,6 +235,10 @@ public class FrameFragment extends BaseEditFragment {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
 
+            if (arrayList == null || arrayList.size() <= 0) {
+                return;
+            }
+
             int frameImageSize = (int)getResources().getDimension(R.dimen.icon_item_image_size_frame_preview);
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(frameImageSize, frameImageSize);
@@ -254,13 +258,11 @@ public class FrameFragment extends BaseEditFragment {
                     }
                 }
             });
-
-
         }
 
         @Override
         public int getItemCount() {
-            return arrayList.size();
+            return arrayList == null ? 0 : arrayList.size();
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {

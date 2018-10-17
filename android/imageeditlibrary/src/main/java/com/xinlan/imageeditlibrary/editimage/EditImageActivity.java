@@ -26,6 +26,7 @@ import com.xinlan.imageeditlibrary.BaseActivity;
 import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.fragment.AddTextFragment;
 import com.xinlan.imageeditlibrary.editimage.fragment.BeautyFragment;
+import com.xinlan.imageeditlibrary.editimage.fragment.ChartletFragment;
 import com.xinlan.imageeditlibrary.editimage.fragment.CropFragment;
 import com.xinlan.imageeditlibrary.editimage.fragment.EnhanceFragment;
 import com.xinlan.imageeditlibrary.editimage.fragment.FilterListFragment;
@@ -79,6 +80,7 @@ public class EditImageActivity extends BaseActivity {
     public static final int MODE_BEAUTY = 7;//美颜模式
     public static final int MODE_ENHANCE = 8;// 加强模式
     public static final int MODE_FRAME = 9; // 相框模式
+    public static final int MODE_CHARTLET = 10; // 相片贴图模式
 
     public String filePath;// 需要编辑图片路径
     public List<String> selectedImgPaths; // 从相册界面传递过来的被选择的图片的路径信息
@@ -102,11 +104,12 @@ public class EditImageActivity extends BaseActivity {
     private View applyBtn;// 应用按钮
     private View saveBtn;// 保存按钮
 
-    public StickerView mStickerView;// 贴图层View
+    public StickerView mStickerView; // 贴图层View
     public CropImageView mCropPanel;// 剪切操作控件
     public RotateImageView mRotatePanel;// 旋转操作控件
     public TextStickerView mTextStickerView;//文本贴图显示View
     public CustomPaintView mPaintView;//涂鸦模式画板
+    public StickerView mChartletView; // 照片贴图层View
 
     public CustomViewPager bottomGallery;// 底部gallery
     private BottomGalleryAdapter mBottomGalleryAdapter;// 底部gallery
@@ -120,6 +123,7 @@ public class EditImageActivity extends BaseActivity {
     public BeautyFragment mBeautyFragment;//美颜模式Fragment
     public EnhanceFragment mEnhanceFragment;//加强模式Fragment
     public FrameFragment mFrameFragment;// 相框模式Fragment
+    public ChartletFragment mChartletFragment; // 相片贴图模式Fragemnt
     private SaveImageTask mSaveImageTask;
 
     private RedoUndoController mRedoUndoController;//撤销操作
@@ -179,6 +183,8 @@ public class EditImageActivity extends BaseActivity {
             chartletMode = false;
         } else {
             chartletMode = true;
+            mChartletFragment = ChartletFragment.newInstance();
+            bottomGallery.getAdapter().notifyDataSetChanged();
             // 说明是在空白的bitmap上进行编辑
             String emptyBitmapPath = FileUtils.generateImgAbsPath();
             int width = 3024;
@@ -220,6 +226,7 @@ public class EditImageActivity extends BaseActivity {
         mRotatePanel = (RotateImageView) findViewById(R.id.rotate_panel);
         mTextStickerView = (TextStickerView) findViewById(R.id.text_sticker_panel);
         mPaintView = (CustomPaintView) findViewById(R.id.custom_paint_view);
+        mChartletView = findViewById(R.id.chartlet_panel);
 
         // 底部gallery
         bottomGallery = (CustomViewPager) findViewById(R.id.bottom_gallery);
@@ -295,13 +302,15 @@ public class EditImageActivity extends BaseActivity {
                     return mEnhanceFragment;
                 case FrameFragment.INDEX:
                     return mFrameFragment; // 相框
+                case ChartletFragment.INDEX:
+                    return mChartletFragment;  // 相册贴图按钮
             }//end switch
             return MainMenuFragment.newInstance();
         }
 
         @Override
         public int getCount() {
-            return BOTTOM_GALLAY_PART_COUNT;
+            return chartletMode ? BOTTOM_GALLAY_PART_COUNT + 1 : BOTTOM_GALLAY_PART_COUNT;
         }
     }// end inner class
 
@@ -363,6 +372,9 @@ public class EditImageActivity extends BaseActivity {
                 return;
             case MODE_FRAME:
                 mFrameFragment.backToMain();
+                return;
+            case MODE_CHARTLET:
+                mChartletFragment.backToMain();
                 return;
         }// end switch
 

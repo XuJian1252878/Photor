@@ -16,4 +16,5 @@ public final class ModuleConfig {
     public static final int INDEX_BEAUTY = 7;  //美颜
     public static final int INDEX_ENHANCE = 8;  //效果增强
     public static final int INDEX_FRAME = 9; //  相框
+    public static final int INDEX_CHARTLET = 10;//
 }
