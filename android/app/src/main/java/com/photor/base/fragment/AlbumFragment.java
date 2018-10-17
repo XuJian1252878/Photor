@@ -49,7 +49,6 @@ import com.example.file.FileUtils;
 import com.example.strings.StringUtils;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
-import com.orhanobut.logger.Logger;
 import com.photor.MainApplication;
 import com.photor.R;
 import com.photor.album.activity.PdfPreviewActivity;
@@ -75,6 +74,7 @@ import com.photor.util.ActivitySwitchHelper;
 import com.photor.util.AlertDialogsHelper;
 import com.photor.util.SnackBarHandler;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -89,8 +89,9 @@ import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
 import io.realm.Realm;
 
+import static com.example.constant.PhotoOperator.REQUEST_ACTION_CHART_LET;
 import static com.photor.album.entity.SortingMode.DATE;
-import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_TO_PDF_PATH;
+import static com.example.constant.PhotoOperator.EXTRA_PHOTO_TO_PDF_PATH;
 
 /**
  * Created by xujian on 2018/2/26.
@@ -1038,6 +1039,9 @@ public class AlbumFragment extends Fragment {
         // 在编辑模式下显示转换为pdf的选项
         menu.findItem(R.id.action_to_pdf).setVisible( (editMode && albumsMode && getAlbums().getSelectedCount() == 1) || (editMode && !albumsMode) );
 
+        // 贴图相册选项
+        menu.findItem(R.id.action_chart_let).setVisible(editMode && !albumsMode);
+
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -1449,6 +1453,26 @@ public class AlbumFragment extends Fragment {
             case R.id.action_to_pdf:
                 // 转化为pdf
                 new GeneratePdfTask(albumFragment).execute();
+                return true;
+            case R.id.action_chart_let:
+                if (editMode && !albumsMode) {
+                    List<String> imgSelectedPaths = new ArrayList<>();
+                    List<Media> selectedMediasTemp = null;
+                    if (!all_photos) {
+                        selectedMediasTemp = getAlbum().getSelectedMedia();
+                    } else {
+                        selectedMediasTemp = selectedMedias;  // 全局的选择的相册信息
+                    }
+
+                    for (Media media: selectedMediasTemp) {
+                        imgSelectedPaths.add(media.getPath());
+                    }
+
+                    String outPath = FileUtils.generateImgEditResPath();
+                    // 然后跳转至 EditImageActivity
+                    EditImageActivity.start(getActivity(), imgSelectedPaths, outPath, REQUEST_ACTION_CHART_LET);
+                    finishEditMode(); // 结束编辑模式
+                }
                 return true;
             default:
                 break;
@@ -2366,5 +2390,23 @@ public class AlbumFragment extends Fragment {
                 albumFragment.getActivity().invalidateOptionsMenu();
             }
         }
+    }
+
+
+    /**
+     * 处理被编辑之后的照片
+     * @param data
+     */
+    public void handleImageAfterEditor(Intent data) {
+        String newFilePath = data.getStringExtra(EditImageActivity.EXTRA_FILE_OUTPUT);
+        boolean isImageEdit = data.getBooleanExtra(EditImageActivity.IMAGE_IS_EDIT, false);
+        if (isImageEdit){
+            Toast.makeText(getContext(), getString(R.string.save_path, newFilePath), Toast.LENGTH_LONG).show();
+            // 扫描新的文件到MediaStore库
+            FileUtils.updateMediaStore(getContext(), new File(newFilePath), null);
+        }else{//未编辑  还是用原来的图片
+            newFilePath = data.getStringExtra(EditImageActivity.EXTRA_FILE_PATH);
+        }
+        // 接下来做显示图片的操作（或者是直接跳转到pdf显示页面），看情况
     }
 }

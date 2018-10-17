@@ -233,13 +233,13 @@ public class ImageEditActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void handleEditorImage(Intent data) {
-        String newFilePath = data.getStringExtra(EditImageActivity.EXTRA_OUTPUT);
+        String newFilePath = data.getStringExtra(EditImageActivity.EXTRA_FILE_OUTPUT);
         boolean isImageEdit = data.getBooleanExtra(EditImageActivity.IMAGE_IS_EDIT, false);
 
         if (isImageEdit){
             Toast.makeText(this, getString(R.string.save_path, newFilePath), Toast.LENGTH_LONG).show();
         }else{//未编辑  还是用原来的图片
-            newFilePath = data.getStringExtra(EditImageActivity.FILE_PATH);;
+            newFilePath = data.getStringExtra(EditImageActivity.EXTRA_FILE_PATH);;
         }
         //System.out.println("newFilePath---->" + newFilePath);
         //File file = new File(newFilePath);

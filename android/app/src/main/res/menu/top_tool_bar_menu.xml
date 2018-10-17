@@ -109,6 +109,12 @@
         android:icon="@drawable/ic_pdf"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/action_chart_let"
+        android:title="@string/to_chart_let"
+        android:icon="@drawable/ic_chart_let"
+        app:showAsAction="always" />
+
 
     <item
         android:id="@+id/backup"

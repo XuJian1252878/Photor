@@ -1,4 +1,4 @@
-package com.photor.base.activity.util;
+package com.example.constant;
 
 public class PhotoOperator {
 
@@ -12,6 +12,9 @@ public class PhotoOperator {
 
     // REQUEST 参数
     public static final int REQUEST_ACTION_EDITIMAGE = 9;
+
+    // 相册贴图
+    public static final int REQUEST_ACTION_CHART_LET = 10;
 
     // 打开寻找pdf文件浏览器的请求参数
     public static final int REQUEST_ACTION_PDF_FILE = 10;

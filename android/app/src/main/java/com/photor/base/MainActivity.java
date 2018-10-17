@@ -1,6 +1,7 @@
 package com.photor.base;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -42,6 +43,8 @@ import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
 import q.rorbin.badgeview.Badge;
 import q.rorbin.badgeview.QBadgeView;
+
+import static com.example.constant.PhotoOperator.REQUEST_ACTION_CHART_LET;
 
 public class MainActivity extends BaseActivity {
 
@@ -285,5 +288,26 @@ public class MainActivity extends BaseActivity {
             // no
             onBackPressed();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == RESULT_OK) {
+            int curBottomNavIndex = mMainViewPager.getCurrentItem();
+            switch (requestCode) {
+                case REQUEST_ACTION_CHART_LET:
+                    if (curBottomNavIndex == BottomNavigationEnum.RESOURCE.getNavItemIndex()) {
+                        // 是相册导航栏的返回键信息
+                        AlbumFragment albumFragment = (AlbumFragment) FragmentDataGenerator.FRAGMENTS[curBottomNavIndex];
+                        // 保存已经编辑好的相册贴图信息
+                        albumFragment.handleImageAfterEditor(data);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.example.file.FileUtils;
 import com.xinlan.imageeditlibrary.BaseActivity;
 import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.fragment.AddTextFragment;
@@ -44,6 +46,9 @@ import com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouch;
 import com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouchBase;
 import com.xinlan.imageeditlibrary.editimage.widget.RedoUndoController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <p>
  * 图片编辑 主页面
@@ -57,8 +62,9 @@ public class EditImageActivity extends BaseActivity {
 
     public static final int BOTTOM_GALLAY_PART_COUNT = 10;  // 底部导航栏的总部分数
 
-    public static final String FILE_PATH = "file_path";
-    public static final String EXTRA_OUTPUT = "extra_output";
+    public static final String EXTRA_FILE_PATH = "file_path";
+    public static final String EXTRA_SELECTED_PHOTO_PATHS_CHART_LET = "EXTRA_SELECTED_PHOTO_PATHS_CHART_LET";
+    public static final String EXTRA_FILE_OUTPUT = "extra_output";
     public static final String SAVE_FILE_PATH = "save_file_path";
 
     public static final String IMAGE_IS_EDIT = "image_is_edit";
@@ -75,9 +81,12 @@ public class EditImageActivity extends BaseActivity {
     public static final int MODE_FRAME = 9; // 相框模式
 
     public String filePath;// 需要编辑图片路径
+    public List<String> selectedImgPaths; // 从相册界面传递过来的被选择的图片的路径信息
     public String saveFilePath;// 生成的新图片路径
     private int imageWidth, imageHeight;// 展示图片控件 宽 高
     private LoadImageTask mLoadImageTask;
+
+    private boolean chartletMode = false;  // 记录是否相册贴图模式
 
     public int mode = MODE_NONE;// 当前操作模式
 
@@ -128,8 +137,26 @@ public class EditImageActivity extends BaseActivity {
         }
 
         Intent it = new Intent(context, EditImageActivity.class);
-        it.putExtra(EditImageActivity.FILE_PATH, editImagePath);
-        it.putExtra(EditImageActivity.EXTRA_OUTPUT, outputPath);
+        it.putExtra(EditImageActivity.EXTRA_FILE_PATH, editImagePath);
+        it.putExtra(EditImageActivity.EXTRA_FILE_OUTPUT, outputPath);
+        context.startActivityForResult(it, requestCode);
+    }
+
+    /**
+     * @param context
+     * @param selectedImgPaths
+     * @param outputPath
+     * @param requestCode
+     */
+    public static void start(Activity context, final List<String> selectedImgPaths, final String outputPath, final int requestCode) {
+        if (selectedImgPaths == null || selectedImgPaths.size() <= 0) {
+            Toast.makeText(context, R.string.no_choose, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent it = new Intent(context, EditImageActivity.class);
+        it.putStringArrayListExtra(EditImageActivity.EXTRA_SELECTED_PHOTO_PATHS_CHART_LET, (ArrayList<String>) selectedImgPaths);
+        it.putExtra(EditImageActivity.EXTRA_FILE_OUTPUT, outputPath);
         context.startActivityForResult(it, requestCode);
     }
 
@@ -143,8 +170,25 @@ public class EditImageActivity extends BaseActivity {
     }
 
     private void getData() {
-        filePath = getIntent().getStringExtra(FILE_PATH);
-        saveFilePath = getIntent().getStringExtra(EXTRA_OUTPUT);// 保存图片路径
+        filePath = getIntent().getStringExtra(EXTRA_FILE_PATH);
+        saveFilePath = getIntent().getStringExtra(EXTRA_FILE_OUTPUT);// 保存图片路径
+        selectedImgPaths = getIntent().getStringArrayListExtra(EXTRA_SELECTED_PHOTO_PATHS_CHART_LET);
+
+        if (filePath != null) {
+            // 说明是在已有的相片上编辑 do nothing
+            chartletMode = false;
+        } else {
+            chartletMode = true;
+            // 说明是在空白的bitmap上进行编辑
+            String emptyBitmapPath = FileUtils.generateImgAbsPath();
+            int width = 3024;
+            int height = 4032;
+            Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+            Bitmap bmp = Bitmap.createBitmap(width, height, conf);
+            bmp.eraseColor(Color.parseColor("#FFFFFF"));  // 创建白色的纯色位图
+            FileUtils.saveImgBitmap(emptyBitmapPath, bmp);
+            filePath = emptyBitmapPath;
+        }
         loadImage(filePath);
     }
 
@@ -463,8 +507,8 @@ public class EditImageActivity extends BaseActivity {
 
     protected void onSaveTaskDone() {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra(FILE_PATH, filePath);
-        returnIntent.putExtra(EXTRA_OUTPUT, saveFilePath);
+        returnIntent.putExtra(EXTRA_FILE_PATH, filePath);
+        returnIntent.putExtra(EXTRA_FILE_OUTPUT, saveFilePath);
         returnIntent.putExtra(IMAGE_IS_EDIT, mOpTimes > 0);
 
         FileUtil.ablumUpdate(this, saveFilePath);

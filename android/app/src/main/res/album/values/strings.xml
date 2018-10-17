@@ -23,6 +23,7 @@
     <string name="select_all">选择全部</string>
     <string name="delete">删除</string>
     <string name="to_pdf">生成pdf文件</string>
+    <string name="to_chart_let">编辑贴图</string>
 
     <string name="trashbin_move">图片已移至垃圾箱中</string>
     <string name="trashbin_move_onefile">图片已移至垃圾箱中</string>

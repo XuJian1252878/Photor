@@ -21,7 +21,6 @@ import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.listener.OnPageErrorListener;
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
-import com.github.barteksc.pdfviewer.util.Constants;
 import com.photor.BuildConfig;
 import com.photor.R;
 import com.photor.base.activity.BaseActivity;
@@ -34,8 +33,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
 
-import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_TO_PDF_PATH;
-import static com.photor.base.activity.util.PhotoOperator.REQUEST_ACTION_PDF_FILE;
+import static com.example.constant.PhotoOperator.EXTRA_PHOTO_TO_PDF_PATH;
+import static com.example.constant.PhotoOperator.REQUEST_ACTION_PDF_FILE;
 
 /**
  * @author htwxujian@gmail.com

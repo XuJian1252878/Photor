@@ -57,7 +57,6 @@ import com.photor.album.utils.Measure;
 import com.photor.album.views.PagerRecyclerView;
 import com.photor.base.activity.BaseActivity;
 import com.photor.base.activity.PhotoExifDetailActivity;
-import com.photor.base.activity.util.PhotoOperator;
 import com.photor.base.fragment.AlbumFragment;
 import com.photor.data.TrashBinRealmModel;
 import com.photor.util.AlertDialogsHelper;
@@ -82,9 +81,9 @@ import io.realm.Realm;
 
 import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_IS_SAVED_CROP_RES;
 import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_ORI_IMG_PATH;
-import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_IS_FROM_OPERATE_RESULT;
-import static com.photor.base.activity.util.PhotoOperator.EXTRA_PHOTO_TO_PDF_PATH;
-import static com.photor.base.activity.util.PhotoOperator.REQUEST_ACTION_EDITIMAGE;
+import static com.example.constant.PhotoOperator.EXTRA_PHOTO_IS_FROM_OPERATE_RESULT;
+import static com.example.constant.PhotoOperator.EXTRA_PHOTO_TO_PDF_PATH;
+import static com.example.constant.PhotoOperator.REQUEST_ACTION_EDITIMAGE;
 import static com.photor.util.ActivitySwitchHelper.getContext;
 
 public class SingleMediaActivity extends BaseActivity implements ImageAdapter.OnSingleTap, ImageAdapter.EnterTransition {
@@ -530,14 +529,14 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
      * @param data
      */
     private void handleImageAfterEditor(Intent data) {
-        String newFilePath = data.getStringExtra(EditImageActivity.EXTRA_OUTPUT);
+        String newFilePath = data.getStringExtra(EditImageActivity.EXTRA_FILE_OUTPUT);
         boolean isImageEdit = data.getBooleanExtra(EditImageActivity.IMAGE_IS_EDIT, false);
         if (isImageEdit){
             Toast.makeText(this, getString(R.string.save_path, newFilePath), Toast.LENGTH_LONG).show();
             // 扫描新的文件到MediaStore库
             FileUtils.updateMediaStore(this, new File(newFilePath), null);
         }else{//未编辑  还是用原来的图片
-            newFilePath = data.getStringExtra(EditImageActivity.FILE_PATH);
+            newFilePath = data.getStringExtra(EditImageActivity.EXTRA_FILE_PATH);
         }
         // 接下来做显示图片的操作
     }
