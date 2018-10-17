@@ -531,6 +531,7 @@ public class Album {
      */
     public int moveAllMedia(Context context, String targetDir, ArrayList<Media> albummedia){
         int n = 0;
+        boolean isInCurrentAlbum = false;  // 看是不是从外部移动图片到本相册
         try
         {
             int index=-1;
@@ -557,11 +558,25 @@ public class Album {
 
                     if (moveMedia(context, albummedia.get(i).getPath(), targetDir)) {
 
-                        medias.remove(albummedia.get(i));
+                        if (targetDir.equals(getPath())) {
+                            isInCurrentAlbum = true;
+                            // 说明是将照片信息移入本相册
+                            String path = albummedia.get(i).getPath();
+                            int indexOfLastSlash = path.lastIndexOf("/");
+                            String fileName = path.substring(indexOfLastSlash + 1);
+                            medias.add(new Media(new File(targetDir, fileName)));
+                        } else {
+                            // 说明是将照片信息移出本相册
+                            medias.remove(albummedia.get(i));
+                        }
                         n++;
                     }
                 }
                 setCount(medias.size());
+            }
+
+            if (isInCurrentAlbum) {
+                sortPhotos();  // 从外部加入照片时需要重新给照片排序
             }
         } catch (Exception e) {
             e.printStackTrace();

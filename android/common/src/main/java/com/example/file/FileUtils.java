@@ -332,7 +332,7 @@ public class FileUtils {
             }
 
             document.close();
-            FileUtils.updateMediaStore(context, new File(pdfPath), null);
+//            FileUtils.updateMediaStore(context, new File(pdfPath), null);
             return pdfPath;
         } catch (IOException e) {
             e.printStackTrace();
@@ -374,7 +374,7 @@ public class FileUtils {
             document.add(image);
             document.close();
             // 更新媒体库信息
-            FileUtils.updateMediaStore(context, new File(pdfPath), null);
+//            FileUtils.updateMediaStore(context, new File(pdfPath), null);
             return pdfPath;
         } catch (DocumentException e) {
             e.printStackTrace();
@@ -863,6 +863,16 @@ public class FileUtils {
      */
     public static boolean updateMediaStore(final Context context, final File file, MediaScannerConnection.OnScanCompletedListener onScanCompletedListener) {
         try {
+
+            String filePath = file.getAbsolutePath();
+            String extensionName = getExtensionName(filePath);
+
+            // 存储刚刚生成的图片信息（目前只支持图片）【仅仅靠MediaScannerConnection是没有效果的】
+            ContentValues contentValues = new ContentValues(2);
+            contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/" + (TextUtils.isEmpty(extensionName) ? "jpeg" : extensionName));
+            contentValues.put(MediaStore.Images.Media.DATA, filePath);
+            context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+
             //版本号的判断  4.4为分水岭，发送广播更新媒体库
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 MediaScannerConnection.scanFile(context,
@@ -890,6 +900,22 @@ public class FileUtils {
             Log.d("updateMediaStore", e.getMessage());
             return false;
         }
+    }
+
+
+    /**
+     * 根据文件路径获取文件的后缀名称
+     * @param filePath
+     * @return
+     */
+    public static String getExtensionName(String filePath) {
+        if ((filePath != null) && (filePath.length() > 0)) {
+            int dotIndex = filePath.lastIndexOf('.');
+            if ((dotIndex > - 1) && (dotIndex < (filePath.length() - 1))) {
+                return filePath.substring(dotIndex + 1);
+            }
+        }
+        return "";
     }
 
 
