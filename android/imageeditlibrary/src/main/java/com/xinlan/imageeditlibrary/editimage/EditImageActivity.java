@@ -88,7 +88,7 @@ public class EditImageActivity extends BaseActivity {
     private int imageWidth, imageHeight;// 展示图片控件 宽 高
     private LoadImageTask mLoadImageTask;
 
-    private boolean chartletMode = false;  // 记录是否相册贴图模式
+    public boolean chartletMode = false;  // 记录是否相册贴图模式
 
     public int mode = MODE_NONE;// 当前操作模式
 
@@ -434,6 +434,9 @@ public class EditImageActivity extends BaseActivity {
                     break;
                 case MODE_FRAME:
                     mFrameFragment.applyFrame();
+                    break;
+                case MODE_CHARTLET:
+                    mChartletFragment.applyChartlet();
                     break;
                 default:
                     break;

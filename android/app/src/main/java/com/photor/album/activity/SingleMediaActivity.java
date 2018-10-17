@@ -3,6 +3,7 @@ package com.photor.album.activity;
 import android.Manifest;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.DialogInterface;
@@ -11,6 +12,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -461,7 +463,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
                 return true;
             case R.id.action_to_pdf:
                 // 生成pdf文件
-                imageToPdf();
+                new TransImgToPdfTask().execute();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -469,43 +471,33 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
     }
 
     /**
-     * 转化当前的图片文件至pdf
+     * 生成pdf文件的任务
      */
-    private void imageToPdf() {
-        try {
+    private class TransImgToPdfTask extends AsyncTask<Void, Void, String> {
+        private Dialog dialog;
 
-            // 转化当前的图片文件至pdf
-            String pdfPath = FileUtils.generateImgPdfResPath();
-            File pdfFile = new File(pdfPath);
-            if (!pdfFile.exists()) {
-                pdfFile.createNewFile();
-            }
-            Document document = new Document();
-            PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
-            document.open();
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = AlertDialogsHelper.getLoadingDialog(SingleMediaActivity.this, getResources().getString(R.string.loading), false);
+            dialog.show();
+        }
 
-            Image image = Image.getInstance(pathForDescription); // 获得当前图片的对象
-            float scaleWidth = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin() - 0) / image.getWidth()) * 100;
-            float scaleHeight = ((document.getPageSize().getHeight() - document.topMargin() - document.bottomMargin() - 0) / image.getHeight()) * 100;
-            image.scalePercent(scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
-            image.setAlignment(Image.ALIGN_CENTER|Image.ALIGN_TOP);
+        @Override
+        protected String doInBackground(Void... voids) {
+            String pdfPath = FileUtils.generateImgToPdf(SingleMediaActivity.this, pathForDescription);
+            return pdfPath;
+        }
 
-            document.add(image);
-            document.close();
-            FileUtils.updateMediaStore(this, new File(pdfPath), null);
-
+        @Override
+        protected void onPostExecute(String pdfPath) {
+            super.onPostExecute(pdfPath);
+            dialog.dismiss();
             // 开启pdf文件预览页面
             Intent intent = new Intent(SingleMediaActivity.this, PdfPreviewActivity.class);
             intent.setData(Uri.fromFile(new File(pdfPath)));
             intent.putExtra(EXTRA_PHOTO_TO_PDF_PATH, pdfPath);
             startActivity(intent);
-
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

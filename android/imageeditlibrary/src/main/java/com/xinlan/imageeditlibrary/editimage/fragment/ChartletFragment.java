@@ -3,6 +3,7 @@ package com.xinlan.imageeditlibrary.editimage.fragment;
 import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,10 +22,12 @@ import android.widget.ViewFlipper;
 import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 import com.xinlan.imageeditlibrary.editimage.ModuleConfig;
-import com.xinlan.imageeditlibrary.editimage.adapter.EditorRecyclerAdapter;
+import com.xinlan.imageeditlibrary.editimage.task.StickerTask;
+import com.xinlan.imageeditlibrary.editimage.view.StickerItem;
 import com.xinlan.imageeditlibrary.editimage.view.StickerView;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -44,6 +47,8 @@ public class ChartletFragment extends BaseEditFragment {
     private StickerView mChartletView;  // 照片贴图控件显示
     private List<Bitmap> thumbsBitmap; // 显示照片的缩略图信息
     private List<String> selectedImgPaths; // 当前照片贴图的路径信息
+
+    private SaveChartletTask saveChartletTask;  // 保存贴图的任务
 
     public static ChartletFragment newInstance() {
         ChartletFragment chartletFragment = new ChartletFragment();
@@ -73,7 +78,7 @@ public class ChartletFragment extends BaseEditFragment {
         backToMainBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                backToMain();
             }
         });
         this.mChartletView = activity.mChartletView;
@@ -166,6 +171,10 @@ public class ChartletFragment extends BaseEditFragment {
         }
     }
 
+    public StickerView getmChartletView() {
+        return mChartletView;
+    }
+
     /**
      * 照片贴图Adapter
      */
@@ -179,8 +188,9 @@ public class ChartletFragment extends BaseEditFragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            if (thumbsBitmap == null || thumbsBitmap.size() <= 0) {
+        public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+            if (thumbsBitmap == null || thumbsBitmap.size() <= 0
+                    || selectedImgPaths == null || selectedImgPaths.size() <= 0) {
                 return;
             }
             // 设置ImageView的布局信息
@@ -189,11 +199,12 @@ public class ChartletFragment extends BaseEditFragment {
             layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
             holder.thumbImg.setLayoutParams(layoutParams);
             holder.thumbImg.setImageBitmap(thumbsBitmap.get(position));
+            holder.thumbImg.setTag(selectedImgPaths.get(position));  // 设置当前选择照片的路径信息
             // 设置thumbImg的点击事件
             holder.thumbImg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    new LoadOriginChartlatTask().execute(selectedImgPaths.get(position));
                 }
             });
         }
@@ -212,10 +223,84 @@ public class ChartletFragment extends BaseEditFragment {
                 thumbImg = itemView.findViewById(R.id.frame_image);
             }
         }
-
     }
 
-    public StickerView getmChartletView() {
-        return mChartletView;
+    /**
+     * 当点击某一个缩略图的时候加载对应原图的操作
+     */
+    private class LoadOriginChartlatTask extends AsyncTask<String, Void, Void> {
+
+        private Dialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = activity.getLoadingDialog(getContext(), R.string.handing, false);
+            dialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            String selectedImgPath = params[0];
+            selectedChartletItem(selectedImgPath);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            dialog.dismiss();
+        }
     }
+
+    /**
+     * 当选中某一个缩略图的时候，加载对应的原图信息
+     * @param selectedImgPath
+     */
+    private void selectedChartletItem(String selectedImgPath) {
+        Bitmap bitmap = null;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        bitmap = BitmapFactory.decodeFile(selectedImgPath);
+        mChartletView.addBitImage(bitmap);
+    }
+
+    /**
+     * 保存合成的相片贴图的任务
+     */
+    private class SaveChartletTask extends StickerTask {
+
+        public SaveChartletTask(EditImageActivity activity) {
+            super(activity);
+        }
+
+        @Override
+        public void handleImage(Canvas canvas, Matrix m) {
+            LinkedHashMap<Integer, StickerItem> addItems = mChartletView.getBank();
+            for (Integer id: addItems.keySet()) {
+                StickerItem item = addItems.get(id);
+                item.matrix.postConcat(m);  // 乘以底部图片变化矩阵
+                canvas.drawBitmap(item.bitmap, item.matrix, null);
+            }
+        }
+
+        @Override
+        public void onPostResult(Bitmap result) {
+            mChartletView.clear();
+            activity.changeMainBitmap(result, true);
+            backToMain();
+        }
+    }
+
+    /**
+     * 保存贴图，合成一张图片
+     */
+    public void applyChartlet() {
+        if (saveChartletTask != null) {
+            saveChartletTask.cancel(true);
+        }
+        saveChartletTask = new SaveChartletTask((EditImageActivity) getActivity());
+        saveChartletTask.execute(activity.getMainBit());
+    }
+
 }

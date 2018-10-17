@@ -253,6 +253,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/chartlet_layout"
             android:orientation="vertical"
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center"

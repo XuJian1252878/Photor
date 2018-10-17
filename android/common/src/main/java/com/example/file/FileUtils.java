@@ -46,6 +46,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
+import static com.example.constant.PhotoOperator.EXTRA_PHOTO_TO_PDF_PATH;
+
 
 /**
  * Created by xujian on 2018/2/5.
@@ -335,6 +337,50 @@ public class FileUtils {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 生成pdf文件信息
+     * @param context
+     * @param pathForDescription
+     * @return
+     */
+    public static String generateImgToPdf(Context context, String pathForDescription) {
+        try {
+            // 转化当前的图片文件至pdf
+            String pdfPath = FileUtils.generateImgPdfResPath();
+            File pdfFile = new File(pdfPath);
+            if (!pdfFile.exists()) {
+                pdfFile.createNewFile();
+            }
+            Document document = new Document();
+            PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
+            document.open();
+
+            Image image = Image.getInstance(pathForDescription); // 获得当前图片的对象
+            float scaleWidth = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin() - 0) / image.getWidth()) * 100;
+            float scaleHeight = ((document.getPageSize().getHeight() - document.topMargin() - document.bottomMargin() - 0) / image.getHeight()) * 100;
+            image.scalePercent(scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
+
+            float scale = (scaleWidth < scaleHeight ? scaleWidth / 100f : scaleHeight / 100f);
+            float x = (document.getPageSize().getWidth() - image.getWidth() * scale) / 2f;
+            float y = (document.getPageSize().getHeight() - image.getHeight() * scale) / 2f;
+//            image.setAlignment(Image.ALIGN_CENTER|Image.ALIGN_TOP);
+            image.setAbsolutePosition(x, y);
+
+            document.add(image);
+            document.close();
+            // 更新媒体库信息
+            FileUtils.updateMediaStore(context, new File(pdfPath), null);
+            return pdfPath;
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;

@@ -75,6 +75,13 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
         enhanceBtn.setOnClickListener(this);
         frameBtn.setOnClickListener(this);
         chartletBtn.setOnClickListener(this);
+
+        if (activity.chartletMode) {
+            mainView.findViewById(R.id.chartlet_layout).setVisibility(View.VISIBLE);
+        } else {
+            mainView.findViewById(R.id.chartlet_layout).setVisibility(View.GONE);
+        }
+
     }
 
     @Override
