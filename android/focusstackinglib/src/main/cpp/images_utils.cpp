@@ -22,6 +22,14 @@ namespace images_utils {
         }
     }
 
+    void readImagesFromPathsToFocusStack(std::vector<std::string> image_paths, FocusStack &focus_stack) {
+        for (auto& filePath : image_paths) {
+            cv::Mat image = cv::imread(filePath, CV_LOAD_IMAGE_COLOR);
+            std::cout << "reading image: " << filePath << std::endl;
+            focus_stack.addImage(cvMat2Matrix(image));
+        }
+    }
+
     void showImage(std::string window_name, Matrix<uint8_t> image) {
         cv::Mat cv_image = images_utils::matrix2CvMat(image);
         cv::namedWindow(window_name, cv::WINDOW_AUTOSIZE);

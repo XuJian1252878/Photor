@@ -261,7 +261,7 @@ public class ChartletFragment extends BaseEditFragment {
         Bitmap bitmap = null;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        bitmap = BitmapFactory.decodeFile(selectedImgPath);
+        bitmap = BitmapFactory.decodeFile(selectedImgPath, options);
         mChartletView.addBitImage(bitmap);
     }
 
