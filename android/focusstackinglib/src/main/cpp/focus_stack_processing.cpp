@@ -12,6 +12,7 @@
 #include "focus_stack.h"
 
 using namespace std;
+using namespace cv;
 
 extern "C"
 JNIEXPORT jboolean JNICALL
@@ -33,5 +34,24 @@ Java_com_example_focusstackinglib_FocusStackProcessing_nativeFocusStackImage(JNI
         imgPathVec.push_back(string(sourcePhotoPathPtr));
     }
 
-    return true;
+    // 景深合成信息
+    FocusStack focus_stack;
+    try {
+        images_utils::readImagesFromPathsToFocusStack(imgPathVec, focus_stack);
+    } catch (exception& e) {
+        return false;
+    }
+
+    auto start = std::chrono::steady_clock::now();
+
+    focus_stack.computeAllInFocusAndDepthMap((unsigned short)kernels_size, gaussian_sigma, bg_threshold);
+
+    auto duration = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start);
+    std::cout << "processing time: " << duration.count() << " ms" << std::endl;
+
+    Matrix<uint8_t> all_in_focus_image = focus_stack.getAllInFocusImage();
+    // 记录当前获得的景深合成Mat信息
+    *((Mat*) outAddr) = images_utils::matrix2CvMat(all_in_focus_image);
+
+    return JNI_TRUE;
 }

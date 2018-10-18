@@ -8,7 +8,7 @@
 namespace images_utils {
 
     void readImagesFromDirToFocusStack(std::string images_dir_path, FocusStack &focus_stack);
-    void readImagesFromPathsToFocusStack(std::vector<std::string> image_paths, FocusStack &focus_stack);
+    void readImagesFromPathsToFocusStack(std::vector<std::string>& image_paths, FocusStack &focus_stack);
     void showImage(std::string window_name, Matrix<uint8_t> image);
     void storeImageOnDisk(std::string filepath, Matrix<uint8_t> image);
     

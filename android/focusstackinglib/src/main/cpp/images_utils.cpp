@@ -22,7 +22,7 @@ namespace images_utils {
         }
     }
 
-    void readImagesFromPathsToFocusStack(std::vector<std::string> image_paths, FocusStack &focus_stack) {
+    void readImagesFromPathsToFocusStack(std::vector<std::string>& image_paths, FocusStack &focus_stack) {
         for (auto& filePath : image_paths) {
             cv::Mat image = cv::imread(filePath, CV_LOAD_IMAGE_COLOR);
             std::cout << "reading image: " << filePath << std::endl;
