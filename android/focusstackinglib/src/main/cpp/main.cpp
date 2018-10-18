@@ -3,8 +3,8 @@
 #include <cstdlib>
 #include <cstdint>
 
-#include "src/images_utils.h"
-#include "src/focus_stack.h"
+#include "images_utils.h"
+#include "focus_stack.h"
 
 struct Params {
     std::string images_dir{"../example-images/"};
