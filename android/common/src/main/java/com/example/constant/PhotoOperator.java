@@ -10,7 +10,10 @@ public class PhotoOperator {
     public static final String EXTRA_PHOTO_TO_PDF_PATH = "EXTRA_PHOTO_TO_PDF_PATH";  // 图片转化成PDF之后，PDF文件存储路径的label
     public static final String EXTRA_PHOTO_TO_PDF_URI = "EXTRA_PHOTO_TO_PDF_URI";  // 图片转化成PDF之后，PDF文件存储路径的label
 
-    // REQUEST 参数
+    // 景深合成结果页面参数
+    public static final String EXTRA_FOCUS_STACK_RES_PATH = "EXTRA_FOCUS_STACK_RES_PATH";
+
+    // 编辑照片页面 REQUEST 参数
     public static final int REQUEST_ACTION_EDITIMAGE = 9;
 
     // 相册贴图

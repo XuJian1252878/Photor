@@ -121,6 +121,10 @@
 
         <!-- pdf 浏览页面Activity -->
         <activity android:name=".album.activity.PdfPreviewActivity" />
+
+        <!-- 景深合成页面 -->
+        <activity android:name=".home.focusstack.FocusStackActivity" />
+
     </application>
 
 </manifest>

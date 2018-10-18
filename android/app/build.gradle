@@ -173,6 +173,7 @@ android {
                     'src/main/res/home/scanner',
                     'src/main/res/camera',
                     'src/main/res/imageedit',
+                    'src/main/res/home/focusstack',
             ]
         }
     }

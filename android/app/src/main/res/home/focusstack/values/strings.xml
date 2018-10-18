@@ -1,0 +1,11 @@
+<resources>
+    <string-array name="focus_stack_steps">
+        <item>选择图片</item>
+        <item>景深合成</item>
+    </string-array>
+
+    <string name="focus_stack_btn_select_label">选择景深图片</string>
+    <string name="focus_stack_btn_operate_label">景深合成</string>
+
+    <string name="focus_stack_photo_count_not_enough">图片数量不足</string>
+</resources>

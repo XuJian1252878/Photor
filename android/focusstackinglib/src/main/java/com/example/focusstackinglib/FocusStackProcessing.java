@@ -35,7 +35,7 @@ public class FocusStackProcessing {
      * @param gaussian_sigma
      * @return
      */
-    public static Bitmap processImage(List<String> inputImagePaths, int bg_threshold, short kernels_size, float gaussian_sigma) {
+    public static Bitmap processImage(List<String> inputImagePaths, int bg_threshold, short kernels_size, float gaussian_sigma, String resImgPath) {
         if (inputImagePaths == null || inputImagePaths.size() <= 0) {
             return null;
         }
@@ -45,7 +45,7 @@ public class FocusStackProcessing {
         Bitmap bitmap = BitmapFactory.decodeFile(inputImagePaths.get(0), options);
 
         Mat outputMat = new Mat();
-        nativeFocusStackImage(inputImagePaths, outputMat.getNativeObjAddr(), bg_threshold, kernels_size, gaussian_sigma);
+        nativeFocusStackImage(inputImagePaths, outputMat.getNativeObjAddr(), bg_threshold, kernels_size, gaussian_sigma, resImgPath);
 
         if (outputMat != null) {
             Bitmap outBit = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
@@ -65,5 +65,6 @@ public class FocusStackProcessing {
      * @param gaussian_sigma
      * @return
      */
-    private static native boolean nativeFocusStackImage(List<String> inputImagePaths, long outAddr, int bg_threshold, short kernels_size, float gaussian_sigma);
+    private static native boolean nativeFocusStackImage(List<String> inputImagePaths, long outAddr, int bg_threshold, short kernels_size, float gaussian_sigma, String resImagePath);
+
 }

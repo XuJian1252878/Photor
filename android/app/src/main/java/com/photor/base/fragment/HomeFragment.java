@@ -20,6 +20,7 @@ import com.photor.R;
 import com.photor.base.activity.test.OpencvTestActivity;
 import com.photor.home.dofcalculator.activity.DofCalcMainActivity;
 import com.photor.home.exposure.ExposureBaseActivity;
+import com.photor.home.focusstack.FocusStackActivity;
 import com.photor.home.scanner.ImageScannerActivity;
 import com.photor.home.staralign.StarAlignBaseActivity;
 import com.photor.imageedit.ImageEditActivity;
@@ -103,6 +104,14 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        // 景深合成
+        rootView.findViewById(R.id.focus_stack_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startFocusStack();
+            }
+        });
+
         return rootView;
     }
 
@@ -180,5 +189,10 @@ public class HomeFragment extends Fragment {
     // 启动图片编辑器操作
     private void startImageEdit() {
         startActivity(new Intent(getActivity(), ImageEditActivity.class));
+    }
+
+    // 启动景深合成的操作
+    private void startFocusStack() {
+        startActivity(new Intent(getActivity(), FocusStackActivity.class));
     }
 }

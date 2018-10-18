@@ -16,7 +16,7 @@ using namespace cv;
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_example_focusstackinglib_FocusStackProcessing_nativeFocusStackImage(JNIEnv *env, jobject instance, jobject inputImagePaths, jlong outAddr, jint bg_threshold, jshort kernels_size, jfloat gaussian_sigma) {
+Java_com_example_focusstackinglib_FocusStackProcessing_nativeFocusStackImage(JNIEnv *env, jobject instance, jobject inputImagePaths, jlong outAddr, jint bg_threshold, jshort kernels_size, jfloat gaussian_sigma, jstring resImgPath) {
 
     // 获取ArrayList对象的class
     jclass arrayList = static_cast<jclass>(env->FindClass("java/util/ArrayList"));
@@ -39,7 +39,7 @@ Java_com_example_focusstackinglib_FocusStackProcessing_nativeFocusStackImage(JNI
     try {
         images_utils::readImagesFromPathsToFocusStack(imgPathVec, focus_stack);
     } catch (exception& e) {
-        return false;
+        return JNI_FALSE;
     }
 
     auto start = std::chrono::steady_clock::now();
@@ -51,7 +51,15 @@ Java_com_example_focusstackinglib_FocusStackProcessing_nativeFocusStackImage(JNI
 
     Matrix<uint8_t> all_in_focus_image = focus_stack.getAllInFocusImage();
     // 记录当前获得的景深合成Mat信息
-    *((Mat*) outAddr) = images_utils::matrix2CvMat(all_in_focus_image);
+    Mat oriMat = images_utils::matrix2CvMat(all_in_focus_image);
+
+    // 在OpenCV中，图像不是按传统的RGB颜色通道，而是按BGR顺序（即RGB的倒序）存储的。读取图像时默认的是BGR（在调用imwrite的时候又会自动将BRG转成RGB）
+    cvtColor(oriMat, *((Mat*) outAddr), COLOR_BGR2RGB);
+
+    // 生成结果Mat存储路径
+    const char *generateImgAbsPath_ = env->GetStringUTFChars(resImgPath, 0); // 存储对齐图片的路径信息
+    string generateImgAbsPath = string(generateImgAbsPath_);
+    images_utils::storeImageOnDisk(generateImgAbsPath, all_in_focus_image);
 
     return JNI_TRUE;
 }
