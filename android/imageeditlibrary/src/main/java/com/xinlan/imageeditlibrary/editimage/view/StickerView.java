@@ -31,7 +31,7 @@ public class StickerView extends View {
     private Context mContext;
     private int currentStatus;// 当前状态
     private StickerItem currentItem;// 当前操作的贴图数据
-    private float oldx, oldy;
+    private float oldx, oldy;  // 移动、旋转的之后记录下之前被点击的位置
 
     private Paint rectPaint = new Paint();
     private Paint boxPaint = new Paint();
@@ -83,7 +83,7 @@ public class StickerView extends View {
         // System.out.println("on draw!!~");
         for (Integer id : bank.keySet()) {
             StickerItem item = bank.get(id);
-            item.draw(canvas);
+            item.draw(canvas);  // 绘制每一个StickerItem
         }// end for each
     }
 
@@ -113,9 +113,10 @@ public class StickerView extends View {
                     } else if (item.detectRotateRect.contains(x, y)) {// 点击了旋转按钮
                         ret = true;
                         if (currentItem != null) {
+                            // 如果之前已经有被选择的图案，那么消除之前图案的边框框
                             currentItem.isDrawHelpTool = false;
                         }
-                        currentItem = item;
+                        currentItem = item;  // 记录当前被点击的新图案，被点击的新图案需要被设置边缘框
                         currentItem.isDrawHelpTool = true;
                         currentStatus = STATUS_ROTATE;
                         oldx = x;
@@ -134,7 +135,7 @@ public class StickerView extends View {
                     }// end if
                 }// end for each
 
-                if (!ret && currentItem != null && currentStatus == STATUS_IDLE) {// 没有贴图被选择
+                if (!ret && currentItem != null && currentStatus == STATUS_IDLE) {// 没有贴图被选择（点击到了全部贴图的范围外）
                     currentItem.isDrawHelpTool = false;
                     currentItem = null;
                     invalidate();

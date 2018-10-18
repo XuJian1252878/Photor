@@ -6,6 +6,7 @@ import android.graphics.RectF;
 
 /**
  * Created by panyi on 2016/6/16.
+ * xujian 2018/10/18
  */
 public class RectUtil {
     /**
