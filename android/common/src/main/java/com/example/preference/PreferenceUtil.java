@@ -53,6 +53,14 @@ public class PreferenceUtil {
         return SP.getBoolean(key, defValue);
     }
 
+    public void putFloat(String key, float value) {
+        getEditor().putFloat(key, value).commit();
+    }
+
+    public float getFloat(String key, float defValue) {
+        return SP.getFloat(key, defValue);
+    }
+
 
     public void remove(String key) {
         getEditor().remove(key).commit();

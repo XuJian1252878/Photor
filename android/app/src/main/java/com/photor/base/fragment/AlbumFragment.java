@@ -1120,7 +1120,7 @@ public class AlbumFragment extends Fragment {
                         getResources().getString(R.string.move_to_trashbin),
                         com.example.theme.ThemeHelper.getAccentColor(getContext()));
 
-                deleteDialog.setNegativeButton(getString(R.string.cancel).toUpperCase(), null);
+                deleteDialog.setNegativeButton(getString(R.string.cancel_action).toUpperCase(), null);
                 deleteDialog.setPositiveButton(getString(R.string.delete).toUpperCase(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

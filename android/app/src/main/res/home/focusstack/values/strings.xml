@@ -8,4 +8,14 @@
     <string name="focus_stack_btn_operate_label">景深合成</string>
 
     <string name="focus_stack_photo_count_not_enough">图片数量不足</string>
+    <string name="focus_stack_params_dialog_title">景深合成参数设置</string>
+
+    <string name="bg_threshold_label">bg threshold</string>
+    <string name="kernels_size_label">kernels size</string>
+    <string name="gaussian_sigma_label">gaussian sigma</string>
+
+    <string name="focus_stack_preference_bg_threshold">focus_stack_preference_bg_threshold</string>
+    <string name="focus_stack_preference_kernels_size">focus_stack_preference_kernels_size</string>
+    <string name="focus_stack_preference_gaussian_sigma">focus_stack_preference_gaussian_sigma</string>
+
 </resources>

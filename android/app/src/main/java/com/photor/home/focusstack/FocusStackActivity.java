@@ -2,29 +2,37 @@ package com.photor.home.focusstack;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.example.file.FileUtils;
 import com.example.focusstackinglib.FocusStackProcessing;
 import com.example.photopicker.PhotoPicker;
 import com.example.photopicker.PhotoPreview;
+import com.example.preference.PreferenceUtil;
+import com.example.theme.ThemeHelper;
 import com.photor.R;
 import com.photor.base.activity.PhotoOperateBaseActivity;
 import com.photor.base.adapters.PhotoAdapter;
 import com.photor.base.adapters.event.PhotoItemClickListener;
-import com.photor.home.exposure.ExposureBaseActivity;
 import com.photor.home.exposure.event.ExposureEnum;
 import com.photor.home.focusstack.event.FocusStackEnum;
 import com.photor.util.AlertDialogsHelper;
+import com.xw.repo.BubbleSeekBar;
 
 import java.io.File;
 import java.util.Arrays;
@@ -38,9 +46,25 @@ public class FocusStackActivity extends PhotoOperateBaseActivity {
     private String resFocusStackPath = null;
     private static final int MAX_PHOTO_COUNT = 15;
 
+    private int bg_threshold = 70;
+    private int bg_threshold_start = 25, bg_threshold_end = 160;
+
+    private short kernels_size = 7;
+    private short kernels_size_start = 3, kernels_size_end = 13;
+
+    private float gaussian_sigma = 5.0f;
+    private float gaussian_sigma_start = 2.0f, gaussian_sigma_end = 7.0f;
+
+    private PreferenceUtil SP;  // 存储景深合成配置信息
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 初始化景深合成的参数信息
+        SP = PreferenceUtil.getInstance(this);
+        bg_threshold = SP.getInt(getResources().getString(R.string.focus_stack_preference_bg_threshold), bg_threshold);
+        kernels_size = (short) SP.getInt(getResources().getString(R.string.focus_stack_preference_kernels_size), (int)kernels_size);
+        gaussian_sigma = SP.getFloat(getResources().getString(R.string.focus_stack_preference_gaussian_sigma), gaussian_sigma);
         initUI();
     }
 
@@ -131,6 +155,166 @@ public class FocusStackActivity extends PhotoOperateBaseActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.focus_stack_menu, menu);
+        return true;  // true 表示显示该菜单
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.focus_stack_setting:
+                getFocusStackSettingDialog();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * 显示景深合成的参数设置信息
+     */
+    private void getFocusStackSettingDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialog_Light);
+
+        View dialogLayout = getLayoutInflater().inflate(R.layout.dialog_focus_stack, null);
+
+        int bg_threshold_before = bg_threshold;
+        short kernels_size_before = kernels_size;
+        float gaussian_sigma_before = gaussian_sigma;
+
+        BubbleSeekBar bgThresholdSeekBar = dialogLayout.findViewById(R.id.bg_threshold_seek_bar);
+        bgThresholdSeekBar.getConfigBuilder()
+                .min(bg_threshold_start)
+                .max(bg_threshold_end)
+//                .sectionCount(1)
+                .showSectionText()
+                .sectionTextColor(getResources().getColor(R.color.icongrey))
+//                .sectionTextPosition(BubbleSeekBar.TextPosition.BELOW_SECTION_MARK)
+                .build();
+        bgThresholdSeekBar.setProgress(bg_threshold);
+        bgThresholdSeekBar.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+                bg_threshold = progress;
+            }
+            @Override
+            public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
+
+            }
+            @Override
+            public void getProgressOnFinally(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+
+            }
+        });
+
+        BubbleSeekBar kernelsSizeSeekBar = dialogLayout.findViewById(R.id.kernels_size_seek_bar);
+        kernelsSizeSeekBar.getConfigBuilder()
+                .min(kernels_size_start)
+                .max(kernels_size_end)
+//                .sectionCount(1)
+                .showSectionText()
+                .sectionTextColor(getResources().getColor(R.color.icongrey))
+//                .sectionTextPosition(BubbleSeekBar.TextPosition.BELOW_SECTION_MARK)
+                .build();
+        kernelsSizeSeekBar.setProgress(kernels_size);
+        kernelsSizeSeekBar.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+                kernels_size = (short)progress;
+            }
+            @Override
+            public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
+
+            }
+            @Override
+            public void getProgressOnFinally(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+
+            }
+        });
+
+        BubbleSeekBar gaussianSigmaSeekBar = dialogLayout.findViewById(R.id.gaussian_sigma_seek_bar);
+        gaussianSigmaSeekBar.getConfigBuilder()
+                .min(gaussian_sigma_start)
+                .max(gaussian_sigma_end)
+//                .sectionCount(1)
+                .showSectionText()
+                .sectionTextColor(getResources().getColor(R.color.icongrey))
+//                .sectionTextPosition(BubbleSeekBar.TextPosition.BELOW_SECTION_MARK)
+                .build();
+        gaussianSigmaSeekBar.setProgress(gaussian_sigma);
+        gaussianSigmaSeekBar.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+                gaussian_sigma = progressFloat;
+            }
+            @Override
+            public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
+
+            }
+            @Override
+            public void getProgressOnFinally(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+
+            }
+        });
+
+
+        /**
+         * You must correct the offsets by setting ScrollListener when BubbleSeekBar's parent view is
+         * scrollable (such as ScrollView, except ViewPager), otherwise, the appearing position of
+         * the bubble may be wrong. For example:
+         */
+        ScrollView focusStackParamsContainer = dialogLayout.findViewById(R.id.focus_stack_params_container);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            focusStackParamsContainer.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+                    bgThresholdSeekBar.correctOffsetWhenContainerOnScrolling();
+                    kernelsSizeSeekBar.correctOffsetWhenContainerOnScrolling();
+                    gaussianSigmaSeekBar.correctOffsetWhenContainerOnScrolling();
+                }
+            });
+        }
+
+        // 设置CardView的背景色
+        dialogLayout.findViewById(R.id.focus_stack_card).setBackgroundColor(ThemeHelper.getCardBackgroundColor(this));
+        dialogLayout.findViewById(R.id.text_dialog_title).setBackgroundColor(ThemeHelper.getPrimaryColor(this));
+        builder.setView(dialogLayout);  // builder设置布局
+
+
+        // 在builder中设置确定按钮
+        builder.setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // 恢复原来的设置值
+                bg_threshold = bg_threshold_before;
+                kernels_size = kernels_size_before;
+                gaussian_sigma = gaussian_sigma_before;
+            }
+        });
+
+        // builder 设置取消按钮
+        builder.setPositiveButton(R.string.ok_action, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // 存储当前设置的参数值
+                SP.putInt(getResources().getString(R.string.focus_stack_preference_bg_threshold), bg_threshold);
+                SP.putInt(getResources().getString(R.string.focus_stack_preference_kernels_size), kernels_size);
+                SP.putFloat(getResources().getString(R.string.focus_stack_preference_gaussian_sigma), gaussian_sigma);
+                dialogInterface.dismiss();  // 关闭AlertDialog的最好方式
+            }
+        });
+
+        // 获取dialog
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+        AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE, DialogInterface.BUTTON_NEGATIVE},
+                ThemeHelper.getAccentColor(this), dialog);
+    }
+
     /**
      * 进行景深合成的任务
      */
@@ -151,7 +335,7 @@ public class FocusStackActivity extends PhotoOperateBaseActivity {
             if (selectedPhotos == null || selectedPhotos.size() <= 0) {
                 return null;
             }
-            Bitmap bitmap = FocusStackProcessing.processImage(selectedPhotos, 70, (short) 7, 5.0f, resFocusStackPath);
+            Bitmap bitmap = FocusStackProcessing.processImage(selectedPhotos, bg_threshold, kernels_size, gaussian_sigma, resFocusStackPath);
             return bitmap;
         }
 
