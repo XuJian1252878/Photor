@@ -106,7 +106,7 @@ public class ExposureBaseActivity extends PhotoOperateBaseActivity {
                             if (expResCode == ExposureEnum.EXPOSURE_MERGE_SUCCESS.getCode()) {
                                 System.out.println(resImgPath);
                                 // 更新MediaStore的信息
-                                FileUtils.updateMediaStore(getApplicationContext(), new File(resImgPath), null);
+                                FileUtils.updateMediaStore(getApplicationContext(), new File(resImgPath), false, null);
                                 ExposureOperator.resultBuilder()
                                         .setExposureResPath(resImgPath)
                                         .setExposureResultUri(Uri.fromFile(new File(resImgPath)))

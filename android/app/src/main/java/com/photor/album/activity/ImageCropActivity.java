@@ -68,7 +68,7 @@ public class ImageCropActivity extends BaseActivity {
                     Bitmap crop = ivCrop.crop();
                     if (crop != null) {
                         saveImage(crop, mCroppedFile);
-                        FileUtils.updateMediaStore(ImageCropActivity.this, mCroppedFile, null); // 添加到媒体库中
+                        FileUtils.updateMediaStore(ImageCropActivity.this, mCroppedFile, false, null); // 添加到媒体库中
                         Toast.makeText(ImageCropActivity.this, "图片裁剪成功", Toast.LENGTH_SHORT).show();
                     }
                     finish();

@@ -116,7 +116,15 @@
         <activity android:name="com.example.photopicker.PhotoPagerActivity" />
 
         <!--显示相册图片详情的页面 -->
-        <activity android:name=".album.activity.SingleMediaActivity" />
+        <activity android:name=".album.activity.SingleMediaActivity">
+            <intent-filter>
+                <action android:name="com.android.camera.action.REVIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="image/*" />
+                <data android:mimeType="video/*" />
+            </intent-filter>
+        </activity>
 
         <!-- 图片裁剪页面 -->
         <activity android:name=".album.activity.ImageCropActivity" />
@@ -126,6 +134,9 @@
 
         <!-- 景深合成页面 -->
         <activity android:name=".home.focusstack.FocusStackActivity" />
+
+        <!-- 回收站页面 -->
+        <activity android:name=".album.activity.TrashBinActivity" />
 
     </application>
 

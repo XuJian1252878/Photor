@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.photor.MainApplication;
 import com.photor.R;
+import com.photor.album.activity.TrashBinActivity;
 import com.photor.album.entity.Album;
 import com.photor.album.entity.HandlingAlbums;
 import com.photor.base.View.MainAcitvityViewPager;
@@ -139,6 +140,16 @@ public class MainActivity extends BaseActivity {
         navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch(item.getItemId()) {
+                    case R.id.ll_drawer_trashbin:
+                        // 点击了回收站的按钮
+                        Intent intent = new Intent(MainActivity.this, TrashBinActivity.class);
+                        startActivity(intent);
+                        break;
+                    default:
+                        break;
+                }
+
                 mDrawerLayout.closeDrawers();
                 return true;
             }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- 表示一个菜单组，一个菜单组只能单选 -->
     <group android:checkableBehavior="single">
@@ -31,6 +32,11 @@
             android:id="@+id/nav_task"
             android:icon="@drawable/nav_task"
             android:title="Task">
+        </item>
+
+        <item
+            android:id="@+id/ll_drawer_trashbin"
+            android:title="@string/trashbin">
         </item>
     </group>
 

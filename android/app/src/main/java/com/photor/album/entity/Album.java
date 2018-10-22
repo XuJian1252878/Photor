@@ -666,8 +666,8 @@ public class Album {
             for (Media m: medias) {
                 File from = new File(m.getPath());  // 旧相册中图片路径
                 File to = new File(StringUtils.getPhotoPathRenamedAlbumChange(m.getPath(), newName)); // 新相册中图片路径
-                FileUtils.updateMediaStore(context, from, null);
-                FileUtils.updateMediaStore(context, to, new MediaScannerConnection.OnScanCompletedListener() {
+                FileUtils.updateMediaStore(context, from, true, null);
+                FileUtils.updateMediaStore(context, to, false, new MediaScannerConnection.OnScanCompletedListener() {
                     @Override
                     public void onScanCompleted(String s, Uri uri) {
                         if (!found_id_album) {

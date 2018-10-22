@@ -824,7 +824,7 @@ public class FileUtils {
      * @return
      */
     public static boolean updateMediaStoreAfterCreate(Context context, File createFile) {
-        return updateMediaStore(context, createFile, null);
+        return updateMediaStore(context, createFile, false, null);
     }
 
     /**
@@ -834,13 +834,11 @@ public class FileUtils {
      * @return
      */
     public static boolean updateMediaStoreAfterDelete(Context context, File deleteFile) {
-        if (!deleteFile.exists()) {
+        if (deleteFile == null) {
             return false;
         }
 
         try {
-
-            // 尝试在MediaStore中删除文件
             try {
                 context.getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         MediaStore.Images.Media.DATA + " = ? ",
@@ -849,9 +847,7 @@ public class FileUtils {
                 e.printStackTrace();
                 Log.d("MediaStoreAfterDelete", e.getMessage());
             }
-
-
-            return updateMediaStore(context, deleteFile, null);
+            return updateMediaStore(context, deleteFile, true, null);
         } catch (Exception e) {
             Log.d("MediaStoreAfterDelete", e.getMessage());
             return false;
@@ -864,36 +860,38 @@ public class FileUtils {
      * @param file
      * @return
      */
-    public static boolean updateMediaStore(final Context context, final File file, MediaScannerConnection.OnScanCompletedListener onScanCompletedListener) {
+    public static boolean updateMediaStore(final Context context, final File file, boolean isDelete, MediaScannerConnection.OnScanCompletedListener onScanCompletedListener) {
         try {
 
-            String filePath = file.getAbsolutePath();
-            String extensionName = getExtensionName(filePath);
+            if (!isDelete) {
+                String filePath = file.getAbsolutePath();
+                String extensionName = getExtensionName(filePath);
 
-            // 存储刚刚生成的图片信息（目前只支持图片）【仅仅靠MediaScannerConnection是没有效果的】
-            ContentValues contentValues = new ContentValues(2);
-            contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/" + (TextUtils.isEmpty(extensionName) ? "jpeg" : extensionName));
-            contentValues.put(MediaStore.Images.Media.DATA, filePath);
-            context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+                // 存储刚刚生成的图片信息（目前只支持图片）【仅仅靠MediaScannerConnection是没有效果的】
+                ContentValues contentValues = new ContentValues(2);
+                contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/" + (TextUtils.isEmpty(extensionName) ? "jpeg" : extensionName));
+                contentValues.put(MediaStore.Images.Media.DATA, filePath);
+                context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+            }
 
+            /**
+             * 在手机文件系统中的文件已经被删除之后，MediaScannerConnection能够将删除的信息反映入MediaStorage中
+             */
             //版本号的判断  4.4为分水岭，发送广播更新媒体库
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 MediaScannerConnection.scanFile(context,
                         new String[]{file.getAbsolutePath()},
                         null,  // 根绝文件后缀名称决定mimetype
-//                        onScanCompletedListener);
-                        new MediaScannerConnection.OnScanCompletedListener() {
-                            @Override
-                            public void onScanCompleted(String s, Uri uri) {
-                                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                                intent.setData(uri);
-                                context.sendBroadcast(intent);
-//                                Log.d("updateMediaStore1", s);
-//                                Log.d("updateMediaStore2", Uri.fromFile(file).toString());
-//                                Log.d("updateMediaStore3", uri.toString());
-//                                Log.d("updateMediaStore4", Environment.getExternalStorageDirectory().getAbsolutePath());
-                            }
-                        });
+                        onScanCompletedListener);
+//                        new MediaScannerConnection.OnScanCompletedListener() {
+//                            @Override
+//                            public void onScanCompleted(String s, Uri uri) {
+//                                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//                                intent.setData(uri);
+//                                context.sendBroadcast(intent);
+//                            }
+//                        }
+//                        );
             } else {
                 context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.fromFile(file)));
             }

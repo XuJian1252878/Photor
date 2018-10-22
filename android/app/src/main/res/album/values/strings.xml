@@ -25,6 +25,7 @@
     <string name="to_pdf">生成pdf文件</string>
     <string name="to_chart_let">编辑贴图</string>
 
+    <string name="trashbin">回收站</string>
     <string name="trashbin_move">图片已移至垃圾箱中</string>
     <string name="trashbin_move_onefile">图片已移至垃圾箱中</string>
     <string name="trashbin_move_error">发生错误</string>
@@ -128,7 +129,7 @@
 
     <string name="cancel_action">取消</string>
     <string name="empty_trashbin_mssg">当前回收站为空</string>
-    <string name="trashbin_mssg">只有在Photor App中被删除的图片才能在此显示</string>
+    <string name="trashbin_mssg">只有在Photor中被删除的图片才能在此显示</string>
 
     <string name="date_text">日期：</string>
     <string name="time_text">时间：</string>

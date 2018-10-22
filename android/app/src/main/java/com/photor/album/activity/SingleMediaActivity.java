@@ -526,7 +526,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
         if (isImageEdit){
             Toast.makeText(this, getString(R.string.save_path, newFilePath), Toast.LENGTH_LONG).show();
             // 扫描新的文件到MediaStore库
-            FileUtils.updateMediaStore(this, new File(newFilePath), null);
+            FileUtils.updateMediaStore(this, new File(newFilePath), false,null);
         }else{//未编辑  还是用原来的图片
             newFilePath = data.getStringExtra(EditImageActivity.EXTRA_FILE_PATH);
         }

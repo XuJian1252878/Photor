@@ -40,6 +40,7 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -1426,44 +1427,7 @@ public class AlbumFragment extends Fragment {
                 renameDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        boolean rename = false;
-                        if (editTextNewName.length() != 0) {
-                            swipeRefreshLayout.setRefreshing(true);
-                            boolean success = false;
-                            if (albumsMode) {
-                                if (!editTextNewName.getText().toString().equals(albumName)) {
-                                    int index = getAlbums().dispAlbums.indexOf(getAlbums().getSelectedAlbum(0));  // 获取被选择的相册在相册中的下标
-                                    success = getAlbums().getAlbum(index).renameAlbum(getContext(), editTextNewName.getText().toString());
-                                    albumsAdapter.notifyItemChanged(index);
-                                } else {
-                                    SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.rename_no_change), navigationView.getHeight());
-                                    rename = true;
-                                }
-                            } else {
-                                if (!editTextNewName.getText().toString().equals(albumName)) {
-                                    success = getAlbum().renameAlbum(getContext(), editTextNewName.getText().toString());
-                                    toolbar.setTitle(getAlbum().getName());
-                                    mediaAdapter.notifyDataSetChanged();  // 更新相册内的照片信息
-                                } else {
-                                    SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.rename_no_change), navigationView.getHeight());
-                                    rename = true;
-                                }
-                            }
-                            renameDialog.dismiss();
-                            if (success) {
-                                SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.rename_succes), navigationView.getHeight());
-                                getAlbums().clearSelectedAlbums();
-                                getActivity().invalidateOptionsMenu();
-                            } else if (!rename) {
-                                // 说明重命名操作失败
-                                SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.rename_error), navigationView.getHeight());
-                                requestSdCardPermissions();
-                            }
-                            swipeRefreshLayout.setRefreshing(false);
-                        } else {
-                            SnackBarHandler.showWithBottomMargin(mDrawerLayout, getString(R.string.insert_something), navigationView.getHeight());
-                            editTextNewName.requestFocus();
-                        }
+                        new RenameAlbumTask(albumFragment, editTextNewName, renameDialog, albumName).execute();
                     }
                 });
                 return true;
@@ -1496,6 +1460,104 @@ public class AlbumFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * 相册重命名的任务
+     */
+    private static class RenameAlbumTask extends AsyncTask<Void, Void, Boolean> {
+
+        private boolean rename = false;
+        private WeakReference<AlbumFragment> reference;
+        private EditText editTextNewName;
+        private AlertDialog renameDialog;
+        private String albumName;
+        private String newAlbumName;
+        private int index;
+
+        private Dialog dialog;
+
+        public RenameAlbumTask(AlbumFragment albumFragment, EditText editTextNewName, AlertDialog renameDialog, String albumName) {
+            this.reference = new WeakReference<>(albumFragment);
+            this.editTextNewName = editTextNewName;
+            this.renameDialog = renameDialog;
+            this.albumName= albumName;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = AlertDialogsHelper.getLoadingDialog(reference.get().getActivity(), reference.get().getString(R.string.loading), false);
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            AlbumFragment fragment = reference.get();
+            if (editTextNewName.length() != 0) {
+                boolean success = false;
+                newAlbumName = editTextNewName.getText().toString();
+                // 关闭系统软键盘
+                InputMethodManager imm = (InputMethodManager) fragment.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(editTextNewName.getWindowToken(), 0);
+                // 关闭系统对话框
+                renameDialog.dismiss();
+                if (fragment.albumsMode) {
+                    if (!newAlbumName.equals(albumName)) {
+                        index = fragment.getAlbums().dispAlbums.indexOf(fragment.getAlbums().getSelectedAlbum(0));  // 获取被选择的相册在相册中的下标
+                        fragment.getAlbums().getAlbum(index).updatePhotos(fragment.getActivity().getApplicationContext());
+                        success = fragment.getAlbums().getAlbum(index).renameAlbum(fragment.getContext(), newAlbumName);
+                    } else {
+                    }
+                } else {
+                    if (!newAlbumName.equals(albumName)) {
+                        success = fragment.getAlbum().renameAlbum(fragment.getContext(), newAlbumName);
+                    } else {
+                    }
+                }
+                return success;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            super.onPostExecute(success);
+            AlbumFragment fragment = reference.get();
+            dialog.dismiss();
+            if (editTextNewName.length() != 0) {
+
+                if (fragment.albumsMode) {
+                    if (!newAlbumName.equals(albumName)) {
+                        fragment.albumsAdapter.notifyItemChanged(index);
+                    } else {
+                        SnackBarHandler.showWithBottomMargin(fragment.mDrawerLayout, fragment.getString(R.string.rename_no_change), fragment.navigationView.getHeight());
+                        rename = true;
+                    }
+                } else {
+                    // 如果是在相册模式下，那么重新命名相册的话，需要将导航栏的名称改为新相册的名称
+                    if (!newAlbumName.equals(albumName)) {
+                        fragment.toolbar.setTitle(fragment.getAlbum().getName());
+                        fragment.mediaAdapter.notifyDataSetChanged();  // 更新相册内的照片信息
+                    } else {
+                        SnackBarHandler.showWithBottomMargin(fragment.mDrawerLayout, fragment.getString(R.string.rename_no_change), fragment.navigationView.getHeight());
+                        rename = true;
+                    }
+                }
+
+                if (success) {
+                    SnackBarHandler.showWithBottomMargin(fragment.mDrawerLayout, fragment.getString(R.string.rename_succes), fragment.navigationView.getHeight());
+                    fragment.finishEditMode();
+                } else if (!rename) {
+                    // 说明重命名操作失败
+                    SnackBarHandler.showWithBottomMargin(fragment.mDrawerLayout, fragment.getString(R.string.rename_error), fragment.navigationView.getHeight());
+                    fragment.requestSdCardPermissions();
+                }
+            } else {
+                SnackBarHandler.showWithBottomMargin(fragment.mDrawerLayout, fragment.getString(R.string.insert_something), fragment.navigationView.getHeight());
+                editTextNewName.requestFocus();
+            }
+        }
     }
 
     /**
@@ -2420,7 +2482,7 @@ public class AlbumFragment extends Fragment {
         if (isImageEdit){
             Toast.makeText(getContext(), getString(R.string.save_path, newFilePath), Toast.LENGTH_LONG).show();
             // 扫描新的文件到MediaStore库
-            FileUtils.updateMediaStore(getContext(), new File(newFilePath), null);
+            FileUtils.updateMediaStore(getContext(), new File(newFilePath), false,null);
         }else{//未编辑  还是用原来的图片
             newFilePath = data.getStringExtra(EditImageActivity.EXTRA_FILE_PATH);
         }
