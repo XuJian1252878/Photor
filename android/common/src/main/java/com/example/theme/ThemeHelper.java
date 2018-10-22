@@ -88,6 +88,10 @@ public class ThemeHelper {
         return new IconicsDrawable(context).icon(icon).color(Color.WHITE).sizeDp(18);
     }
 
+    public static int getDialogStyle() {
+        return R.style.AlertDialog_Light;
+    }
+
     public static int getPopupToolbarStyle(Context context) {
         return R.style.LightActionBarMenu;
     }

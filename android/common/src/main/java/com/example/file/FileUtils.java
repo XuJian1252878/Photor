@@ -808,17 +808,11 @@ public class FileUtils {
         if (!success) {
             success = copyFile(context, source, targetDir);
             if (success) {
-//                success = deleteFile(context, source);
                 success = updateMediaStoreAfterDelete(context, source) && updateMediaStoreAfterCreate(context, target);
             }
         } else {
             success = updateMediaStoreAfterDelete(context, source) && updateMediaStoreAfterCreate(context, target);
         }
-
-//        boolean success = copyFile(context, source, targetDir);
-//        if (success) {
-//            success = updateMediaStoreAfterDelete(context, source) && updateMediaStoreAfterCreate(context, target);
-//        }
 
         return success;
     }
@@ -840,14 +834,23 @@ public class FileUtils {
      * @return
      */
     public static boolean updateMediaStoreAfterDelete(Context context, File deleteFile) {
-//        if (!deleteFile.exists()) {
-//            return false;
-//        }
+        if (!deleteFile.exists()) {
+            return false;
+        }
 
         try {
-//            context.getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-//                    MediaStore.Images.Media.DATA + " = ? ",
-//                    new String[] { deleteFile.getAbsolutePath()});
+
+            // 尝试在MediaStore中删除文件
+            try {
+                context.getContentResolver().delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        MediaStore.Images.Media.DATA + " = ? ",
+                        new String[] { deleteFile.getAbsolutePath()});
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d("MediaStoreAfterDelete", e.getMessage());
+            }
+
+
             return updateMediaStore(context, deleteFile, null);
         } catch (Exception e) {
             Log.d("MediaStoreAfterDelete", e.getMessage());
