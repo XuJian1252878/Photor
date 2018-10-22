@@ -81,8 +81,8 @@ import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
 import io.realm.Realm;
 
-import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_IS_SAVED_CROP_RES;
-import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_ORI_IMG_PATH;
+import static com.example.constant.PhotoOperator.EXTRA_IS_SAVED_CROP_RES;
+import static com.example.constant.PhotoOperator.EXTRA_ORI_IMG_PATH;
 import static com.example.constant.PhotoOperator.EXTRA_PHOTO_IS_FROM_OPERATE_RESULT;
 import static com.example.constant.PhotoOperator.EXTRA_PHOTO_TO_PDF_PATH;
 import static com.example.constant.PhotoOperator.REQUEST_ACTION_EDITIMAGE;

@@ -11,10 +11,11 @@ import com.allen.library.SuperTextView;
 import com.example.media.image.MediaExifHelper;
 import com.photor.R;
 
-import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_CROP_IMG_RES_PATH;
-import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_IS_SAVED_CROP_RES;
-import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_ORI_IMG_PATH;
-import static com.photor.base.activity.PhotoOperateResultActivity.REQUEST_IMAGE_EXIF_INFO;
+import static com.example.constant.PhotoOperator.EXTRA_CROP_IMG_RES_PATH;
+import static com.example.constant.PhotoOperator.EXTRA_IS_SAVED_CROP_RES;
+import static com.example.constant.PhotoOperator.EXTRA_ORI_IMG_PATH;
+import static com.example.constant.PhotoOperator.REQUEST_IMAGE_EXIF_INFO;
+
 
 public class PhotoExifDetailActivity extends AppCompatActivity {
 

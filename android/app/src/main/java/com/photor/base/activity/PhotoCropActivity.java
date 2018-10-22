@@ -24,8 +24,9 @@ import java.io.IOException;
 
 import me.pqpo.smartcropperlib.view.CropImageView;
 
-import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_CROP_IMG_RES_PATH;
-import static com.photor.base.activity.PhotoOperateResultActivity.EXTRA_ORI_IMG_PATH;
+import static com.example.constant.PhotoOperator.EXTRA_CROP_IMG_RES_PATH;
+import static com.example.constant.PhotoOperator.EXTRA_ORI_IMG_PATH;
+
 
 public class PhotoCropActivity extends AppCompatActivity {
 

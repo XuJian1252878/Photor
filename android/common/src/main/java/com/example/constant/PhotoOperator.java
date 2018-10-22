@@ -22,4 +22,11 @@ public class PhotoOperator {
     // 打开寻找pdf文件浏览器的请求参数
     public static final int REQUEST_ACTION_PDF_FILE = 10;
 
+    // 跟裁剪图片相关的变量
+    public final static int REQUEST_IMAGE_CROP_FILE_PATH = 789;
+    public final static int REQUEST_IMAGE_EXIF_INFO = 1011;
+    public final static String EXTRA_CROP_IMG_RES_PATH = "EXTRA_CROP_IMG_RES_PATH";
+    public static final String EXTRA_ORI_IMG_PATH = "EXTRA_ORI_IMG_PATH";  // 图片的原图路径
+    public final static String EXTRA_IS_SAVED_CROP_RES = "EXTRA_IS_SAVED_CROP_RES";  // 图片的裁剪结果路径
+
 }
