@@ -121,7 +121,7 @@ extern "C"
 
 
 /******************************************************************************************************
- * 星野图片对齐操作
+ * 实验代码
  */
 extern "C"
 JNIEXPORT void JNICALL
@@ -168,7 +168,14 @@ JNIEXPORT void JNICALL
 Java_com_photor_staralign_GrabCutActivity_grabCutOver(JNIEnv *env, jobject instance) {
     GCApplication::showImage(env,instance);
 }
+/******************************************************************************************************
+ * 实验代码
+ */
 
+
+/**
+ * 星空图片对齐方法
+ */
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env, jobject instance,
@@ -271,10 +278,10 @@ Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env,
 }
 
 
-// StarAlignSplitActivity 分割星空前景背景的方法
+// StarAlignSplitActivity 分割星空前景背景的方法（初始化分割背景）
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_photor_staralign_StarAlignSplitActivity_initGrabCut(JNIEnv *env, jobject instance,
+Java_com_photor_home_staralign_StarAlignSplitActivity_initGrabCut(JNIEnv *env, jobject instance,
                                                              jlong oriImgMatAddr,
                                                              jlong resImgMatAddr,
                                                              jlong maskMatAddr) {
@@ -288,17 +295,19 @@ Java_com_photor_staralign_StarAlignSplitActivity_initGrabCut(JNIEnv *env, jobjec
     StarGrabCut::init(oriImgMat, resImgMat, maskMat, showId);
 }
 
+// 实时跟踪划线背景轨迹的方法
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_photor_staralign_StarAlignSplitActivity_moveGrabCut(JNIEnv *env, jobject instance,
+Java_com_photor_home_staralign_StarAlignSplitActivity_moveGrabCut(JNIEnv *env, jobject instance,
                                                              jint event, jint x, jint y,
                                                              jint flags, jint lastX, jint lastY) {
     StarGrabCut::mouseClick(event, x, y, flags, lastX, lastY, env, instance);
 }
 
+// 保存截取的Mask信息
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_photor_staralign_StarAlignSplitActivity_saveMaskMat(JNIEnv *env, jobject instance,
+Java_com_photor_home_staralign_StarAlignSplitActivity_saveMaskMat(JNIEnv *env, jobject instance,
                                                              jstring maskImgPath_) {
 
     const char *maskImgPath = env->GetStringUTFChars(maskImgPath_, 0);
@@ -309,13 +318,13 @@ Java_com_photor_staralign_StarAlignSplitActivity_saveMaskMat(JNIEnv *env, jobjec
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_photor_staralign_StarAlignSplitActivity_grabCutOver(JNIEnv *env, jobject instance) {
+Java_com_photor_home_staralign_StarAlignSplitActivity_grabCutOver(JNIEnv *env, jobject instance) {
     StarGrabCut::showImage(env, instance);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_photor_staralign_StarAlignSplitActivity_reset(JNIEnv *env, jobject instance) {
+Java_com_photor_home_staralign_StarAlignSplitActivity_reset(JNIEnv *env, jobject instance) {
     // 重新设置照片的前景以及背景
     StarGrabCut::reset();
 }

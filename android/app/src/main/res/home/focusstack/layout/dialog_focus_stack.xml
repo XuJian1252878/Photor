@@ -45,9 +45,10 @@
                     <TextView
                         android:text="@string/bg_threshold_label"
                         android:textSize="16sp"
-                        android:gravity="center_vertical"
+                        android:gravity="center"
                         android:layout_width="0dp"
                         android:layout_weight="3"
+                        android:padding="3dp"
                         android:layout_height="wrap_content" />
 
                     <com.xw.repo.BubbleSeekBar
@@ -58,6 +59,7 @@
                         app:bsb_show_section_mark="true"
                         app:bsb_show_section_text="true"
                         app:bsb_show_thumb_text="true"
+                        android:padding="3dp"
                         app:bsb_section_text_position="below_section_mark"
                         android:layout_height="wrap_content" />
 
@@ -75,8 +77,9 @@
                         android:text="@string/kernels_size_label"
                         android:textSize="16sp"
                         android:layout_width="0dp"
-                        android:gravity="center_vertical"
+                        android:gravity="center"
                         android:layout_weight="3"
+                        android:padding="3dp"
                         android:layout_height="wrap_content" />
 
                     <com.xw.repo.BubbleSeekBar
@@ -87,6 +90,7 @@
                         app:bsb_show_section_mark="true"
                         app:bsb_show_section_text="true"
                         app:bsb_show_thumb_text="true"
+                        android:padding="3dp"
                         app:bsb_section_text_position="below_section_mark"
                         android:layout_height="wrap_content" />
 
@@ -104,9 +108,10 @@
                     <TextView
                         android:text="@string/gaussian_sigma_label"
                         android:textSize="16sp"
-                        android:gravity="center_vertical"
+                        android:gravity="center"
                         android:layout_width="0dp"
                         android:layout_weight="3"
+                        android:padding="3dp"
                         android:layout_height="wrap_content" />
 
                     <com.xw.repo.BubbleSeekBar
@@ -118,6 +123,7 @@
                         app:bsb_show_thumb_text="true"
                         android:layout_width="0dp"
                         android:layout_weight="7"
+                        android:padding="3dp"
                         app:bsb_section_text_position="below_section_mark"
                         android:layout_height="wrap_content" />
 

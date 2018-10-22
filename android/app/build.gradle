@@ -264,6 +264,8 @@ dependencies {
     implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
     // seekbar 的实现
     implementation 'com.xw.repo:bubbleseekbar:3.19'
+    // 弹出对话框控件
+    implementation 'com.github.thomper:sweet-alert-dialog:v1.4.0'
 }
 
 // Run this once to be able to run the application with BUCK

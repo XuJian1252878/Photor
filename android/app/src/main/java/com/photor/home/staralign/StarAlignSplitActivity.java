@@ -23,6 +23,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.file.FileUtils;
+import com.example.theme.ThemeHelper;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 import com.photor.R;
 import com.photor.util.ImageUtils;
 import com.photor.widget.TipToast;
@@ -32,7 +34,6 @@ import com.photor.widget.graffiti.GraffitiView;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
-
 
 import static com.photor.home.staralign.StarAlignOperator.EXTRA_BASE_SELECT_PHOTO_PATH;
 import static com.photor.home.staralign.StarAlignOperator.EXTRA_MASK_IMG_PATH;
@@ -288,7 +289,7 @@ public class StarAlignSplitActivity extends AppCompatActivity {
 
         private Bitmap originBitmap;
         private String baseImgPath;
-        private TipToast tipToast;
+        private SweetAlertDialog tipDialog;
 
         public LoadGraffitiAsyncTask(String baseImgPath) {
             this.baseImgPath = baseImgPath;
@@ -298,10 +299,11 @@ public class StarAlignSplitActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             // 弹出加载图片的对话框提示
-            tipToast = new TipToast.Builder(StarAlignSplitActivity.this)
-                    .setMessage("正在加载")
-                    .create();
-            tipToast.show();
+            tipDialog = new SweetAlertDialog(StarAlignSplitActivity.this, SweetAlertDialog.PROGRESS_TYPE);
+            tipDialog.getProgressHelper().setBarColor(ThemeHelper.getPrimaryColor(StarAlignSplitActivity.this));
+            tipDialog.setTitleText(StarAlignSplitActivity.this.getResources().getString(R.string.loading));
+            tipDialog.setCancelable(false);
+            tipDialog.show();
         }
 
         @Override
@@ -321,7 +323,7 @@ public class StarAlignSplitActivity extends AppCompatActivity {
             // 界面操作
             initGraffitiView(originBitmap, baseImgPath);
             // 关闭提示的对话框
-            tipToast.dismiss();
+            tipDialog.dismiss();
         }
     }
 }
