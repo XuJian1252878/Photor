@@ -335,7 +335,7 @@ public class Album {
     }
 
     private int toggleSelectPhoto(int index) {
-        if (medias.get(index) != null) {
+        if (index >= 0 && medias.get(index) != null) {
             medias.get(index).setSelected(!medias.get(index).isSelected());
             if (medias.get(index).isSelected()) {
                 selectedMedias.add(medias.get(index));

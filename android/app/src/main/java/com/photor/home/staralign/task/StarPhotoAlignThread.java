@@ -1,9 +1,14 @@
 package com.photor.home.staralign.task;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.View;
+import android.widget.Button;
 
+import com.example.theme.ThemeHelper;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 import com.photor.R;
+import com.photor.home.staralign.StarAlignSplitActivity;
 import com.photor.home.staralign.event.StarAlignProgressListener;
 import com.photor.widget.BaseDialog;
 
@@ -25,7 +30,7 @@ public class StarPhotoAlignThread extends Thread {
 
     private volatile int alignResFlag = -3; // 表示未执行完成
 
-    private BaseDialog starAlignProgressDialog;
+    private SweetAlertDialog starAlignProgressDialog;
 
     private StarAlignProgressListener starAlignProgressListener;
 
@@ -60,23 +65,25 @@ public class StarPhotoAlignThread extends Thread {
 
     public void startAlign() {
         // 在主线程设置弹出ProgressDialog
-        starAlignProgressDialog = new BaseDialog.Builder(activity)
-                .setTitle(activity.getString(R.string.star_align_progress_dialog_title))
-                .setProgressBarShow(true)
-                .setCancelable(false) // 设置触摸屏幕不可取消
-                .setNegativeButton("取消图片对齐操作", new View.OnClickListener() {
+        starAlignProgressDialog = new SweetAlertDialog(activity, SweetAlertDialog.PROGRESS_TYPE);
+        starAlignProgressDialog.setTitleText(activity.getString(R.string.star_align_progress_dialog_title));  // 设置对话框title
+        starAlignProgressDialog.getProgressHelper().setBarColor(ThemeHelper.getPrimaryColor(activity));// 设置对话框进度条颜色
+        starAlignProgressDialog.setContentText(activity.getString(R.string.loading))
+                .setCancelText("取消图片对齐操作")
+                .showCancelButton(true)
+                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
                         if (StarPhotoAlignThread.this.isAlive()) {
-                            StarPhotoAlignThread.this.stop();
+                            StarPhotoAlignThread.this.interrupt();
                         }
                         starAlignProgressDialog.dismiss();
                     }
                 })
-                .setNegativeBtnShow(true)
-                .setMessage("正在对齐图片")
-                .create();
-        starAlignProgressDialog.show();
+                .show();
+
+        // 设置取消按钮颜色的操作
+//        starAlignProgressDialog.findViewById(R.id.cancel_button).setBackgroundColor(activity.getResources().getColor(R.color.accent_red));
 
         // 开始对齐操作
         this.start();
