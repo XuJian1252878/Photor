@@ -178,7 +178,7 @@ Java_com_photor_staralign_GrabCutActivity_grabCutOver(JNIEnv *env, jobject insta
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_photor_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env, jobject instance,
+Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv *env, jobject instance,
                                                                     jobject starPhotos,
                                                                     jint alignBasePhotoIndex,
                                                                     jlong alignResMatAddr,

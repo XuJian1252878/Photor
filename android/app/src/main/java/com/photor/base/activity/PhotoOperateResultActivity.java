@@ -18,8 +18,9 @@ import android.widget.Toast;
 
 import com.example.file.FileUtils;
 import com.example.media.MediaManager;
+import com.example.theme.ThemeHelper;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 import com.photor.R;
-import com.photor.widget.TipToast;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -69,7 +70,7 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    private TipToast tipToast;
+    private SweetAlertDialog tipDialog;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -80,11 +81,13 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
                 return true;
             case R.id.save_operate_btn:
                 isSavedOperateRes = true;
-//                Toast.makeText(PhotoOperateResultActivity.this, "图片已保存", Toast.LENGTH_SHORT).show();
-                tipToast = new TipToast.Builder(PhotoOperateResultActivity.this)
-                        .setMessage("保存")
-                        .create();
-                tipToast.show();
+
+                tipDialog = new SweetAlertDialog(PhotoOperateResultActivity.this, SweetAlertDialog.PROGRESS_TYPE);
+                tipDialog.getProgressHelper().setBarColor(ThemeHelper.getPrimaryColor(PhotoOperateResultActivity.this));
+                tipDialog.setTitleText(PhotoOperateResultActivity.this.getResources().getString(R.string.save));
+                tipDialog.setCancelable(false);
+                tipDialog.show();
+
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
@@ -104,7 +107,7 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                tipToast.dismiss();
+                                tipDialog.dismiss();
                                 finish();
                             }
                         });
@@ -113,10 +116,11 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
                 return true;
 
             case R.id.delete_operate_res_btn:
-                tipToast = new TipToast.Builder(PhotoOperateResultActivity.this)
-                        .setMessage("删除")
-                        .create();
-                tipToast.show();
+                tipDialog = new SweetAlertDialog(PhotoOperateResultActivity.this, SweetAlertDialog.PROGRESS_TYPE);
+                tipDialog.getProgressHelper().setBarColor(ThemeHelper.getPrimaryColor(PhotoOperateResultActivity.this));
+                tipDialog.setTitleText(PhotoOperateResultActivity.this.getResources().getString(R.string.delete));
+                tipDialog.setCancelable(false);
+                tipDialog.show();
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
@@ -127,7 +131,7 @@ public class PhotoOperateResultActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                tipToast.dismiss();
+                                tipDialog.dismiss();
                                 finish();
                             }
                         });

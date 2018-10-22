@@ -93,6 +93,7 @@ public class StarAlignBaseActivity extends PhotoOperateBaseActivity {
                 } else if (currentStep == StarAlignEnum.STAR_ALIGN_RESULT.getCode()) {  // 图片对齐步骤
                     // 开始图片对齐操作
                     final String imgAbsPath =  FileUtils.generateImgAbsPath();
+                    // 开始进行图片对齐操作
                     StarPhotoAlignThread thread = new StarPhotoAlignThread(StarAlignBaseActivity.this,
                             selectedPhotos, 0, alignResMat.getNativeObjAddr(),
                             imgAbsPath, maskImgPath,

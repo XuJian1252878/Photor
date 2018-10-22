@@ -27,7 +27,6 @@ import com.example.theme.ThemeHelper;
 import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 import com.photor.R;
 import com.photor.util.ImageUtils;
-import com.photor.widget.TipToast;
 import com.photor.widget.graffiti.ColorPickerDialog;
 import com.photor.widget.graffiti.GraffitiView;
 
@@ -190,10 +189,11 @@ public class StarAlignSplitActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                final TipToast tipToast = new TipToast.Builder(StarAlignSplitActivity.this)
-                        .setMessage("正在分割")
-                        .create();
-                tipToast.show();
+                SweetAlertDialog tipDialog = new SweetAlertDialog(StarAlignSplitActivity.this, SweetAlertDialog.PROGRESS_TYPE);
+                tipDialog.getProgressHelper().setBarColor(ThemeHelper.getPrimaryColor(StarAlignSplitActivity.this));
+                tipDialog.setTitleText("正在分割图片");
+                tipDialog.setCancelable(false);
+                tipDialog.show();
 
                 // 获得maskImgPath的路径
                 maskImgPath = FileUtils.generateTempImgAbsPath(StarAlignSplitActivity.this);
@@ -214,7 +214,7 @@ public class StarAlignSplitActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     grabCutOver();
-                                    tipToast.dismiss();
+                                    tipDialog.dismiss();
                                     // 返回上一个Activity，并且传回mask路径
                                     Intent intent = new Intent();
                                     intent.putExtra(EXTRA_MASK_IMG_PATH, maskImgPath);
