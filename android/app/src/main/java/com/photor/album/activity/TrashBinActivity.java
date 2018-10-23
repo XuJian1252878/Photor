@@ -102,6 +102,7 @@ public class TrashBinActivity extends BaseActivity {
         public void onClick(View view) {
             TrashBinRealmModel trashBinRealmModel = (TrashBinRealmModel) view.findViewById(R.id.delete_date).getTag();
             view.setTransitionName(getString(R.string.transition_photo));
+            // 配置 <action android:name="com.android.camera.action.REVIEW" /> 的 <intent-filter>
             Intent intent = new Intent("com.android.camera.action.REVIEW", Uri.fromFile(new File(trashBinRealmModel.getTrashbinpath())));
             intent.putExtra("path", trashBinRealmModel.getTrashbinpath());
             intent.putExtra("position", checkpos(trashBinRealmModel.getTrashbinpath()));

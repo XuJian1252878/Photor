@@ -142,5 +142,9 @@
     <string name="restore_all_success_mssg">图片恢复成功</string>
     <string name="restore_all_fail_mssg">图片恢复失败</string>
 
+    <string name="restore">恢复</string>
+    <string name="restore_image">从回收站中恢复该图片？</string>
+    <string name="delete_image_bin">确定从磁盘删除此文件？</string>
+
 
 </resources>

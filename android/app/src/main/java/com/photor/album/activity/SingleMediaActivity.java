@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -55,6 +56,7 @@ import com.photor.BuildConfig;
 import com.photor.R;
 import com.photor.album.adapter.ImageAdapter;
 import com.photor.album.entity.Album;
+import com.photor.album.entity.Media;
 import com.photor.album.utils.Measure;
 import com.photor.album.views.PagerRecyclerView;
 import com.photor.base.activity.BaseActivity;
@@ -74,24 +76,30 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.disposables.Disposable;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 import static com.example.constant.PhotoOperator.EXTRA_IS_SAVED_CROP_RES;
 import static com.example.constant.PhotoOperator.EXTRA_ORI_IMG_PATH;
 import static com.example.constant.PhotoOperator.EXTRA_PHOTO_IS_FROM_OPERATE_RESULT;
 import static com.example.constant.PhotoOperator.EXTRA_PHOTO_TO_PDF_PATH;
 import static com.example.constant.PhotoOperator.REQUEST_ACTION_EDITIMAGE;
+import static com.photor.util.ActivitySwitchHelper.context;
 import static com.photor.util.ActivitySwitchHelper.getContext;
 
 public class SingleMediaActivity extends BaseActivity implements ImageAdapter.OnSingleTap, ImageAdapter.EnterTransition {
 
     public static final String ACTION_OPEN_ALBUM = "android.intent.action.pagerAlbumMedia";
     private static final String ACTION_REVIEW = "com.android.camera.action.REVIEW";
+
+    private Boolean trashdis;  // 是否是浏览回收站中的文件夹
+    private ArrayList<Media> trashbinlistd;  // 回收站中照片的总数
 
     private PreferenceUtil SP;
     private static int SLIDE_SHOW_INTERVAL = 5000;  // 控制幻灯片播放的时长
@@ -160,8 +168,14 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
         SP = PreferenceUtil.getInstance(getApplicationContext());
 
         allPhotoMode = getIntent().getBooleanExtra(getString(R.string.all_photo_mode), false);
-        all_photo_pos = getIntent().getIntExtra(getString(R.string.position), 0);
-        size_all = getIntent().getIntExtra(getString(R.string.allMediaSize), getAlbum().getCount());
+        all_photo_pos = getIntent().getIntExtra(getString(R.string.position), 0);  // 当前照片的位置
+        size_all = getIntent().getIntExtra(getString(R.string.allMediaSize), getAlbum().getCount());  // 当前照片同组照片的总数
+
+        // 回收站文件信息
+        trashdis = getIntent().getBooleanExtra("trashbin", false);
+        if (getIntent().hasExtra("trashdatalist")) {
+            trashbinlistd = getIntent().getParcelableArrayListExtra("trashdatalist");
+        }
 
         pathForDescription = getIntent().getStringExtra("path");
 
@@ -182,7 +196,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
                     // 图片在本地路径上
                     album = new Album(getApplicationContext(), file);
                 } else {
-                    // 图片是一个uri
+                    // 图片是一个uri（拍照、图片对齐、景深合成、曝光合成等操作的结果）
                     album = new Album(getApplicationContext(), getIntent().getData());
                     customUri = true;
                 }
@@ -316,6 +330,16 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
         final Menu bottomMenu = bottomBar.getMenu();
         getMenuInflater().inflate(R.menu.menu_bottom_view_pager, bottomMenu);
 
+        if (trashdis) {
+            // 如果是查看垃圾箱中的文件（只保留恢复和删除选项）
+            bottomMenu.findItem(R.id.action_edit).setVisible(false);
+            bottomMenu.findItem(R.id.action_share).setVisible(false);
+            bottomMenu.findItem(R.id.restore_action).setVisible(true);
+            bottomMenu.findItem(R.id.action_details).setVisible(false);
+            bottomMenu.findItem(R.id.action_crop).setVisible(false);
+        }
+
+        // 将ActionMenuView的点击事件跟OptionMenuItem的一起绑定起来，然后一起处理点击事件
         for (int i = 0; i < bottomMenu.size(); i ++) {
             bottomMenu.getItem(i).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
@@ -465,10 +489,74 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
                 // 生成pdf文件
                 new TransImgToPdfTask().execute();
                 return true;
+            case R.id.restore_action:
+                // 从回收站恢复的菜单项信息
+                AlertDialog.Builder restoreDialogBuilder = new AlertDialog.Builder(SingleMediaActivity.this, ThemeHelper.getDialogStyle());
+                AlertDialogsHelper.getTextDialog(this, restoreDialogBuilder, R.string.restore, R.string.restore_image, null);
+                restoreDialogBuilder.setNegativeButton(getString(R.string.cancel), null);
+                restoreDialogBuilder.setPositiveButton(getString(R.string.restore), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        restoreImage(trashbinlistd.get(current_image_pos).getPath());
+                    }
+                });
+                AlertDialog restoreDialog = restoreDialogBuilder.create();
+                restoreDialog.show();
+                AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE, DialogInterface.BUTTON_NEGATIVE},
+                        ThemeHelper.getAccentColor(this), restoreDialog);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    /**
+     * 从回收站恢复文件信息
+     * @param path
+     */
+    private void restoreImage(String path) {
+        Realm.init(this);
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<TrashBinRealmModel> results = realm.where(TrashBinRealmModel.class).equalTo("trashbinpath", path).findAll();
+        String oldPath = results.get(0).getOldpath();
+        String oldFolder = oldPath.substring(0, oldPath.lastIndexOf("/"));
+        // 恢复到原来的文件夹
+        if (restoreMove(context, results.get(0).getTrashbinpath(), oldFolder)) {
+            // 从数据库中删除回收站的记录
+            if (removeFromRealm(results.get(0).getTrashbinpath())) {
+                deleteFromList(path);
+                size_all = trashbinlistd.size();
+                if (size_all > 0) {
+                    adapter.notifyDataSetChanged();
+                    getSupportActionBar().setTitle(current_image_pos + 1 + " / " + size_all);
+                } else {
+                    onBackPressed();
+                }
+            }
+        }
+    }
+
+    private boolean restoreMove(Context context, String source, String targetDir) {
+        File from = new File(source);
+        File to = new File(targetDir);
+        return FileUtils.moveFile(context, from, to);
+    }
+
+
+    private boolean removeFromRealm(String path) {
+        boolean[] delete = {false};
+        Realm.init(this);
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<TrashBinRealmModel> results = realm.where(TrashBinRealmModel.class).equalTo("trashbinpath", path).findAll();
+                delete[0] = results.deleteAllFromRealm();
+            }
+        });
+        return delete[0];
+    }
+
 
     /**
      * 生成pdf文件的任务
@@ -559,7 +647,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
             }
         };
 
-        if (!allPhotoMode) {
+        if (!allPhotoMode && !trashdis) {
             // 相册模式下点击某一个图片进入该界面
             adapter = new ImageAdapter(basicCallBack, getAlbum().getMedias(), this, this);
             getSupportActionBar().setTitle((getAlbum().getCurrentMediaIndex() + 1) + " / " + getAlbum().getMedias().size()); // 设置标题栏为当前图片下标
@@ -575,7 +663,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
             });
             // 设置RecyclerView滚动到当前的item下标
             mViewPager.scrollToPosition(getAlbum().getCurrentMediaIndex());
-        } else {
+        } else if (allPhotoMode && !trashdis) {
             // 全部照片模式下，点击一个图片进入该界面
             adapter = new ImageAdapter(basicCallBack, AlbumFragment.listAll, this, this);
             getSupportActionBar().setTitle(all_photo_pos + " / " + size_all);
@@ -585,13 +673,29 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
                 @Override
                 public void onPageChanged(int oldPosition, int newPosition) {
                     current_image_pos = newPosition;
-//                    getAlbum().setCurrentPhotoIndex(getAlbum().getCurrentMediaIndex());
+                    getAlbum().setCurrentPhotoIndex(getAlbum().getCurrentMediaIndex());
                     toolbar.setTitle((newPosition + 1) + " / " + size_all);
                     invalidateOptionsMenu();
                     pathForDescription = AlbumFragment.listAll.get(newPosition).getPath();
                 }
             });
             mViewPager.scrollToPosition(all_photo_pos);
+        } else if (trashdis && !allPhotoMode) {
+            // 显示回收站中的文件信息
+            adapter = new ImageAdapter(basicCallBack, trashbinlistd, this, this);
+            getSupportActionBar().setTitle(all_photo_pos + 1 + " / " + size_all);
+            current_image_pos = all_photo_pos;
+            mViewPager.setOnPageChangeListener(new PagerRecyclerView.OnPageChangeListener() {
+                @Override
+                public void onPageChanged(int oldPosition, int newPosition) {
+                    current_image_pos = newPosition;
+                    getAlbum().setCurrentPhotoIndex(getAlbum().getCurrentMediaIndex());
+                    toolbar.setTitle(newPosition + 1 + " / " + size_all);
+                    invalidateOptionsMenu();
+                    pathForDescription = trashbinlistd.get(newPosition).getPath();
+                }
+            });
+            mViewPager.scrollToPosition(current_image_pos);
         }
         mViewPager.setAdapter(adapter);
     }
@@ -685,7 +789,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacks(slideShowRunnable);
-        if (customUri) {
+        if (customUri || trashdis) {
             getAlbums().deleteAlbumByIndexSoft(0);  // 删除供拍照使用的临时相册
         }
     }
@@ -694,20 +798,24 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
     public void onBackPressed() {
         super.onBackPressed();
         handler.removeCallbacks(slideShowRunnable);
-        if (customUri) {
+        if (customUri || trashdis) {
             getAlbums().deleteAlbumByIndexSoft(0);  // 删除供拍照使用的临时相册
         }
     }
 
     private void deleteAction() {
         final AlertDialog.Builder deleteDialog = new AlertDialog.Builder(SingleMediaActivity.this, R.style.AlertDialog_Light);
-        AlertDialogsHelper.getTextCheckboxDialog(SingleMediaActivity.this,
-                deleteDialog,
-                R.string.delete,
-                R.string.delete_photo_message,
-                null,
-                "移至回收站",
-                ThemeHelper.getAccentColor(this));
+        if (trashdis) {
+            AlertDialogsHelper.getTextDialog(this, deleteDialog, R.string.delete, R.string.delete_image_bin, null);
+        } else {
+            AlertDialogsHelper.getTextCheckboxDialog(SingleMediaActivity.this,
+                    deleteDialog,
+                    R.string.delete,
+                    R.string.delete_photo_message,
+                    null,
+                    "移至回收站",
+                    ThemeHelper.getAccentColor(this));
+        }
         String buttonDelete = getString(R.string.delete);
         deleteDialog.setNegativeButton(getString(R.string.cancel), null);
         deleteDialog.setPositiveButton(buttonDelete, new DialogInterface.OnClickListener() {
@@ -853,7 +961,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
 
     private void deleteCurrentMedia() {
         boolean success = false;
-        if (!allPhotoMode) {
+        if (!allPhotoMode && !trashdis) {
             // 某一个相册下显示的图片信息
             if (AlertDialogsHelper.check) {
                 success = addToTrash();  // 删除至回收站的操作
@@ -877,7 +985,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
             }
             adapter.notifyDataSetChanged();
             getSupportActionBar().setTitle((getAlbum().getCurrentMediaIndex() + 1) + " / " + getAlbum().getMedias().size());
-        } else {
+        } else if (allPhotoMode && !trashdis) {
             // 以全部的模式显示照片
             int c = all_photo_pos;
             if (AlertDialogsHelper.check) {
@@ -895,6 +1003,43 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
 
             if (current_image_pos != size_all) {
                 getSupportActionBar().setTitle((c + 1) + " / " + size_all);
+            }
+        } else if (trashdis && !allPhotoMode) {
+            // 垃圾回收站的模式
+            int c = current_image_pos;
+            Realm.init(this);
+            Realm realm = Realm.getDefaultInstance();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    RealmResults<TrashBinRealmModel> results = realm.where(TrashBinRealmModel.class)
+                            .equalTo("trashbinpath", trashbinlistd.get(current_image_pos).getPath()).findAll();
+                    results.deleteAllFromRealm();
+                }
+            });
+            deleteFromList(trashbinlistd.get(current_image_pos).getPath());
+            size_all = trashbinlistd.size();
+            if (size_all > 0) {
+                adapter.notifyDataSetChanged();
+                getSupportActionBar().setTitle(c + 1 + " / " + size_all);
+            } else {
+                onBackPressed();
+            }
+        }
+    }
+
+    /**
+     * 从对应的图片列表中删除图片文件信息
+     * @param path
+     */
+    private void deleteFromList(String path) {
+        if (trashdis) {
+            // 从回收站删除文件
+            for(int i = 0; i < trashbinlistd.size(); i ++) {
+                if (trashbinlistd.get(i).getPath().equals(path)) {
+                    trashbinlistd.remove(i);
+                    break;
+                }
             }
         }
     }
