@@ -1,4 +1,4 @@
-package com.photor.album.utils;
+package com.photor.util;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -46,7 +46,7 @@ public class Measure {
         return new Point();
     }
 
-    private static Point getAppUsableScreenSize(Context context) {
+    public static Point getAppUsableScreenSize(Context context) {
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
         Point size = new Point();
@@ -54,7 +54,7 @@ public class Measure {
         return size;
     }
 
-    private static Point getRealScreenSize(Context context) {
+    public static Point getRealScreenSize(Context context) {
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
         Point size = new Point();

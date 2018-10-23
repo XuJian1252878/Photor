@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -37,9 +39,11 @@ import com.otaliastudios.cameraview.SessionType;
 import com.otaliastudios.cameraview.Size;
 import com.otaliastudios.cameraview.SizeSelector;
 import com.photor.R;
+import com.photor.base.MainActivity;
 import com.photor.camera.activity.VideoPreviewActivity;
 import com.photor.camera.event.CameraOperator;
 import com.photor.camera.view.CameraSettingPopupView;
+import com.photor.util.Measure;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -51,7 +55,6 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
 
     private CameraView camera;
     private CameraOptions cameraOptions;
-    private Toolbar toolbar;  // MainActivity的导航栏信息
 
     private LinearLayout bottomControlPanel;
 
@@ -97,6 +100,9 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         rootView = inflater.inflate(R.layout.fragment_camera, container, false);
+
+        // 设置整个相机界面的高度信息
+        bottomControlPanel = rootView.findViewById(R.id.camera_fragment_bottom_control_panel);
 
         camera = rootView.findViewById(R.id.camera);
         cameraSettingPopupView = new CameraSettingPopupView(getActivity(),
@@ -145,8 +151,6 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initUI(View rootView) {
-
-        bottomControlPanel = rootView.findViewById(R.id.camera_fragment_bottom_control_panel);
 
         // 1. 初始化相机曝光信息
         initCameraExposureUIInfo(rootView);
@@ -415,6 +419,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
             // 说明正在录制视频，再次点击的时候应该关闭录制
             message(getResources().getString(R.string.camera_stop_record_video), false);
             camera.stopCapturingVideo();
+            getActivity().findViewById(R.id.toolbar).setVisibility(View.GONE);
         } else {
             // 说明正要开始录制视频
             mCapturingVideo = true;
@@ -427,6 +432,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
             File file = FileUtils.generateVideoFile();
             startVideoRecording(); // 计时器设置
             camera.startCapturingVideo(file);
+            getActivity().findViewById(R.id.toolbar).setVisibility(View.GONE);
         }
     }
 
@@ -459,6 +465,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+        ((MainActivity)getActivity()).changeToolbarStatus();
         camera.start();
     }
 

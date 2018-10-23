@@ -208,6 +208,16 @@ public class MainActivity extends BaseActivity {
 //        });
     }
 
+    /**
+     * 根据当前的fragment tab项显示定了个步导航栏信息
+     */
+    public void changeToolbarStatus() {
+        if (mMainViewPager.getCurrentItem() == BottomNavigationEnum.CAMERA.getNavItemIndex()) {
+            toolbar.setVisibility(View.GONE);
+        } else {
+            toolbar.setVisibility(View.VISIBLE);
+        }
+    }
 
     // ViewPager和BottomNavigationView联动绑定
     private void onBottomNavigationItemSelected(int id) {

@@ -66,7 +66,7 @@ import com.photor.album.entity.SortingMode;
 import com.photor.album.entity.SortingOrder;
 import com.photor.album.entity.comparator.MediaComparators;
 import com.photor.album.provider.StorageProvider;
-import com.photor.album.utils.Measure;
+import com.photor.util.Measure;
 import com.example.preference.PreferenceUtil;
 import com.photor.album.utils.ThemeHelper;
 import com.photor.album.views.CustomScrollBarRecyclerView;
@@ -218,7 +218,7 @@ public class AlbumFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().findViewById(R.id.toolbar).setVisibility(View.VISIBLE);
+        ((MainActivity)getActivity()).changeToolbarStatus();
         setUpUI();
 
         if (all_photos) {

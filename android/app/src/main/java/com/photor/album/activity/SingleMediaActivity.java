@@ -47,17 +47,13 @@ import android.widget.ViewSwitcher;
 
 import com.example.file.FileUtils;
 import com.example.preference.PreferenceUtil;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.pdf.PdfWriter;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.photor.BuildConfig;
 import com.photor.R;
 import com.photor.album.adapter.ImageAdapter;
 import com.photor.album.entity.Album;
 import com.photor.album.entity.Media;
-import com.photor.album.utils.Measure;
+import com.photor.util.Measure;
 import com.photor.album.views.PagerRecyclerView;
 import com.photor.base.activity.BaseActivity;
 import com.photor.base.activity.PhotoExifDetailActivity;
@@ -72,9 +68,6 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;

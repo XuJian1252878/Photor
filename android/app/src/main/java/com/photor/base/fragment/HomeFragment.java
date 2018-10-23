@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.permissions.PermissionsUtils;
 import com.photor.R;
+import com.photor.base.MainActivity;
 import com.photor.base.activity.test.OpencvTestActivity;
 import com.photor.home.dofcalculator.activity.DofCalcMainActivity;
 import com.photor.home.exposure.ExposureBaseActivity;
@@ -172,7 +173,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().findViewById(R.id.toolbar).setVisibility(View.VISIBLE);
+        ((MainActivity)getActivity()).changeToolbarStatus();
     }
 
     @Override
