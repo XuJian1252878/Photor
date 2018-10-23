@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -23,6 +24,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -50,6 +52,7 @@ import com.example.file.FileUtils;
 import com.example.strings.StringUtils;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.photor.BuildConfig;
 import com.photor.MainApplication;
 import com.photor.R;
 import com.photor.album.activity.PdfPreviewActivity;
@@ -1039,26 +1042,23 @@ public class AlbumFragment extends Fragment {
             // 移动文件夹的情况
             menu.findItem(R.id.action_move).setVisible(getAlbums().getSelectedCount() == 1);
         }
-
         // 设置相册封面的照片
         menu.findItem(R.id.set_as_album_preview).setVisible(!albumsMode && !all_photos && getAlbum()
                 .getSelectedCount() == 1);
-
         // 设置清除相册封面选项
         menu.findItem(R.id.clear_album_preview).setVisible(!albumsMode && getAlbum().hasCustomCover() && !all_photos);
-
         // 重命名相册的菜单项（某一个相册被选择 || 正在浏览某一个相册下的图片）
         menu.findItem(R.id.rename_album).setVisible(((albumsMode && getAlbums().getSelectedCount() == 1) ||
                 (!albumsMode && !editMode)) && !all_photos);
-
         // 控制各种菜单项是否显示
         menu.findItem(R.id.delete_action).setVisible((!albumsMode || editMode) && (!all_photos || editMode));  // 在editMode，或者 显示某一个相册下照片的时候显示删除按钮
-
         // 在编辑模式下显示转换为pdf的选项
         menu.findItem(R.id.action_to_pdf).setVisible( (editMode && albumsMode && getAlbums().getSelectedCount() == 1) || (editMode && !albumsMode) );
-
         // 贴图相册选项
         menu.findItem(R.id.action_chart_let).setVisible(editMode && !albumsMode);
+        // 分享图片信息
+        menu.findItem(R.id.sharePhotos).setVisible((!albumsMode && !all_photos && editMode && getAlbum().getSelectedCount() <= 1)
+                || (!albumsMode && all_photos && editMode && getSelectedMedias().size() <= 1));
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -1455,11 +1455,50 @@ public class AlbumFragment extends Fragment {
                     finishEditMode(); // 结束编辑模式
                 }
                 return true;
+            case R.id.sharePhotos:
+                // 分享文件信息
+                shareToOthers();
+                finishEditMode();
+                return true;
             default:
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * 分享选择的图片
+     * @return
+     */
+    private boolean shareToOthers() {
+        Uri uri = null;
+        String name = null;
+        String mediaPath = null;
+
+        if (!albumsMode && !all_photos && getAlbum().getSelectedCount() <= 1) {
+            mediaPath = getAlbum().getSelectedMedia(0).getPath();
+            name = getAlbum().getSelectedMedia(0).getName();
+        } else if (!albumsMode && all_photos && getSelectedMedias().size() <= 1) {
+            mediaPath = getSelectedMedias().get(0).getPath();
+            name = getSelectedMedias().get(0).getName();
+        } else {
+            return false;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            uri = FileProvider.getUriForFile(getActivity().getApplicationContext(),
+                    BuildConfig.APPLICATION_ID + ".provider", new File(mediaPath));
+        } else {
+            uri = Uri.fromFile(new File(mediaPath));
+        }
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, name);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        shareIntent.setType("image/png");
+
+        startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_image)));
+        return true;
     }
 
     /**

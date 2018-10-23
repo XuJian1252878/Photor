@@ -146,5 +146,7 @@
     <string name="restore_image">从回收站中恢复该图片？</string>
     <string name="delete_image_bin">确定从磁盘删除此文件？</string>
 
+    <string name="create_pdf">创建pdf文件</string>
+
 
 </resources>
