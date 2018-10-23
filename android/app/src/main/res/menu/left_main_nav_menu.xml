@@ -36,6 +36,7 @@
 
         <item
             android:id="@+id/ll_drawer_trashbin"
+            android:icon="@drawable/ic_trashbin"
             android:title="@string/trashbin">
         </item>
     </group>

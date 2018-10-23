@@ -905,6 +905,29 @@ public class FileUtils {
 
 
     /**
+     * 避免垃圾箱中的文件被扫描
+     * @return
+     */
+    public static boolean generateNoMediaFile() {
+        //  这个是应用程序的垃圾箱文件夹，为了垃圾箱文件夹中的文件不出现在相册中，需要增加 .nomedia 文件
+        boolean isCreateed = true;
+        File file = new File(Environment.getExternalStorageDirectory() + "/" + ".nomedia");
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        File noMediaFile = new File(file, ".nomedia");
+        if (!noMediaFile.exists()) {
+            try {
+                isCreateed = noMediaFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return isCreateed;
+    }
+
+
+    /**
      * 根据文件路径获取文件的后缀名称
      * @param filePath
      * @return

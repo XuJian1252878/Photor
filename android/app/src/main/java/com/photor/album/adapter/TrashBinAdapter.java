@@ -120,6 +120,7 @@ public class TrashBinAdapter extends RecyclerView.Adapter<TrashBinAdapter.ViewHo
                             }
                         }
                     });
+                    menu.show();
                 }
             });
         }

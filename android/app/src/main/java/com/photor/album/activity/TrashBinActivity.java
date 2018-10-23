@@ -459,7 +459,7 @@ public class TrashBinActivity extends BaseActivity {
     }
 
     private void trashEmptyViewSetup() {
-        emptyIcon.setImageResource(R.drawable.ic_delete_sweep_white_24dp);
+        emptyIcon.setImageResource(R.drawable.ic_delete_sweep_black_24dp);
         trashText.setTextColor(ThemeHelper.getTextColor(this));
         trashMessage.setTextColor(ThemeHelper.getTextColor(this));
     }

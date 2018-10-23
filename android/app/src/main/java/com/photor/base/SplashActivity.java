@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.example.file.FileUtils;
 import com.example.preference.PreferenceUtil;
 import com.example.theme.ThemeHelper;
 import com.photor.MainApplication;
@@ -83,6 +84,9 @@ public class SplashActivity extends BaseActivity {
             splashBannerLayout.setVisibility(View.GONE);
             splashLogoLayout.setVisibility(View.VISIBLE);
         }
+
+        // 创建垃圾箱识别文件
+        FileUtils.generateNoMediaFile();
     }
 
     private void setUpGuideBanner() {
