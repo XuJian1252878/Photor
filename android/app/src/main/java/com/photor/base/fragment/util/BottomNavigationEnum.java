@@ -10,8 +10,8 @@ public enum  BottomNavigationEnum {
 
     HOME(0, R.id.menu_main_bottom_tab_home, "HOME_MAIN_BOTTOM_NAVIGATION"),
     GALLERY(1, R.id.menu_main_bottom_tab_gallery, "GALLERY_MAIN_BOTTOM_NAVIGATION"),
-    RESOURCE(2, R.id.menu_main_bottom_tab_resource, "RESOURCE_MAIN_BOTTOM_NAVIGATION"),
-    CAMERA(3, R.id.menu_main_bottom_tab_camera, "CAMERA_MAIN_BOTTOM_NAVIGATION");
+//    RESOURCE(2, R.id.menu_main_bottom_tab_resource, "RESOURCE_MAIN_BOTTOM_NAVIGATION"),
+    CAMERA(2, R.id.menu_main_bottom_tab_camera, "CAMERA_MAIN_BOTTOM_NAVIGATION");
 
     private int navItemIndex;  // 底部导航栏的下标
     private int navItemId;  // 底部导航栏的资源id

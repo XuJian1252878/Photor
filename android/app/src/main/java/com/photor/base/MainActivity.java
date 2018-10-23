@@ -247,7 +247,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         int curBottomNavIndex = mMainViewPager.getCurrentItem();
-        if (curBottomNavIndex == BottomNavigationEnum.RESOURCE.getNavItemIndex()) {
+        if (curBottomNavIndex == BottomNavigationEnum.GALLERY.getNavItemIndex()) {
             // 是相册导航栏的返回键信息
             AlbumFragment albumFragment = (AlbumFragment) FragmentDataGenerator.FRAGMENTS[curBottomNavIndex];
             // 设置backPress的点击信息
@@ -308,7 +308,7 @@ public class MainActivity extends BaseActivity {
             int curBottomNavIndex = mMainViewPager.getCurrentItem();
             switch (requestCode) {
                 case REQUEST_ACTION_CHART_LET:
-                    if (curBottomNavIndex == BottomNavigationEnum.RESOURCE.getNavItemIndex()) {
+                    if (curBottomNavIndex == BottomNavigationEnum.GALLERY.getNavItemIndex()) {
                         // 是相册导航栏的返回键信息
                         AlbumFragment albumFragment = (AlbumFragment) FragmentDataGenerator.FRAGMENTS[curBottomNavIndex];
                         // 保存已经编辑好的相册贴图信息

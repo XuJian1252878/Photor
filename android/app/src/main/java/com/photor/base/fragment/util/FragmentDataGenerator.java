@@ -14,7 +14,7 @@ import com.photor.base.fragment.HomeFragment;
 
 public class FragmentDataGenerator {
 
-    public static final int MAIN_FRAGMENT_PARTS = 4;
+    public static final int MAIN_FRAGMENT_PARTS = 3;
 
     public static final Fragment[] FRAGMENTS = new Fragment[MAIN_FRAGMENT_PARTS];
 
@@ -45,25 +45,30 @@ public class FragmentDataGenerator {
 
 
         if (position == BottomNavigationEnum.GALLERY.getNavItemIndex()) {
-            GalleryFragment galleryFragment = (GalleryFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.GALLERY.getTag());
-            if (galleryFragment == null) {
-                galleryFragment = GalleryFragment.newInstance();
-//                fragmentTransaction.add(galleryFragment, BottomNavigationEnum.GALLERY.getTag()).commit();
-            }
-//            fragmentManager.executePendingTransactions();
-            return galleryFragment;
-        }
-
-
-        if (position == BottomNavigationEnum.RESOURCE.getNavItemIndex()) {
-            AlbumFragment albumFragment = (AlbumFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.RESOURCE.getTag());
+//            GalleryFragment galleryFragment = (GalleryFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.GALLERY.getTag());
+//            if (galleryFragment == null) {
+//                galleryFragment = GalleryFragment.newInstance();
+////                fragmentTransaction.add(galleryFragment, BottomNavigationEnum.GALLERY.getTag()).commit();
+//            }
+////            fragmentManager.executePendingTransactions();
+//            return galleryFragment;
+            AlbumFragment albumFragment = (AlbumFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.GALLERY.getTag());
             if (albumFragment == null) {
                 albumFragment = AlbumFragment.newInstance();
-//                fragmentTransaction.add(albumFragment, BottomNavigationEnum.RESOURCE.getTag()).commit();
             }
-//            fragmentManager.executePendingTransactions();
             return albumFragment;
         }
+
+
+//        if (position == BottomNavigationEnum.RESOURCE.getNavItemIndex()) {
+//            AlbumFragment albumFragment = (AlbumFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.RESOURCE.getTag());
+//            if (albumFragment == null) {
+//                albumFragment = AlbumFragment.newInstance();
+////                fragmentTransaction.add(albumFragment, BottomNavigationEnum.RESOURCE.getTag()).commit();
+//            }
+////            fragmentManager.executePendingTransactions();
+//            return albumFragment;
+//        }
 
         if (position == BottomNavigationEnum.CAMERA.getNavItemIndex()) {
             CameraFragment cameraFragment = (CameraFragment) fragmentManager.findFragmentByTag(BottomNavigationEnum.CAMERA.getTag());
