@@ -218,6 +218,7 @@ public class AlbumFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        getActivity().findViewById(R.id.toolbar).setVisibility(View.VISIBLE);
         setUpUI();
 
         if (all_photos) {
@@ -997,7 +998,7 @@ public class AlbumFragment extends Fragment {
             // 相册模式下（全部照片、选择全部）
             editMode = getAlbums().getSelectedCount() != 0;
             menu.setGroupVisible(R.id.album_options_menu, editMode);
-            menu.setGroupVisible(R.id.photos_option_men, false);
+            menu.setGroupVisible(R.id.photos_option_menu, false);
             menu.findItem(R.id.all_photos).setVisible(true);
             menu.findItem(R.id.select_all).setVisible(getAlbums().getSelectedCount() != albumsAdapter.getItemCount() ? true : false);
 
@@ -1010,14 +1011,14 @@ public class AlbumFragment extends Fragment {
             if (!all_photos) {
                 // 某个相册下的照片
                 editMode = getAlbum().areMediaSelected();
-                menu.setGroupVisible(R.id.photos_option_men, editMode);
+                menu.setGroupVisible(R.id.photos_option_menu, editMode);
                 menu.setGroupVisible(R.id.album_options_menu, !editMode);
                 menu.findItem(R.id.all_photos).setVisible(false);
                 menu.findItem(R.id.album_details).setVisible(false);
             } else {
                 // 全部的照片
                 editMode = selectedMedias.size() != 0;
-                menu.setGroupVisible(R.id.photos_option_men, editMode);
+                menu.setGroupVisible(R.id.photos_option_menu, editMode);
                 menu.setGroupVisible(R.id.album_options_menu, !editMode);
                 menu.findItem(R.id.all_photos).setVisible(false);
                 menu.findItem(R.id.album_details).setVisible(false);

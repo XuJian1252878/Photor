@@ -10,6 +10,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -42,6 +44,12 @@ public class HomeFragment extends Fragment {
         homeFragment.setArguments(args);
 
         return homeFragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);  // 在 fragment中也能使用 onOptionsItemSelected，否则fragment中的onOptionsItemSelected无法被调用
     }
 
     @Nullable
@@ -115,7 +123,6 @@ public class HomeFragment extends Fragment {
         return rootView;
     }
 
-
     private void init(){
         startActivity(new Intent(getActivity(), OpencvTestActivity.class));
         getActivity().finish();
@@ -160,6 +167,29 @@ public class HomeFragment extends Fragment {
                 getActivity().finish();
                 break;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().findViewById(R.id.toolbar).setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        // 控制菜单项的显示
+        menu.setGroupVisible(R.id.general_action, false);
+        menu.setGroupVisible(R.id.album_options_menu, false);
+        menu.setGroupVisible(R.id.photos_option_menu, false);
+        menu.findItem(R.id.all_photos).setVisible(false);
+        menu.findItem(R.id.select_all).setVisible(false);
+        menu.findItem(R.id.delete_action).setVisible(false);
+        menu.findItem(R.id.set_as_album_preview).setVisible(false);
+        menu.findItem(R.id.clear_album_preview).setVisible(false);
+        menu.findItem(R.id.rename_album).setVisible(false);
+        menu.findItem(R.id.action_to_pdf).setVisible(false);
+        menu.findItem(R.id.action_chart_let).setVisible(false);
+        super.onPrepareOptionsMenu(menu);
     }
 
     private void showHint(String hint){

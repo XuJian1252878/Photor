@@ -1,18 +1,13 @@
 package com.photor.base;
 
-import android.Manifest;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,25 +18,17 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
-import com.photor.MainApplication;
 import com.photor.R;
 import com.photor.album.activity.TrashBinActivity;
-import com.photor.album.entity.Album;
-import com.photor.album.entity.HandlingAlbums;
 import com.photor.base.View.MainAcitvityViewPager;
 import com.photor.base.activity.BaseActivity;
 import com.photor.base.adapters.MainViewPagerAdapter;
 import com.photor.base.fragment.AlbumFragment;
 import com.photor.base.fragment.util.BottomNavigationEnum;
 import com.photor.base.fragment.util.FragmentDataGenerator;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.opencv.android.OpenCVLoader;
 
-import java.util.List;
-
-import butterknife.ButterKnife;
-import io.reactivex.disposables.Disposable;
 import q.rorbin.badgeview.Badge;
 import q.rorbin.badgeview.QBadgeView;
 
@@ -50,6 +37,7 @@ import static com.example.constant.PhotoOperator.REQUEST_ACTION_CHART_LET;
 public class MainActivity extends BaseActivity {
 
     private BottomNavigationViewEx mBottomNavigationView;
+    private Toolbar toolbar;
     private DrawerLayout mDrawerLayout;
     private MainAcitvityViewPager mMainViewPager; // 主页面的ViewPager
     private int previousBtmNavItemId = -1; // 上一次下部导航栏所在的item的下标
@@ -87,7 +75,7 @@ public class MainActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // 加载位于屏幕右上角的菜单信息（右上角的三竖点）
         getMenuInflater().inflate(R.menu.top_tool_bar_menu, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -120,7 +108,7 @@ public class MainActivity extends BaseActivity {
     private void initUI() {
 
         // 1. 初始化action bar
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // 获得当前ActionBar的实例
@@ -168,8 +156,6 @@ public class MainActivity extends BaseActivity {
                 return true;
             }
         });
-        // 由于第一次进来没有回调onNavigationItemSelected，因此需要手动调用一下切换状态的方法
-        onBottomNavigationItemSelected(R.id.menu_main_bottom_tab_home);
 
         // 测试BottomNavigationView的小气泡功能
         // add badge
@@ -189,8 +175,10 @@ public class MainActivity extends BaseActivity {
                 mBottomNavigationView.setCurrentItem(position);
                 if (position == BottomNavigationEnum.CAMERA.getNavItemIndex()) {
                     mMainViewPager.setCanScroll(false); // 到Camera Fragment的时候禁止ViewPager 的滑动
+                    toolbar.setVisibility(View.GONE); // 隐藏导航栏
                 } else {
                     mMainViewPager.setCanScroll(true);
+                    toolbar.setVisibility(View.VISIBLE); // 恢复显示导航栏
                 }
             }
 
@@ -198,6 +186,9 @@ public class MainActivity extends BaseActivity {
             public void onPageScrollStateChanged(int state) {
             }
         });
+
+        // 由于第一次进来没有回调onNavigationItemSelected，因此需要手动调用一下切换状态的方法
+        onBottomNavigationItemSelected(R.id.menu_main_bottom_tab_gallery);  // 应用进入时默认选择相册选项卡
 
         // 5. 初始化浮动小圆点
 //        FloatingActionButton fab = findViewById(R.id.fab);

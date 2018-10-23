@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
 
+    <!-- 相册页面的菜单项信息 -->
     <group android:id="@+id/general_action">
         <item
             android:id="@+id/sort_action"
@@ -27,10 +28,6 @@
                         android:id="@+id/size_sort_action"
                         android:title="@string/size"
                         app:showAsAction="never" />
-                    <!--<item-->
-                        <!--android:id="@+id/numeric_sort_action"-->
-                        <!--android:title="@string/numeric"-->
-                        <!--app:showAsAction="never" />-->
                 </group>
                 <group android:checkableBehavior="all">
                     <item
@@ -49,7 +46,7 @@
             app:showAsAction="never" />
     </group>
 
-    <group android:id="@+id/photos_option_men">
+    <group android:id="@+id/photos_option_menu">
         <item
             android:id="@+id/sharePhotos"
             android:title="@string/share"
