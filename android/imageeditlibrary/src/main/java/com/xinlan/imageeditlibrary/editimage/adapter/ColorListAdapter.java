@@ -14,6 +14,7 @@ import com.xinlan.imageeditlibrary.editimage.fragment.PaintFragment;
  * 颜色列表Adapter
  *
  * @author panyi
+ * xujian 2018/10/24
  */
 public class ColorListAdapter extends RecyclerView.Adapter<ViewHolder> {
     public static final int TYPE_COLOR = 1;

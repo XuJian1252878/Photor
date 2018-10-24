@@ -29,6 +29,7 @@ import com.photor.R;
 import com.photor.util.ImageUtils;
 import com.photor.widget.graffiti.ColorPickerDialog;
 import com.photor.widget.graffiti.GraffitiView;
+import com.xw.repo.BubbleSeekBar;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -256,21 +257,30 @@ public class StarAlignSplitActivity extends AppCompatActivity {
         });
 
         // 2.6 设置进度条模式
-        SeekBar paintSizeBar = findViewById(R.id.paint_size);
-        final TextView paintSizeView = findViewById(R.id.paint_size_text);
-        paintSizeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                paintSizeView.setText("" + progress);
+        BubbleSeekBar paintSizeBar = findViewById(R.id.paint_size);
+        paintSizeBar.getConfigBuilder()
+                .min(0)
+                .max(100)
+                .showSectionText()
+                .sectionTextColor(getResources().getColor(R.color.icongrey))
+                .build();
+        paintSizeBar.setProgress((int) graffitiView.getPaintSize());
+        paintSizeBar.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
                 graffitiView.setPaintSize(progress);
             }
 
-            public void onStartTrackingTouch(SeekBar seekBar) {
+            @Override
+            public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
+
             }
 
-            public void onStopTrackingTouch(SeekBar seekBar) {
+            @Override
+            public void getProgressOnFinally(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat, boolean fromUser) {
+
             }
         });
-        paintSizeBar.setProgress((int) graffitiView.getPaintSize());
     }
 
     @Override

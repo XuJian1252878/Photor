@@ -45,6 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
+            android:padding="10dp"
             android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
@@ -60,28 +61,15 @@
                     android:layout_height="fill_parent" />
             </RelativeLayout>
 
-            <SeekBar
+            <com.xw.repo.BubbleSeekBar
                 android:id="@+id/paint_size"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="33dp"
-                android:max="100"
-                android:paddingBottom="17dp"
-                android:paddingStart="12dp"
-                android:paddingEnd="10dp"
-                android:paddingTop="3dp"
-                android:progressDrawable="@drawable/graffiti_seekbar_bg"
-                android:thumb="@drawable/graffiti_thumb_seekbar"/>
-
-            <TextView
-                android:id="@+id/paint_size_text"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:paddingStart="2dp"
-                android:text="30"
-                android:textColor="#000000"
-                android:textSize="14dp"/>
+                android:layout_gravity="center_vertical"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:max="100" />
         </LinearLayout>
 
         <FrameLayout
