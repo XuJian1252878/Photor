@@ -3,14 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:padding="1dp"
     android:background="@drawable/picker_photo_add_item_bg"
+    android:gravity="center"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <TextView
+    <ImageView
         android:text="@string/pick_photo_add_item_label"
-        android:gravity="center"
-        android:textSize="32sp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:src="@drawable/ic_pick_photo_add_item"
+        android:scaleType="fitCenter"
+        android:layout_width="@dimen/size_50dp"
+        android:layout_height="@dimen/size_50dp" />
 
 </com.example.photopicker.widget.SquareItemLayout>

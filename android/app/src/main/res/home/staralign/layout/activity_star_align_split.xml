@@ -2,6 +2,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".home.staralign.StarAlignSplitActivity">
@@ -64,32 +65,63 @@
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <Button
+            <Space
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <info.hoang8f.widget.FButton
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="2dp"
+                fbutton:cornerRadius="15dp"
+                android:textColor="@color/white"
+                android:background="@color/blue_dark"
                 android:id="@+id/btn_star_ground_boundary"
                 android:text="@string/sky_ground_boundary_btn_label"
                 android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
+            <Space
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
 
-            <Button
+
+            <info.hoang8f.widget.FButton
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="2dp"
+                fbutton:cornerRadius="15dp"
+                android:textColor="@color/white"
+                android:background="@color/blue_dark"
                 android:id="@+id/btn_clear"
                 android:text="@string/sky_ground_reset_btn_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <Button
+            <Space
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <info.hoang8f.widget.FButton
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="2dp"
+                fbutton:cornerRadius="15dp"
+                android:textColor="@color/white"
+                android:background="@color/blue_dark"
                 android:id="@+id/btn_star_grab_cut"
                 android:text="@string/sky_ground_split_btn_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
+            <Space
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
         </LinearLayout>
 
     </LinearLayout>
-
-
-
-
 
 </android.support.design.widget.CoordinatorLayout>

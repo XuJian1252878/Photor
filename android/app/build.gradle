@@ -268,6 +268,8 @@ dependencies {
     implementation 'com.github.thomper:sweet-alert-dialog:v1.4.0'
     // 提示对话框
     implementation 'com.github.deano2390:MaterialShowcaseView:1.2.0'
+    // 引入按钮
+    implementation 'com.github.jd-alexander:android-flat-button:v1.1'
 }
 
 // Run this once to be able to run the application with BUCK

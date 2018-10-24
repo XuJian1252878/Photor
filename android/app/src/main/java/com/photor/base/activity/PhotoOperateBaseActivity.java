@@ -21,6 +21,8 @@ import com.shuhart.stepview.StepView;
 import java.util.ArrayList;
 import java.util.List;
 
+import info.hoang8f.widget.FButton;
+
 /**
  * 作为图像分割、曝光合成、景深合成的公共Activity父类
  */
@@ -32,7 +34,7 @@ public class PhotoOperateBaseActivity extends BaseActivity {
     protected ArrayList<String> selectedPhotos = new ArrayList<>();
     protected int PHOTO_PICKER_SPAN_COUNT = 3;
 
-    protected Button operateBtn;
+    protected FButton operateBtn;
     protected RecyclerView recyclerView;
     protected StepView stepView;
 
@@ -52,6 +54,9 @@ public class PhotoOperateBaseActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        // 2. 设置操作按钮样式
+        operateBtn = findViewById(R.id.photo_operate_btn);
     }
 
     @Override
