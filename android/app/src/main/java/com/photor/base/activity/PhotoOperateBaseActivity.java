@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
@@ -30,6 +30,7 @@ public class PhotoOperateBaseActivity extends BaseActivity {
 
     protected PhotoAdapter photoAdapter;
     protected ArrayList<String> selectedPhotos = new ArrayList<>();
+    protected int PHOTO_PICKER_SPAN_COUNT = 3;
 
     protected Button operateBtn;
     protected RecyclerView recyclerView;
@@ -39,7 +40,7 @@ public class PhotoOperateBaseActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_operate_base);
-
+        recyclerView = findViewById(R.id.photo_operate_rv);
         initUI();
     }
 
@@ -80,6 +81,14 @@ public class PhotoOperateBaseActivity extends BaseActivity {
             if (photos != null) {
                 selectedPhotos.addAll(photos);
             }
+
+            // 设置recyclerView的总列数
+            if (selectedPhotos.size() <= 0) {
+                recyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, OrientationHelper.VERTICAL));
+            } else {
+                recyclerView.setLayoutManager(new StaggeredGridLayoutManager(PHOTO_PICKER_SPAN_COUNT, OrientationHelper.VERTICAL));
+            }
+
             photoAdapter.notifyDataSetChanged();
         }
     }

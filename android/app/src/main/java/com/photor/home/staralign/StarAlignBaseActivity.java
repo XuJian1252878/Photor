@@ -40,7 +40,6 @@ public class StarAlignBaseActivity extends PhotoOperateBaseActivity {
 
     private boolean starAlignBaseIsFirstEnter = false;  // 星空图片对齐的界面是否第一次进入
     private String SHOWCASE_ID = StarAlignBaseActivity.class.getName();
-    private int photoPickerSpanCount = 3;  // 图片选择器图片按3列选取
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +99,12 @@ public class StarAlignBaseActivity extends PhotoOperateBaseActivity {
         recyclerView = findViewById(R.id.photo_operate_rv);
         photoAdapter = new PhotoAdapter(selectedPhotos, this);
 
-        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(photoPickerSpanCount, OrientationHelper.VERTICAL));
+        // 设置recyclerView的总列数
+        if (selectedPhotos.size() <= 0) {
+            recyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, OrientationHelper.VERTICAL));
+        } else {
+            recyclerView.setLayoutManager(new StaggeredGridLayoutManager(PHOTO_PICKER_SPAN_COUNT, OrientationHelper.VERTICAL));
+        }
         recyclerView.setAdapter(photoAdapter);
 
         recyclerView.addOnItemTouchListener(new PhotoItemClickListener(this,
@@ -132,7 +136,7 @@ public class StarAlignBaseActivity extends PhotoOperateBaseActivity {
                 if (currentStep == StarAlignEnum.STAR_ALIGN_SELECT_PHOTOS.getCode()) {  // 图片选择步骤
                     if (selectedPhotos.size() < 2) {
                         PhotoPicker.builder()
-                                .setGridColumnCount(photoPickerSpanCount)
+                                .setGridColumnCount(PHOTO_PICKER_SPAN_COUNT)
                                 .setPhotoCount(PhotoAdapter.MAX_PHOTO_COUNT)
                                 .start(StarAlignBaseActivity.this);
                     }
