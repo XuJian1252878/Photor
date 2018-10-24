@@ -9,4 +9,9 @@
     <string name="star_split_boundary_hint">首先，您需要点击此按钮，并在图片中画出地面和星空的分界线</string>
     <string name="star_split_reset_boundary_hint">您可以点击此按钮清除分割线信息</string>
     <string name="star_split_cut_hint">划分好分割线后，您需要点击此按钮进行图片分割操作</string>
+
+    <string name="star_align_base_is_first_enter">star_align_base_is_first_enter</string>
+    <string name="star_align_base_select_photo_hint">首先您需要点击按钮来选择将要进行对齐操作的星空照片</string>
+    <string name="star_align_base_boundary_hint">然后您需要点击按钮来设置照片中星空与地面的分界线信息</string>
+    <string name="star_align_base_operate_hint">最后点击按钮，等待星空照片对齐的结果信息</string>
 </resources>

@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.example.file.FileUtils;
 import com.example.photopicker.PhotoPicker;
 import com.example.photopicker.PhotoPreview;
+import com.example.preference.PreferenceUtil;
 import com.photor.R;
 import com.photor.base.activity.PhotoOperateBaseActivity;
 import com.photor.base.adapters.PhotoAdapter;
@@ -25,18 +26,68 @@ import org.opencv.core.Mat;
 import java.io.File;
 import java.util.Arrays;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
+
 
 public class StarAlignBaseActivity extends PhotoOperateBaseActivity {
 
 //    public static final int REQUEST_SPLIT_CODE = 100;
     private Mat alignResMat = new Mat(); // 进行图片对齐的Mat结果
     private String maskImgPath; // 星空模板的路径（地面是白色区域）
+    private PreferenceUtil SP;  // 存储景深合成配置信息
+
+    private boolean starAlignBaseIsFirstEnter = false;  // 星空图片对齐的界面是否第一次进入
+    private String SHOWCASE_ID = StarAlignBaseActivity.class.getName();
+    private int photoPickerSpanCount = 3;  // 图片选择器图片按3列选取
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SP = PreferenceUtil.getInstance(this);
         // 初始化UI操作
         initUI();
+        initFirstTimeHint();
+    }
+
+
+    private void initFirstTimeHint() {
+        starAlignBaseIsFirstEnter = SP.getBoolean(getString(R.string.star_align_base_is_first_enter), true);
+        SP.putBoolean(getString(R.string.star_align_base_is_first_enter), false);
+        // 获取界面中的操作按钮
+        operateBtn = findViewById(R.id.photo_operate_btn);
+
+//        if (starAlignBaseIsFirstEnter) {
+            ShowcaseConfig config = new ShowcaseConfig();
+            config.setDelay(500); // half second between each showcase view
+            // 同一个id的提示信息只显示一次
+            MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this, null);
+            sequence.setConfig(config);
+
+            sequence.addSequenceItem(new MaterialShowcaseView.Builder(this)
+                    .setTarget(operateBtn)
+                    .setDismissText(getString(R.string.got_it_message))
+                    .setContentText(getString(R.string.star_align_base_select_photo_hint))
+                    .setDismissOnTouch(true)
+                    .build());
+
+            sequence.addSequenceItem(new MaterialShowcaseView.Builder(this)
+                    .setTarget(operateBtn)
+                    .setDismissText(getString(R.string.got_it_message))
+                    .setContentText(getString(R.string.star_align_base_boundary_hint))
+                    .setDismissOnTouch(true)
+                    .build());
+
+            sequence.addSequenceItem(new MaterialShowcaseView.Builder(this)
+                    .setTarget(operateBtn)
+                    .setDismissText(getString(R.string.got_it_message))
+                    .setContentText(getString(R.string.star_align_base_operate_hint))
+                    .setDismissOnTouch(true)
+                    .build());
+
+            sequence.start();
+//        }
     }
 
     private void initUI() {
@@ -49,7 +100,7 @@ public class StarAlignBaseActivity extends PhotoOperateBaseActivity {
         recyclerView = findViewById(R.id.photo_operate_rv);
         photoAdapter = new PhotoAdapter(selectedPhotos, this);
 
-        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(photoPickerSpanCount, OrientationHelper.VERTICAL));
         recyclerView.setAdapter(photoAdapter);
 
         recyclerView.addOnItemTouchListener(new PhotoItemClickListener(this,
@@ -81,7 +132,7 @@ public class StarAlignBaseActivity extends PhotoOperateBaseActivity {
                 if (currentStep == StarAlignEnum.STAR_ALIGN_SELECT_PHOTOS.getCode()) {  // 图片选择步骤
                     if (selectedPhotos.size() < 2) {
                         PhotoPicker.builder()
-                                .setGridColumnCount(4)
+                                .setGridColumnCount(photoPickerSpanCount)
                                 .setPhotoCount(PhotoAdapter.MAX_PHOTO_COUNT)
                                 .start(StarAlignBaseActivity.this);
                     }

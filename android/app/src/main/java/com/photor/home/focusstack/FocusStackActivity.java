@@ -54,6 +54,7 @@ public class FocusStackActivity extends PhotoOperateBaseActivity {
 
     private float gaussian_sigma = 5.0f;
     private float gaussian_sigma_start = 2.0f, gaussian_sigma_end = 7.0f;
+    private int photoPickerSpanCount = 3;  // 图片选择器图片按3列选取
 
     private PreferenceUtil SP;  // 存储景深合成配置信息
 
@@ -76,8 +77,9 @@ public class FocusStackActivity extends PhotoOperateBaseActivity {
         // 1. 初始化显示选择图片的RecyclerView
         recyclerView = findViewById(R.id.photo_operate_rv);
         photoAdapter = new PhotoAdapter(selectedPhotos, this);
+        photoAdapter.setMaxPhotoCount(MAX_PHOTO_COUNT);
 
-        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(photoPickerSpanCount, OrientationHelper.VERTICAL));
         recyclerView.setAdapter(photoAdapter);
 
         recyclerView.addOnItemTouchListener(new PhotoItemClickListener(this,
@@ -108,7 +110,7 @@ public class FocusStackActivity extends PhotoOperateBaseActivity {
                 if (currentStep == FocusStackEnum.FOCUS_STACK_SELECT_PHOTO.getCode()) {
                     // 1. 第一步：选择景深合成的原始照片
                     PhotoPicker.builder()
-                            .setGridColumnCount(4)
+                            .setGridColumnCount(photoPickerSpanCount)
                             .setPhotoCount(MAX_PHOTO_COUNT)
                             .start(FocusStackActivity.this);
                 } else if (currentStep == FocusStackEnum.FOCUS_STACK_RESULT.getCode()) {

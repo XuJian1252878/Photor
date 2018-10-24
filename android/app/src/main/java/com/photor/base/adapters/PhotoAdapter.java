@@ -27,7 +27,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     private List<String> photoPaths = new ArrayList<>();
     private LayoutInflater inflator;
     private Context mContext;
-    public final static int MAX_PHOTO_COUNT = 9;
+    public static int MAX_PHOTO_COUNT = 9;
 
     public final static int TYPE_PHOTO = 1;
     public final static int TYPE_ADD = 2;
@@ -89,6 +89,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     @Override
     public int getItemViewType(int position) {
         return (position == this.photoPaths.size() && position != MAX_PHOTO_COUNT) ? TYPE_ADD : TYPE_PHOTO;
+    }
+
+    public void setMaxPhotoCount(int maxPhotoCount) {
+        MAX_PHOTO_COUNT = maxPhotoCount;
     }
 
     public class PhotoViewHolder extends RecyclerView.ViewHolder {

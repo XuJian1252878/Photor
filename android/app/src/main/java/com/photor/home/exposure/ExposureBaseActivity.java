@@ -32,6 +32,7 @@ import java.util.List;
 public class ExposureBaseActivity extends PhotoOperateBaseActivity {
 
     private Mat expoResMat = new Mat();
+    private int photoPickerSpanCount = 3;  // 图片选择器图片按3列选取
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class ExposureBaseActivity extends PhotoOperateBaseActivity {
         recyclerView = findViewById(R.id.photo_operate_rv);
         photoAdapter = new PhotoAdapter(selectedPhotos, this);
 
-        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(photoPickerSpanCount, OrientationHelper.VERTICAL));
         recyclerView.setAdapter(photoAdapter);
 
         recyclerView.addOnItemTouchListener(new PhotoItemClickListener(this,
@@ -80,7 +81,7 @@ public class ExposureBaseActivity extends PhotoOperateBaseActivity {
                 int currentStep = stepView.getCurrentStep();
                 if (currentStep == ExposureEnum.EXPOSURE_SELECT_PHOTOS.getCode()) {
                     PhotoPicker.builder()
-                            .setGridColumnCount(4)
+                            .setGridColumnCount(photoPickerSpanCount)
                             .setPhotoCount(PhotoAdapter.MAX_PHOTO_COUNT)
                             .start(ExposureBaseActivity.this);
                 } else if (currentStep == ExposureEnum.EXPOSURE_RESULT.getCode()) {

@@ -52,7 +52,7 @@ public class StarAlignSplitActivity extends AppCompatActivity {
     private Mat maskImgMat = new Mat();
     private boolean isReadySplit = false;  // 记录有没准备好划分星空和地面的分界线
     private boolean isFirstTimeEnter = false; // 是不是第一次
-    private String SHOWCASE_ID = "-1";  // 控制提示信息的显示
+    private String SHOWCASE_ID = StarAlignSplitActivity.class.getName();  // 控制提示信息的显示
 
     private String maskImgPath;
     private int splitDrawLineColor = Color.GREEN;
@@ -104,7 +104,8 @@ public class StarAlignSplitActivity extends AppCompatActivity {
 //        if (isFirstTimeEnter) {
             ShowcaseConfig config = new ShowcaseConfig();
             config.setDelay(500); // half second between each showcase view
-            MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this, SHOWCASE_ID);
+            // 同一个id的提示信息只显示一次
+            MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this, null);
             sequence.setConfig(config);
 
             View boundaryBtn = findViewById(R.id.btn_star_ground_boundary);
