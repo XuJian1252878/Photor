@@ -6,45 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".home.staralign.StarAlignSplitActivity">
 
+    <include layout="@layout/toolbar_main"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="?android:actionBarSize"
         android:orientation="vertical">
 
-        <include layout="@layout/toolbar_main"/>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:gravity="center_horizontal"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:id="@+id/btn_star_ground_boundary"
-                android:text="@string/sky_ground_boundary_btn_label"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-
-            <Button
-                android:id="@+id/btn_clear"
-                android:text="@string/sky_ground_reset_btn_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:id="@+id/btn_star_grab_cut"
-                android:text="@string/sky_ground_split_btn_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:gravity="center_horizontal"
+            android:layout_gravity="center"
             android:padding="10dp"
             android:layout_marginTop="10dp"
             android:orientation="horizontal">
@@ -74,9 +49,42 @@
 
         <FrameLayout
             android:id="@+id/star_align_split_container"
-            android:layout_marginBottom="10dp"
+            android:layout_gravity="center"
+            android:padding="10dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="0dp"
+            android:layout_weight="8"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:padding="10dp"
+            android:layout_gravity="center"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/btn_star_ground_boundary"
+                android:text="@string/sky_ground_boundary_btn_label"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+            <Button
+                android:id="@+id/btn_clear"
+                android:text="@string/sky_ground_reset_btn_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btn_star_grab_cut"
+                android:text="@string/sky_ground_split_btn_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

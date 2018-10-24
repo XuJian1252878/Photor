@@ -21,6 +21,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.file.FileUtils;
 import com.example.theme.ThemeHelper;
@@ -44,8 +45,10 @@ public class StarAlignSplitActivity extends AppCompatActivity {
     private Mat resImgMat = new Mat();
     private Mat oriImgMat = new Mat();
     private Mat maskImgMat = new Mat();
+    private boolean isReadySplit = false;  // 记录有没准备好划分星空和地面的分界线
 
     private String maskImgPath;
+    private int splitDrawLineColor = Color.GREEN;
 
     // 表示当前划分分界线的状态
     private enum BoundaryEnum {
@@ -135,41 +138,45 @@ public class StarAlignSplitActivity extends AppCompatActivity {
             public void onReady() {}
 
             @Override
-            public void onTouchEvent(View v, MotionEvent event, int imgX, int imgY) {
-                Log.d("TagImg", imgX + "\t" + imgY);
-                switch(event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        GRABCUT_TOUCH_EVENT = 0;
-                        moveGrabCut(GRABCUT_TOUCH_EVENT, imgX, imgY, OPERATE_FLAG, LAST_BOUNDARY_X, LAST_BOUNDARY_Y);
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        GRABCUT_TOUCH_EVENT = 2;
-                        moveGrabCut(GRABCUT_TOUCH_EVENT, imgX, imgY, OPERATE_FLAG, LAST_BOUNDARY_X, LAST_BOUNDARY_Y);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        GRABCUT_TOUCH_EVENT = 1;
-                        moveGrabCut(GRABCUT_TOUCH_EVENT, imgX, imgY, OPERATE_FLAG, LAST_BOUNDARY_X, LAST_BOUNDARY_Y);
-                        break;
-                    default:
-                        break;
+            public boolean onTouchEvent(View v, MotionEvent event, int imgX, int imgY) {
+                if (isReadySplit) {
+                    // 当前已经合适进行图片分割操作
+                    Log.d("TagImg", imgX + "\t" + imgY);
+                    switch(event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            GRABCUT_TOUCH_EVENT = 0;
+                            moveGrabCut(GRABCUT_TOUCH_EVENT, imgX, imgY, OPERATE_FLAG, LAST_BOUNDARY_X, LAST_BOUNDARY_Y);
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            GRABCUT_TOUCH_EVENT = 2;
+                            moveGrabCut(GRABCUT_TOUCH_EVENT, imgX, imgY, OPERATE_FLAG, LAST_BOUNDARY_X, LAST_BOUNDARY_Y);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            GRABCUT_TOUCH_EVENT = 1;
+                            moveGrabCut(GRABCUT_TOUCH_EVENT, imgX, imgY, OPERATE_FLAG, LAST_BOUNDARY_X, LAST_BOUNDARY_Y);
+                            break;
+                        default:
+                            break;
+                    }
+                    if (OPERATE_FLAG == 3) {
+                        LAST_BOUNDARY_X = imgX;
+                        LAST_BOUNDARY_Y = imgY;
+                    }
                 }
-                if (OPERATE_FLAG == 3) {
-                    LAST_BOUNDARY_X = imgX;
-                    LAST_BOUNDARY_Y = imgY;
-                }
+                return isReadySplit;
             }
         });
 
         graffitiView.setPen(GraffitiView.Pen.HAND);
+        graffitiView.setColor(splitDrawLineColor);  // 设置画图页面分割线初始的颜色信息
         starAlignSplitContainer.addView(graffitiView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         // 2. 绑定绘图需要的事件
-
         // 2.3 设置划分界限的的线条
         findViewById(R.id.btn_star_ground_boundary).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                graffitiView.setColor(Color.GREEN);
+                isReadySplit = true;
                 graffitiView.setShape(GraffitiView.Shape.HAND_WRITE);
                 OPERATE_FLAG = 3;  // 分界线
             }
@@ -189,6 +196,12 @@ public class StarAlignSplitActivity extends AppCompatActivity {
         findViewById(R.id.btn_star_grab_cut).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (!isReadySplit) {
+                    // 没有设置分割线的情况下
+                    Toast.makeText(StarAlignSplitActivity.this, "请首先设置分割线", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 SweetAlertDialog tipDialog = new SweetAlertDialog(StarAlignSplitActivity.this, SweetAlertDialog.PROGRESS_TYPE);
                 tipDialog.getProgressHelper().setBarColor(ThemeHelper.getPrimaryColor(StarAlignSplitActivity.this));

@@ -205,7 +205,10 @@ public class GraffitiView extends View {
     public boolean onTouchEvent(MotionEvent event) {
 
         // 获取触摸事件进行处理
-        mGraffitiListener.onTouchEvent(this, event, (int)toX(event.getX()), (int)toY(event.getY()));
+        boolean isReady = mGraffitiListener.onTouchEvent(this, event, (int)toX(event.getX()), (int)toY(event.getY()));
+        if (!isReady) {
+            return false;
+        }
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
@@ -1091,7 +1094,8 @@ public class GraffitiView extends View {
          * @param event
          * @param imgX 图片中的真实X坐标
          * @param imgY 图片中的真实Y坐标
+         * @return 当前是否已经合适进行控件涂鸦操作
          */
-        void onTouchEvent(View v, MotionEvent event, int imgX, int imgY);
+        boolean onTouchEvent(View v, MotionEvent event, int imgX, int imgY);
     }
 }
