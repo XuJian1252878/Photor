@@ -4,4 +4,9 @@
         <item>划定分界线</item>
         <item>对齐</item>
     </string-array>
+
+    <string name="star_split_is_first_enter">star_split_is_first_enter</string>
+    <string name="star_split_boundary_hint">首先，您需要点击此按钮，并在图片中画出地面和星空的分界线</string>
+    <string name="star_split_reset_boundary_hint">您可以点击此按钮清除分割线信息</string>
+    <string name="star_split_cut_hint">划分好分割线后，您需要点击此按钮进行图片分割操作</string>
 </resources>

@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.file.FileUtils;
+import com.example.preference.PreferenceUtil;
 import com.example.theme.ThemeHelper;
 import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 import com.photor.R;
@@ -36,6 +37,10 @@ import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
+
 import static com.photor.home.staralign.StarAlignOperator.EXTRA_BASE_SELECT_PHOTO_PATH;
 import static com.photor.home.staralign.StarAlignOperator.EXTRA_MASK_IMG_PATH;
 
@@ -46,9 +51,12 @@ public class StarAlignSplitActivity extends AppCompatActivity {
     private Mat oriImgMat = new Mat();
     private Mat maskImgMat = new Mat();
     private boolean isReadySplit = false;  // 记录有没准备好划分星空和地面的分界线
+    private boolean isFirstTimeEnter = false; // 是不是第一次
+    private String SHOWCASE_ID = "-1";  // 控制提示信息的显示
 
     private String maskImgPath;
     private int splitDrawLineColor = Color.GREEN;
+    private PreferenceUtil SP;  // 存储景深合成配置信息
 
     // 表示当前划分分界线的状态
     private enum BoundaryEnum {
@@ -83,8 +91,48 @@ public class StarAlignSplitActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_star_align_split);
-
+        SP = PreferenceUtil.getInstance(this);
         initUI();
+        initFirstTimeHint();  // 第一次进入Activity时的提示信息
+    }
+
+    private void initFirstTimeHint() {
+        // 记录是否第一次进入分割星空图片页面
+        isFirstTimeEnter = SP.getBoolean(getString(R.string.star_split_is_first_enter), true);
+        SP.putBoolean(getString(R.string.star_split_is_first_enter), false);  // 仅仅第一次进入分割界面的时候有效
+
+//        if (isFirstTimeEnter) {
+            ShowcaseConfig config = new ShowcaseConfig();
+            config.setDelay(500); // half second between each showcase view
+            MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this, SHOWCASE_ID);
+            sequence.setConfig(config);
+
+            View boundaryBtn = findViewById(R.id.btn_star_ground_boundary);
+            sequence.addSequenceItem(new MaterialShowcaseView.Builder(this)
+                    .setTarget(boundaryBtn)
+                    .setDismissText(getString(R.string.got_it_message))
+                    .setContentText(getString(R.string.star_split_boundary_hint))
+                    .setDismissOnTouch(true)
+                    .build());
+
+            View clearBoundaryBtn = findViewById(R.id.btn_clear);
+            sequence.addSequenceItem(new MaterialShowcaseView.Builder(this)
+                    .setTarget(clearBoundaryBtn)
+                    .setDismissText(getString(R.string.got_it_message))
+                    .setContentText(getString(R.string.star_split_reset_boundary_hint))
+                    .setDismissOnTouch(true)
+                    .build());
+
+            View cutImgBtn = findViewById(R.id.btn_star_grab_cut);
+            sequence.addSequenceItem(new MaterialShowcaseView.Builder(this)
+                    .setTarget(cutImgBtn)
+                    .setDismissText(getString(R.string.got_it_message))
+                    .setContentText(getString(R.string.star_split_cut_hint))
+                    .setDismissOnTouch(true)
+                    .build());
+
+            sequence.start();
+//        }
     }
 
     private void initUI() {
