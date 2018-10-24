@@ -10,23 +10,36 @@
 
     <include layout="@layout/toolbar_main"/>
 
-    <com.shuhart.stepview.StepView
-        android:id="@+id/photo_operate_step_view"
+
+    <LinearLayout
+        android:layout_margin="15dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:selectedCircleColor="@color/colorAccent"
-        app:selectedTextColor="@color/colorAccent"
-        app:nextTextColor="@color/colorAccent"
-        app:nextStepLineColor="@color/colorAccent"
-        app:doneCircleColor="@color/colorAccent"
-        app:doneStepLineColor="@color/colorAccent"
-        app:selectedStepNumberColor="@color/colorPrimary"
-        app:doneStepMarkColor="@color/colorPrimary"
-        android:padding="6dp"
-        android:typeface="@font/iran_sans_mobile"
-        app:animationType="All"
-        app:stepPadding="12dp"
-        android:layout_marginTop="10dp"/>
+        android:layout_height="wrap_content">
+
+        <com.shuhart.stepview.StepView
+            android:id="@+id/photo_operate_step_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            app:selectedCircleColor="@color/colorAccent"
+            app:selectedTextColor="@color/black"
+
+            app:nextTextColor="@color/colorAccent"
+            app:nextStepLineColor="@color/colorAccent"
+
+            app:doneCircleColor="@color/colorAccent"
+            app:doneStepLineColor="@color/colorPrimaryDark"
+
+            app:selectedStepNumberColor="@color/black"
+            app:doneStepMarkColor="@color/white"
+            app:doneTextColor="@color/colorPrimaryDark"
+
+            android:typeface="@font/iran_sans_mobile"
+            app:animationType="All"
+            android:padding="16dp"
+            app:stepPadding="4dp" />
+
+    </LinearLayout>
 
 
     <LinearLayout
