@@ -173,12 +173,18 @@ public class MainActivity extends BaseActivity {
             public void onPageSelected(int position) {
                 // ViewPager和BottomNavigationView联动绑定
                 mBottomNavigationView.setCurrentItem(position);
+                AlbumFragment fragment = (AlbumFragment) FragmentDataGenerator.FRAGMENTS[BottomNavigationEnum.GALLERY.getNavItemIndex()];
                 if (position == BottomNavigationEnum.CAMERA.getNavItemIndex()) {
                     mMainViewPager.setCanScroll(false); // 到Camera Fragment的时候禁止ViewPager 的滑动
                     toolbar.setVisibility(View.GONE); // 隐藏导航栏
-                } else {
+                    fragment.gotoInitStatus();  // 将相册界面初始化，防止逻辑混乱
+                } else if (position == BottomNavigationEnum.GALLERY.getNavItemIndex()) {
                     mMainViewPager.setCanScroll(true);
                     toolbar.setVisibility(View.VISIBLE); // 恢复显示导航栏
+                } else if (position == BottomNavigationEnum.HOME.getNavItemIndex()) {
+                    mMainViewPager.setCanScroll(true);
+                    toolbar.setVisibility(View.VISIBLE); // 恢复显示导航栏
+                    fragment.gotoInitStatus();  // 将相册界面初始化，防止逻辑混乱
                 }
             }
 

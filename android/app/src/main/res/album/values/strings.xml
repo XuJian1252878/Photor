@@ -4,7 +4,7 @@
     <string name="preference_use_alternative_provider">alternative_provider</string>
     <string name="album_photo_count_html_media">Media</string>
 
-    <string name="local_folder">本地文件</string>
+    <string name="local_folder">Photor</string>
     <string name="all_media">全部照片</string>
     <string name="sort_menu_title">排序</string>
 

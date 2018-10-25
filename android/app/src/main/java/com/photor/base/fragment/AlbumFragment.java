@@ -871,6 +871,31 @@ public class AlbumFragment extends Fragment {
     }
 
     /**
+     * 当滑动ViewPager时，将相册恢复到初始的相册状态
+     */
+    public void gotoInitStatus() {
+        checkForReveal = true;
+        if (editMode && all_photos) {
+            clearSelectedPhotos();  // 清除全局被选中的照片信息
+        }
+        getNavigationBar(); // 显示底部导航栏信息
+        if (editMode) {
+            finishEditMode();  // 根据不同 相册模式清除已经选中的照片
+            displayAlbums();  // 显示最初始的Album状态
+        } else {
+            if (albumsMode) {
+                // 如果是相册模式
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                }
+            } else {
+                // 不是album模式的，返回album模式作为根
+                displayAlbums();
+            }
+        }
+    }
+
+    /**
      * 处理在长按模式下，点击导航栏返回按钮的各种逻辑
      */
     private void updateSelectedStuff() {
