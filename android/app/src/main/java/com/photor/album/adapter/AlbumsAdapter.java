@@ -76,7 +76,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
         holder.storage.setVisibility(View.INVISIBLE);
         holder.pin.setVisibility(View.INVISIBLE);
 
-        String hexAccentColor = "0xFFFFFF";
+        String hexAccentColor = "#2196F3";
 
         RequestOptions requestOptions = new RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
