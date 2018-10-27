@@ -8,6 +8,7 @@ import android.util.AttributeSet;
  * 禁用ViewPager滑动事件
  * 
  * @author panyi
+ * xujian 2018/10/27
  * 
  */
 public class CustomViewPager extends ViewPager {
@@ -19,9 +20,9 @@ public class CustomViewPager extends ViewPager {
 
 	@Override
 	public void setCurrentItem(int item, boolean smoothScroll) {
-		isCanScroll = true;
+//		isCanScroll = true;
 		super.setCurrentItem(item, smoothScroll);
-		isCanScroll = false;
+//		isCanScroll = false;
 	}
 
 	@Override
