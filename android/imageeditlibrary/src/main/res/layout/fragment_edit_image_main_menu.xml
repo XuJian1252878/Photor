@@ -176,6 +176,7 @@
             android:orientation="vertical"
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center"
+            android:visibility="gone"
             android:layout_gravity="center_vertical"
             android:layout_width="@dimen/editor_mid_row_size"
             android:layout_height="@dimen/editor_mid_row_size" >

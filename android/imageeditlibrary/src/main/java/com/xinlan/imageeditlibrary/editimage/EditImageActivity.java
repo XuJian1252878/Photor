@@ -61,7 +61,7 @@ import java.util.List;
  */
 public class EditImageActivity extends BaseActivity {
 
-    public static final int BOTTOM_GALLAY_PART_COUNT = 10;  // 底部导航栏的总部分数
+    public static final int BOTTOM_GALLAY_PART_COUNT = 9;  // 底部导航栏的总部分数
 
     public static final String EXTRA_FILE_PATH = "file_path";
     public static final String EXTRA_SELECTED_PHOTO_PATHS_CHART_LET = "EXTRA_SELECTED_PHOTO_PATHS_CHART_LET";
@@ -77,10 +77,11 @@ public class EditImageActivity extends BaseActivity {
     public static final int MODE_ROTATE = 4;// 旋转模式
     public static final int MODE_TEXT = 5;// 文字模式
     public static final int MODE_PAINT = 6;//绘制模式
-    public static final int MODE_BEAUTY = 7;//美颜模式
-    public static final int MODE_ENHANCE = 8;// 加强模式
-    public static final int MODE_FRAME = 9; // 相框模式
-    public static final int MODE_CHARTLET = 10; // 相片贴图模式
+    public static final int MODE_ENHANCE = 7;// 加强模式
+    public static final int MODE_FRAME = 8; // 相框模式
+    public static final int MODE_CHARTLET = 9; // 相片贴图模式
+
+    public static final int MODE_BEAUTY = 10;//美颜模式
 
     public String filePath;// 需要编辑图片路径
     public List<String> selectedImgPaths; // 从相册界面传递过来的被选择的图片的路径信息
@@ -296,8 +297,8 @@ public class EditImageActivity extends BaseActivity {
                     return mAddTextFragment;
                 case PaintFragment.INDEX:
                     return mPaintFragment;//绘制
-                case BeautyFragment.INDEX://美颜
-                    return mBeautyFragment;
+//                case BeautyFragment.INDEX://美颜
+//                    return mBeautyFragment;
                 case EnhanceFragment.INDEX: // 加强
                     return mEnhanceFragment;
                 case FrameFragment.INDEX:
@@ -364,9 +365,9 @@ public class EditImageActivity extends BaseActivity {
             case MODE_PAINT:
                 mPaintFragment.backToMain();
                 return;
-            case MODE_BEAUTY://从美颜模式中返回
-                mBeautyFragment.backToMain();
-                return;
+//            case MODE_BEAUTY://从美颜模式中返回
+//                mBeautyFragment.backToMain();
+//                return;
             case MODE_ENHANCE:
                 mEnhanceFragment.backToMain();
                 return;
@@ -426,9 +427,9 @@ public class EditImageActivity extends BaseActivity {
                 case MODE_PAINT://保存涂鸦
                     mPaintFragment.savePaintImage();
                     break;
-                case MODE_BEAUTY://保存美颜后的图片
-                    mBeautyFragment.applyBeauty();
-                    break;
+//                case MODE_BEAUTY://保存美颜后的图片
+//                    mBeautyFragment.applyBeauty();
+//                    break;
                 case MODE_ENHANCE:
                     mEnhanceFragment.applyEnhanceImage();
                     break;
