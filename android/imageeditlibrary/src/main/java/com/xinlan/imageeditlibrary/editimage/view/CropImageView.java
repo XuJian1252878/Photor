@@ -19,6 +19,7 @@ import com.xinlan.imageeditlibrary.editimage.utils.PaintUtil;
  * 剪切图片
  * 
  * @author 潘易
+ * xujian 2018/10/26
  * 
  */
 public class CropImageView extends View {
@@ -31,11 +32,14 @@ public class CropImageView extends View {
 	private float oldx, oldy;
 	private int status = STATUS_IDLE;
 	private int selectedControllerCicle;
+
+	// 除了裁剪框之外的区域，将除了裁剪框之外的区域分为4个矩形
 	private RectF backUpRect = new RectF();// 上
 	private RectF backLeftRect = new RectF();// 左
 	private RectF backRightRect = new RectF();// 右
 	private RectF backDownRect = new RectF();// 下
 
+	// 当前的裁剪位置矩形
 	private RectF cropRect = new RectF();// 剪切矩形
 
 	private Paint mBackgroundPaint;// 背景Paint
@@ -79,7 +83,7 @@ public class CropImageView extends View {
 	}
 
 	/**
-	 * 重置剪裁面
+	 * 重置剪裁面（将裁剪界面设置为跟当前的图像界面一样长一样宽）
 	 * 
 	 * @param rect
 	 */
@@ -90,9 +94,15 @@ public class CropImageView extends View {
 		invalidate();
 	}
 
+	/**
+	 * 点击某一个裁剪选项的时候，设置当前裁剪矩形的缩放比例
+	 * @param rect
+	 * @param r
+	 */
 	public void setRatioCropRect(RectF rect, float r) {
 		this.ratio = r;
 		if (r < 0) {
+			// 设置为任意的裁剪比例（初始时默认为2：1）
 			setCropRect(rect);
 			return;
 		}
@@ -164,6 +174,7 @@ public class CropImageView extends View {
 		float y = event.getY();
 		switch (action & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_DOWN:
+			// 检查有没有选中某一个控制点
 			int selectCircle = isSeletedControllerCircle(x, y);
 			if (selectCircle > 0) {// 选择控制点
 				ret = true;
@@ -200,7 +211,7 @@ public class CropImageView extends View {
 
 	/**
 	 * 移动剪切框
-	 * 
+	 * 并且会判断边框是否超出了图片的矩形范围
 	 * @param dx
 	 * @param dy
 	 */
@@ -305,9 +316,11 @@ public class CropImageView extends View {
 
 	/**
 	 * 边界条件检测
-	 * 
+	 * 防止裁剪区域跃出图片区域
+	 * 以及裁剪区域小于四边操作点的位置
 	 */
 	private void validateCropRect() {
+		//
 		if (cropRect.width() < CIRCLE_WIDTH) {
 			cropRect.left = tempRect.left;
 			cropRect.right = tempRect.right;
@@ -316,6 +329,7 @@ public class CropImageView extends View {
 			cropRect.top = tempRect.top;
 			cropRect.bottom = tempRect.bottom;
 		}
+		// 检测当前的裁剪框是否在底图的Rect范围内
 		if (cropRect.left < imageRect.left) {
 			cropRect.left = imageRect.left;
 		}
@@ -366,8 +380,9 @@ public class CropImageView extends View {
 	}
 
 	/**
+	 * 按照中心点进行缩放切换
 	 * 缩放指定矩形
-	 * 
+	 *
 	 * @param rect
 	 */
 	private static void scaleRect(RectF rect, float scaleX, float scaleY) {
@@ -387,6 +402,7 @@ public class CropImageView extends View {
 	}
 
 	/**
+	 * 当用户点击不同的缩放比例之后调用
 	 * 缩放指定矩形
 	 * 
 	 * @param rect
