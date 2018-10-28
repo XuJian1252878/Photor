@@ -259,6 +259,9 @@ public class EditImageActivity extends BaseActivity {
         });
 
         mRedoUndoController = new RedoUndoController(this, findViewById(R.id.redo_uodo_panel));
+
+        // 清除原来的滤镜缩略图信息
+        mFilterListFragment.initFilterThumbs();
     }
 
     /**

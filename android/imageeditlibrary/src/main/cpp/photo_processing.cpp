@@ -790,78 +790,95 @@ Java_com_xinlan_imageeditlibrary_editimage_task_ImageProcessingTask_nativeApplyF
 
     switch (mode) {
         case 0:
+            // 原始图像
             dst = src.clone();
             break;
         case 1:
-            applySajuno(src,dst,val);
+            // 怀旧风格
+            applyReminiscence(src,dst,val);
             break;
         case 2:
-            applyManglow(src, dst, val);
+            // 连环画风格
+            applyComicStrip(src,dst,val);
             break;
         case 3:
-            applyPalacia(src, dst, val);
+            // 熔铸风格
+            applyCasting(src,dst,val);
             break;
         case 4:
-            applyAnax(src, dst, val);
+            // 冰冻风格
+            applyFrozen(src,dst,val);
             break;
         case 5:
-            applySepia(src, dst, val);
+            applySajuno(src,dst,val);
             break;
         case 6:
-            applyCyano(src, dst, val);
+            applyManglow(src, dst, val);
             break;
         case 7:
-            applyBW(src, dst, val);
+            applyPalacia(src, dst, val);
             break;
         case 8:
-            applyAnsel(src, dst, val);
+            applyAnax(src, dst, val);
             break;
         case 9:
-            applyGrain(src, dst, val);
+            applySepia(src, dst, val);
             break;
         case 10:
-            applyHistEq(src, dst, val);
+            applyCyano(src, dst, val);
             break;
         case 11:
-            applyThreshold(src, dst, val);
+            applyBW(src, dst, val);
             break;
         case 12:
-            applyNegative(src,dst,val);
+            applyAnsel(src, dst, val);
             break;
         case 13:
-            applyGreenBoostEffect(src,dst,val);
+            applyGrain(src, dst, val);
             break;
         case 14:
-            applyBoostRedEffect(src,dst,val);
+            applyHistEq(src, dst, val);
             break;
         case 15:
-            applyBlueBoostEffect(src,dst,val);
+            applyThreshold(src, dst, val);
             break;
         case 16:
-            applyColorBoostEffect(src,dst,val);
+            applyNegative(src,dst,val);
             break;
         case 17:
-            applyCyanise(src,dst,val);
+            applyGreenBoostEffect(src,dst,val);
             break;
         case 18:
-            applyFade(src,dst,val);
+            applyBoostRedEffect(src,dst,val);
             break;
         case 19:
-            applyCartoon(src, dst, val);
+            applyBlueBoostEffect(src,dst,val);
             break;
         case 20:
-            applyEdgify(src, dst, val);
+            applyColorBoostEffect(src,dst,val);
             break;
         case 21:
-            applyPencilSketch(src, dst, val);
+            applyCyanise(src,dst,val);
             break;
         case 22:
-            applyRedBlueEffect(src,dst,val);
+            applyFade(src,dst,val);
             break;
         case 23:
-            applyRedGreenFilter(src,dst,val);
+            applyCartoon(src, dst, val);
             break;
         case 24:
+            applyEdgify(src, dst, val);
+            break;
+        case 25:
+            applyPencilSketch(src, dst, val);
+            break;
+        case 26:
+            applyRedBlueEffect(src,dst,val);
+            break;
+        case 27:
+            applyRedGreenFilter(src,dst,val);
+            break;
+        case 28:
             applyWhiteYellowTint(src, dst, val);
             break;
         default:

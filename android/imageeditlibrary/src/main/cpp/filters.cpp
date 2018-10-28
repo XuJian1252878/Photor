@@ -217,6 +217,99 @@ void applySajuno(cv::Mat &src, cv::Mat &dst, int val) {
     }
 }
 
+// 怀旧风格
+void applyReminiscence(cv::Mat &src, cv::Mat &dst, int val) {
+    cvtColor(src, src, CV_BGRA2BGR);
+    float opacity = val * 0.01f;
+    dst = Mat::zeros(src.size(), src.type());
+    uchar r, g, b;
+
+    for (int y = 0; y < src.rows; y ++) {
+        for (int x = 0; x < src.cols; x ++) {
+            r = src.at<Vec3b>(y, x)[0];
+            g = src.at<Vec3b>(y, x)[1];
+            b = src.at<Vec3b>(y, x)[2];
+
+            // 根据怀旧公式计算目标像素值
+            dst.at<Vec3b>(y, x)[0] = saturate_cast<uchar>((0.393 * r + 0.769 * g + 0.189 * b) * (1 + opacity));
+            dst.at<Vec3b>(y, x)[1] = saturate_cast<uchar>((0.349 * r + 0.686 * g + 0.168 * b) * (1 + opacity));
+            dst.at<Vec3b>(y, x)[2] = saturate_cast<uchar>((0.272 * r + 0.534 * g + 0.131 * b) * (1 + opacity));
+        }
+    }
+}
+
+// 连环画风格
+void applyComicStrip(cv::Mat &src, cv::Mat &dst, int val) {
+    cvtColor(src, src, CV_BGRA2BGR);
+    float opacity = val * 0.01f;
+    dst = Mat::zeros(src.size(), src.type());
+    uchar r, g, b;
+
+    for (int y = 0; y < src.rows; y ++) {
+        for (int x = 0; x < src.cols; x ++) {
+            r = src.at<Vec3b>(y, x)[0];
+            g = src.at<Vec3b>(y, x)[1];
+            b = src.at<Vec3b>(y, x)[2];
+
+            // 根据怀旧公式计算目标像素值
+            dst.at<Vec3b>(y, x)[0] = saturate_cast<uchar>((abs(g - b + g + r) * r / 256) * (1 + opacity));
+            dst.at<Vec3b>(y, x)[1] = saturate_cast<uchar>((abs(b - g + b + r) * r / 256) * (1 + opacity));
+            dst.at<Vec3b>(y, x)[2] = saturate_cast<uchar>((abs(b - g + b + r) * g / 256) * (1 + opacity));
+        }
+    }
+}
+
+// 熔炉风格
+void applyCasting(cv::Mat &src, cv::Mat &dst, int val) {
+    cvtColor(src, src, CV_BGRA2BGR);
+    float opacity = val * 0.01f;
+    dst = Mat::zeros(src.size(), src.type());
+    uchar r, g, b;
+
+    for (int y = 0; y < src.rows; y ++) {
+        for (int x = 0; x < src.cols; x ++) {
+            r = src.at<Vec3b>(y, x)[0];
+            g = src.at<Vec3b>(y, x)[1];
+            b = src.at<Vec3b>(y, x)[2];
+
+            // 根据怀旧公式计算目标像素值
+            dst.at<Vec3b>(y, x)[0] = saturate_cast<uchar>(r * 128 / (g + b + 1) * (1 + opacity));
+            dst.at<Vec3b>(y, x)[1] = saturate_cast<uchar>(g * 128 / (r + b + 1) * (1 + opacity));
+            dst.at<Vec3b>(y, x)[2] = saturate_cast<uchar>(b * 128 / (g + r + 1) * (1 + opacity));
+        }
+    }
+}
+
+// 冰冻风格
+void applyFrozen(cv::Mat &src, cv::Mat &dst, int val) {
+    cvtColor(src, src, CV_BGRA2BGR);
+    float opacity = val * 0.01f;
+    dst = Mat::zeros(src.size(), src.type());
+    uchar r, g, b;
+
+    for (int y = 0; y < src.rows; y ++) {
+        for (int x = 0; x < src.cols; x ++) {
+            r = src.at<Vec3b>(y, x)[0];
+            g = src.at<Vec3b>(y, x)[1];
+            b = src.at<Vec3b>(y, x)[2];
+
+            // 根据怀旧公式计算目标像素值
+
+            r = (uchar)((r - g - b) * 3 / 2);
+            g = (uchar)((g - r - b) * 3 / 2);
+            b = (uchar)((b - g - r) * 3 / 2);
+
+            r = (uchar)(r>255 ? 255 : (r<0? -r : r));
+            g = (uchar)(g>255 ? 255 : (g<0? -g : g));
+            b = (uchar)(b>255 ? 255 : (b<0? -b : b));
+
+            dst.at<Vec3b>(y, x)[0] = saturate_cast<uchar>(r * (1 + opacity));
+            dst.at<Vec3b>(y, x)[1] = saturate_cast<uchar>(g * (1 + opacity));
+            dst.at<Vec3b>(y, x)[2] = saturate_cast<uchar>(b * (1 + opacity));
+        }
+    }
+}
+
 void applyBoostRedEffect(cv::Mat &src, cv::Mat &dst, int val) {
     register int x, y;
     float opacity = val * 0.01f;

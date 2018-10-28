@@ -67,6 +67,13 @@ public class FilterListFragment extends BaseEditFragment {
         return fragment;
     }
 
+    /**
+     * 解决重新进入图片编辑界面时，图片滤镜缩略图不变的bug
+     */
+    public static void initFilterThumbs() {
+        filterThumbs = null;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
