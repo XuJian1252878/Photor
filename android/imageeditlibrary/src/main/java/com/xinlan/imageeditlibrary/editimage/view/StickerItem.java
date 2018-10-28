@@ -30,7 +30,7 @@ public class StickerItem {
     public Bitmap bitmap;
     public Rect srcRect;// 原始图片坐标
     public RectF dstRect;// 绘制目标坐标
-    private Rect helpToolsRect;
+    private Rect helpToolsRect;  // 帮助按钮图标的矩形范围
     public RectF deleteRect;// 删除按钮位置
     public RectF rotateRect;// 旋转按钮位置
 
@@ -112,6 +112,7 @@ public class StickerItem {
                 - BUTTON_WIDTH, helpBox.right + BUTTON_WIDTH, helpBox.bottom
                 + BUTTON_WIDTH);
 
+        // 用于检测用户的点击是否落在了该delete rotate 按钮上
         detectRotateRect = new RectF(rotateRect);
         detectDeleteRect = new RectF(deleteRect);
     }
