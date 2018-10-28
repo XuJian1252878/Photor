@@ -47,7 +47,11 @@
 
 
     <string-array name="filter_titles">
-        <item>Origin</item>
+        <item>原始</item>
+        <item>怀旧</item>
+        <item>连环画</item>
+        <item>熔铸</item>
+        <item>冰冻</item>
         <item>Sajuno</item>
         <item>Manglow</item>
         <item>Palacia</item>

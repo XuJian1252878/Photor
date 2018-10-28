@@ -108,6 +108,10 @@ static double applyContrastToPixelComponent(float pixelComponent, float contrast
 }
 
 
+void applyReminiscence(cv::Mat &src, cv::Mat &dst, int val);
+void applyComicStrip(cv::Mat &src, cv::Mat &dst, int val);
+void applyCasting(cv::Mat &src, cv::Mat &dst, int val);
+void applyFrozen(cv::Mat &src, cv::Mat &dst, int val);
 void applySajuno(cv::Mat &inp, cv::Mat &out, int val);
 void applyManglow(cv::Mat &inp, cv::Mat &out, int val);
 void applyPalacia(cv::Mat &inp, cv::Mat &out, int val);
