@@ -24,6 +24,8 @@ import com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouchBase;
  * 图片旋转Fragment
  *
  * @author 潘易
+ *
+ * xujian 2018/10/27
  */
 public class RotateFragment extends BaseEditFragment {
     public static final int INDEX = ModuleConfig.INDEX_ROTATE;

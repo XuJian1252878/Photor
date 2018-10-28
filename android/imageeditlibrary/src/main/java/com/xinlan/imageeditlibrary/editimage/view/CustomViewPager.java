@@ -11,7 +11,10 @@ import android.util.AttributeSet;
  * xujian 2018/10/27
  * 
  */
+
+
 public class CustomViewPager extends ViewPager {
+	// 设置是否响应滑动事件的标志为false
 	private boolean isCanScroll = false;
 
 	public CustomViewPager(Context context) {
@@ -20,9 +23,9 @@ public class CustomViewPager extends ViewPager {
 
 	@Override
 	public void setCurrentItem(int item, boolean smoothScroll) {
-//		isCanScroll = true;
+		isCanScroll = true;
 		super.setCurrentItem(item, smoothScroll);
-//		isCanScroll = false;
+		isCanScroll = false;
 	}
 
 	@Override
@@ -40,8 +43,15 @@ public class CustomViewPager extends ViewPager {
 
 	@Override
 	public void scrollTo(int x, int y) {
+		// 控制是否响应滑动事件
 		if (isCanScroll) {
 			super.scrollTo(x, y);
 		}
 	}
-}// end class
+}
+
+
+
+
+
+

@@ -3,7 +3,6 @@ package com.xinlan.imageeditlibrary.editimage.fragment;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.os.AsyncTask;
@@ -11,21 +10,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.xinlan.imageeditlibrary.BaseActivity;
 import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 import com.xinlan.imageeditlibrary.editimage.ModuleConfig;
 import com.xinlan.imageeditlibrary.editimage.adapter.EditorRecyclerAdapter;
-import com.xinlan.imageeditlibrary.editimage.model.RatioItem;
-import com.xinlan.imageeditlibrary.editimage.utils.Matrix3;
+import com.xinlan.imageeditlibrary.editimage.utils.Matrix3Mul3;
 import com.xinlan.imageeditlibrary.editimage.view.CropImageView;
 import com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouchBase;
 
@@ -33,8 +28,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -199,8 +192,8 @@ public class CropFragment extends BaseEditFragment {
 			// Canvas canvas = new Canvas(resultBit);
 			float[] data = new float[9];
 			touchMatrix.getValues(data);// 底部图片变化记录矩阵原始数据
-			Matrix3 cal = new Matrix3(data);// 辅助矩阵计算类
-			Matrix3 inverseMatrix = cal.inverseMatrix();// 计算逆矩阵
+			Matrix3Mul3 cal = new Matrix3Mul3(data);// 辅助矩阵计算类
+			Matrix3Mul3 inverseMatrix = cal.inverseMatrix();// 计算逆矩阵
 			Matrix m = new Matrix();
 			m.setValues(inverseMatrix.getValues());
 			m.mapRect(cropRect);// 变化剪切矩形

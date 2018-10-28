@@ -10,7 +10,7 @@ import android.os.Build;
 
 import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
-import com.xinlan.imageeditlibrary.editimage.utils.Matrix3;
+import com.xinlan.imageeditlibrary.editimage.utils.Matrix3Mul3;
 
 /**
  * Created by panyi on 2016/8/14.
@@ -49,8 +49,8 @@ public abstract class StickerTask extends AsyncTask<Bitmap, Void, Bitmap> {
 
         float[] data = new float[9];
         touchMatrix.getValues(data);// 底部图片变化记录矩阵原始数据
-        Matrix3 cal = new Matrix3(data);// 辅助矩阵计算类
-        Matrix3 inverseMatrix = cal.inverseMatrix();// 计算逆矩阵
+        Matrix3Mul3 cal = new Matrix3Mul3(data);// 辅助矩阵计算类
+        Matrix3Mul3 inverseMatrix = cal.inverseMatrix();// 计算逆矩阵
         Matrix m = new Matrix();
         m.setValues(inverseMatrix.getValues());
 

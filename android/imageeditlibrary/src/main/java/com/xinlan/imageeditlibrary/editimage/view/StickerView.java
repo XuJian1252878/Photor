@@ -190,7 +190,9 @@ public class StickerView extends View {
     private boolean detectInItemContent(StickerItem item , float x , float y){
         //reset
         mPoint.set((int)x , (int)y);
-        //旋转点击点
+        // 具体实现中，贴图的位置矩形distRect(以及helpBox)只是体现了平移、缩放，并没有体现旋转。因此当前的触点要经过反旋转之后，再判断是否在helpBox的范围之内
+        // 具体的StickItem使用Matrix来重绘保证正确；helpBox通过让Canvas旋转roatetAngle角度保证重绘正确
+        // deleteRect，rotateRect（位置体现）只体现了平移，所以也是通过让Canvas旋转roatetAngle角度保证重绘正确
         RectUtil.rotatePoint(mPoint , item.helpBox.centerX() , item.helpBox.centerY() , -item.roatetAngle);
         return item.helpBox.contains(mPoint.x, mPoint.y);
     }

@@ -15,6 +15,7 @@ import android.view.View;
 
 /**
  * Created by panyi on 17/2/11.
+ * xujian 2018/10/26
  */
 
 public class CustomPaintView extends View {
@@ -111,12 +112,15 @@ public class CustomPaintView extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 ret = true;
+                // 记录上一次的用户触点位置
                 last_x = x;
                 last_y = y;
                 break;
             case MotionEvent.ACTION_MOVE:
                 ret = true;
+                // 根据上一次触点位置以及当前的触点位置在 mDrawBit 上画直线
                 mPaintCanvas.drawLine(last_x, last_y, x, y, eraser ? mEraserPaint : mPaint);
+                // 记录上一次的用户触点位置
                 last_x = x;
                 last_y = y;
                 this.postInvalidate();
