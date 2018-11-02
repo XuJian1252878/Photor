@@ -16,6 +16,7 @@ import com.xinlan.imageeditlibrary.editimage.utils.PaintUtil;
  * 旋转图片
  * 
  * @author 潘易
+ * xujian2018/10/23
  * 
  */
 public class RotateImageView extends View {
@@ -27,7 +28,7 @@ public class RotateImageView extends View {
 	private Matrix matrix = new Matrix();// 辅助计算矩形
 
 	private float scale;// 缩放比率
-	private int rotateAngle;
+	private int rotateAngle;  // 当前的旋转角度
 
 	private RectF wrapRect = new RectF();// 图片包围矩形
 	private Paint bottomPaint;
@@ -52,16 +53,17 @@ public class RotateImageView extends View {
 		srcRect = new Rect();
 		dstRect = new RectF();
 		maxRect = new Rect();
+		// 旋转图片背景的白底色信息
 		bottomPaint = PaintUtil.newRotateBottomImagePaint();
 		originImageRect = new RectF();
 	}
 
 	public void addBit(Bitmap bit, RectF imageRect) {
 		bitmap = bit;
-		srcRect.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
-		dstRect = imageRect;
+		srcRect.set(0, 0, bitmap.getWidth(), bitmap.getHeight());  // 当前原图像的大小矩形信息
+		dstRect = imageRect; // 当前图像所处的位置矩形
 
-		originImageRect.set(0, 0, bit.getWidth(), bit.getHeight());
+		originImageRect.set(0, 0, bit.getWidth(), bit.getHeight());  // 原图像的大小矩形信息
 		this.invalidate();
 	}
 
@@ -93,7 +95,9 @@ public class RotateImageView extends View {
 		canvas.save();
 		canvas.scale(scale, scale, canvas.getWidth() >> 1,
 				canvas.getHeight() >> 1);
+		// 绘制旋转界面的底部区域wrapRect
 		canvas.drawRect(wrapRect, bottomPaint);
+		// 设置当前的旋转角度
 		canvas.rotate(rotateAngle, canvas.getWidth() >> 1,
 				canvas.getHeight() >> 1);
 		canvas.drawBitmap(bitmap, srcRect, dstRect, null);
@@ -101,7 +105,7 @@ public class RotateImageView extends View {
 	}
 
 	/**
-	 * 计算出矩形包围盒
+	 * 计算出wrapRect
 	 */
 	private void calculateWrapBox() {
 		wrapRect.set(dstRect);
@@ -109,11 +113,11 @@ public class RotateImageView extends View {
 		int centerX = getWidth() >> 1;
 		int centerY = getHeight() >> 1;
 		matrix.postRotate(rotateAngle, centerX, centerY);// 旋转后的角度
-		// System.out.println("旋转之前-->" + wrapRect.left + "    " + wrapRect.top
-		// + "    " + wrapRect.right + "   " + wrapRect.bottom);
+		 System.out.println("旋转之前-->" + wrapRect.left + "    " + wrapRect.top
+		 + "    " + wrapRect.right + "   " + wrapRect.bottom);
 		matrix.mapRect(wrapRect);
-		// System.out.println("旋转之后-->" + wrapRect.left + "    " + wrapRect.top
-		// + "    " + wrapRect.right + "   " + wrapRect.bottom);
+		 System.out.println("旋转之后-->" + wrapRect.left + "    " + wrapRect.top
+		 + "    " + wrapRect.right + "   " + wrapRect.bottom);
 	}
 
 	/**

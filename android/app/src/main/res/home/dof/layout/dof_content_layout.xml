@@ -202,18 +202,20 @@
             android:layout_width="80sp"
             android:layout_height="30sp"
             android:translationZ="5dp"
+            android:gravity="center"
             android:layout_above="@+id/focal_wheel"
-            android:background="@color/accent_material_light"
+            android:background="@color/blue_dark"
             android:textSize="@dimen/main_activity_text_size"
             android:text="@string/focal_text_view_label"/>
 
         <!-- 实时显示当前的焦距数值 -->
         <TextView
             android:id="@+id/focal_text_view_number"
+            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="30sp"
             android:layout_alignParentStart="true"
-            android:background="@color/accent_material_light"
+            android:background="@color/blue_dark"
             android:text="@string/focal_text_view_number_init"
             android:textSize="@dimen/main_activity_text_size"
             android:layout_above="@+id/focal_wheel"
@@ -236,9 +238,10 @@
             android:layout_width="80sp"
             android:layout_height="30sp"
             android:translationZ="5dp"
+            android:gravity="center"
             android:textSize="@dimen/main_activity_text_size"
             android:layout_above="@+id/aperture_wheel"
-            android:background="@color/accent_material_light"
+            android:background="@color/blue_dark"
             android:text="@string/aperture_text_view_label"/>
 
         <TextView
@@ -247,7 +250,8 @@
             android:layout_height="30sp"
             android:layout_above="@+id/aperture_wheel"
             android:layout_alignParentStart="true"
-            android:background="@color/accent_material_light"
+            android:gravity="center"
+            android:background="@color/blue_dark"
             android:text="@string/aperture_text_view_number_init"
             android:textSize="@dimen/main_activity_text_size"
             android:textAlignment="center"
@@ -273,7 +277,8 @@
             android:translationZ="5dp"
             android:textSize="@dimen/main_activity_text_size"
             android:layout_above="@+id/distance_wheel"
-            android:background="@color/accent_material_light"
+            android:background="@color/blue_dark"
+            android:gravity="center"
             android:text="@string/distance_text_view_label"/>
 
         <TextView
@@ -283,8 +288,9 @@
             android:translationZ="3dp"
             android:layout_above="@+id/distance_wheel"
             android:layout_alignParentStart="true"
-            android:background="@color/accent_material_light"
+            android:background="@color/blue_dark"
             android:text="@string/distance_text_view_number_init"
+            android:gravity="center"
             android:textSize="@dimen/main_activity_text_size"
             android:textAlignment="center" />
 

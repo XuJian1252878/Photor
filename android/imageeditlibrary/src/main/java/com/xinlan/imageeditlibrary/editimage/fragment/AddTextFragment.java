@@ -30,6 +30,7 @@ import com.xinlan.imageeditlibrary.editimage.view.TextStickerView;
  * 添加文本贴图
  *
  * @author 潘易
+ * xujian 2018/10/18
  */
 public class AddTextFragment extends BaseEditFragment implements TextWatcher {
     public static final int INDEX = ModuleConfig.INDEX_ADDTEXT;

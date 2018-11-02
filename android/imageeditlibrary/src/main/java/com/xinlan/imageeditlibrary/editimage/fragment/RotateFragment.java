@@ -84,6 +84,7 @@ public class RotateFragment extends BaseEditFragment {
      * 角度改变监听
      *
      * @author panyi
+     * xujian 2018/10/27
      */
     private final class RotateAngleChange implements OnSeekBarChangeListener {
         @Override
@@ -108,6 +109,7 @@ public class RotateFragment extends BaseEditFragment {
      * 返回按钮逻辑
      *
      * @author panyi
+     * xujian 2018/10/27
      */
     private final class BackToMenuClick implements OnClickListener {
         @Override
@@ -146,6 +148,7 @@ public class RotateFragment extends BaseEditFragment {
      * 保存图片线程
      *
      * @author panyi
+     * xujian 2018/10/27
      */
     private final class SaveRotateImageTask extends
             AsyncTask<Bitmap, Void, Bitmap> {

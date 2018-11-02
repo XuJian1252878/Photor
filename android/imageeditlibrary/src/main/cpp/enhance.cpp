@@ -26,7 +26,8 @@ extern "C" {
         int x,y,contrast;
         cvtColor(src,src,CV_BGRA2BGR);
         contrast = (int)(((float)(val-50)/100)*255);
-        float factor = (float)(259*(contrast + 255))/(255*(259-contrast));
+//        float factor = (float)(259*(contrast + 255))/(255*(259-contrast));
+        float factor = (float)((val - 50) / 100.0 * 2 + 1);
 
         dst = Mat::zeros( src.size(), src.type());
         for (y = 0; y < src.rows; y++) {
@@ -68,6 +69,7 @@ extern "C" {
         }
     }
 
+    // YCrCb
     void adjustSaturation(Mat &src, Mat &dst, int val) {
         int x,y;
         cvtColor(src,src,CV_BGRA2BGR);
@@ -90,6 +92,8 @@ extern "C" {
             }
         }
     }
+
+    // HSL  https://blog.csdn.net/xingyanxiao/article/details/48035537
 
     void adjustTemperature(Mat &src, Mat &dst, int val) {
         int x,y,temp;

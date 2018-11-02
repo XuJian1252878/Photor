@@ -27,6 +27,7 @@ import java.util.List;
  * 文本贴图处理控件
  * <p/>
  * Created by panyi on 2016/6/9.
+ * xujian 2018/10/18
  */
 public class TextStickerView extends View {
     public static final float TEXT_SIZE_DEFAULT = 80;

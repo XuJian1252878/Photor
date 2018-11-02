@@ -2,12 +2,15 @@ package com.photor.home.dofcalculator.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.theme.ThemeHelper;
+import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.photor.R;
 import com.photor.home.dofcalculator.constant.ApplicationConstants;
 import com.photor.home.dofcalculator.model.DepthOfFieldCalculator;
@@ -47,6 +50,16 @@ public class DofCalcMainActivity extends AppCompatActivity {
         // 设置ActionBar
         Toolbar toolbar = findViewById(R.id.main_activity_toolbar);
         setSupportActionBar(toolbar);
+
+        toolbar.setTitle(R.string.dof_calc_name);
+        toolbar.setNavigationIcon(ThemeHelper.getToolbarIcon(getApplicationContext(), CommunityMaterial.Icon.cmd_arrow_left));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+
 
         dofCalcMainActivity = this;
 

@@ -361,20 +361,19 @@ public class FileUtils {
             document.open();
 
             Image image = Image.getInstance(pathForDescription); // 获得当前图片的对象
-            float scaleWidth = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin() - 0) / image.getWidth()) * 100;
-            float scaleHeight = ((document.getPageSize().getHeight() - document.topMargin() - document.bottomMargin() - 0) / image.getHeight()) * 100;
+            float scaleWidth = ((document.getPageSize().getWidth() - document.leftMargin()
+                    - document.rightMargin() - 0) / image.getWidth()) * 100;
+            float scaleHeight = ((document.getPageSize().getHeight() - document.topMargin()
+                    - document.bottomMargin() - 0) / image.getHeight()) * 100;
             image.scalePercent(scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
 
             float scale = (scaleWidth < scaleHeight ? scaleWidth / 100f : scaleHeight / 100f);
             float x = (document.getPageSize().getWidth() - image.getWidth() * scale) / 2f;
             float y = (document.getPageSize().getHeight() - image.getHeight() * scale) / 2f;
-//            image.setAlignment(Image.ALIGN_CENTER|Image.ALIGN_TOP);
             image.setAbsolutePosition(x, y);
 
             document.add(image);
             document.close();
-            // 更新媒体库信息
-//            FileUtils.updateMediaStore(context, new File(pdfPath), null);
             return pdfPath;
         } catch (DocumentException e) {
             e.printStackTrace();
@@ -861,16 +860,23 @@ public class FileUtils {
      * @param file
      * @return
      */
-    public static boolean updateMediaStore(final Context context, final File file, boolean isDelete, MediaScannerConnection.OnScanCompletedListener onScanCompletedListener) {
+
+
+    public static boolean updateMediaStore(final Context context,
+                                           final File file,
+                                           boolean isDelete,
+                                           MediaScannerConnection.OnScanCompletedListener
+                                                   onScanCompletedListener) {
         try {
 
             if (!isDelete) {
                 String filePath = file.getAbsolutePath();
                 String extensionName = getExtensionName(filePath);
 
-                // 存储刚刚生成的图片信息（目前只支持图片）【仅仅靠MediaScannerConnection是没有效果的】
+                // 存储刚刚生成的图片信息（目前只支持图片）
                 ContentValues contentValues = new ContentValues(2);
-                contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/" + (TextUtils.isEmpty(extensionName) ? "jpeg" : extensionName));
+                contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/" +
+                        (TextUtils.isEmpty(extensionName) ? "jpeg" : extensionName));
                 contentValues.put(MediaStore.Images.Media.DATA, filePath);
                 context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
             }
@@ -884,15 +890,6 @@ public class FileUtils {
                         new String[]{file.getAbsolutePath()},
                         null,  // 根绝文件后缀名称决定mimetype
                         onScanCompletedListener);
-//                        new MediaScannerConnection.OnScanCompletedListener() {
-//                            @Override
-//                            public void onScanCompleted(String s, Uri uri) {
-//                                Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-//                                intent.setData(uri);
-//                                context.sendBroadcast(intent);
-//                            }
-//                        }
-//                        );
             } else {
                 context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.fromFile(file)));
             }
