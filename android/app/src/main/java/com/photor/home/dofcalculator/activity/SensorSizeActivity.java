@@ -5,7 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
+import com.example.theme.ThemeHelper;
+import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.photor.R;
 import com.photor.home.dofcalculator.adapter.SensorSizeAdapter;
 import com.photor.home.dofcalculator.model.SensorSizeEnum;
@@ -26,6 +29,15 @@ public class SensorSizeActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.sensor_size_activity_toolbar);
         setSupportActionBar(toolbar);
+
+        toolbar.setTitle(R.string.dof_calc_name);
+        toolbar.setNavigationIcon(ThemeHelper.getToolbarIcon(getApplicationContext(), CommunityMaterial.Icon.cmd_arrow_left));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
         // 获取RecyclerView控件
         mSensorSizeRecyclerView = findViewById(R.id.sensor_size_recycler_view);

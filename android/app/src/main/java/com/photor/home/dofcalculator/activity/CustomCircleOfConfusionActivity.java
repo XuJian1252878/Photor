@@ -3,6 +3,7 @@ package com.photor.home.dofcalculator.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.view.KeyEvent;
@@ -12,6 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.theme.ThemeHelper;
+import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.photor.R;
 import com.photor.home.dofcalculator.constant.ApplicationConstants;
 import com.photor.home.dofcalculator.model.DepthOfFieldCalculator;
@@ -32,6 +35,18 @@ public class CustomCircleOfConfusionActivity extends AppCompatActivity {
         mCustomCircleOfConfusionEditView = findViewById(R.id.custom_circle_of_confusion_edit_view);
         mCustomCircleOfConfusionButton = findViewById(R.id.custom_circle_of_confusion_button);
         mCustomCircleOfConfusionButton.setClickable(false);
+
+        Toolbar toolbar = findViewById(R.id.custom_circle_of_confusion_toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setTitle(R.string.dof_calc_name);
+        toolbar.setNavigationIcon(ThemeHelper.getToolbarIcon(getApplicationContext(), CommunityMaterial.Icon.cmd_arrow_left));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
 
         mCustomCircleOfConfusionEditView.setOnEditorActionListener(new TextView.OnEditorActionListener() {

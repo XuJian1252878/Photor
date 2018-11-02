@@ -1,5 +1,7 @@
 <resources>
 
+    <string name="dof_calc_name">景深计算器</string>
+
     <string name="feet">feet</string>
     <string name="inch">inch</string>
     <string name="meter">m</string>

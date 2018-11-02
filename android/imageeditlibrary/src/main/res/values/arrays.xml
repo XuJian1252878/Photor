@@ -16,14 +16,14 @@
     <string-array name="enhance_titles">
         <item>亮度</item>
         <item>对比度</item>
-        <item>色调</item>
+        <item>色相</item>
         <item>饱和度</item>
         <item>色温</item>
-        <item>染色</item>  <!-- tint -->
+        <item>色调</item>  <!-- tint -->
         <item>晕影</item>  <!-- vignette -->
         <item>锐化</item>
-        <item>虚化</item>
-        <item>gamma</item>
+        <item>模糊</item>
+        <!--<item>gamma</item>-->
     </string-array>
 
 
