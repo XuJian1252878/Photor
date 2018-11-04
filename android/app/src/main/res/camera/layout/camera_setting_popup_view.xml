@@ -104,6 +104,7 @@
         <Space
             android:layout_width="0dp"
             android:layout_height="1dp"
+            android:visibility="gone"
             android:layout_weight="1" />
 
         <ImageButton
@@ -111,6 +112,7 @@
             android:padding="10dp"
             android:background="#63636363"
             android:scaleType="fitCenter"
+            android:visibility="gone"
             android:src="@drawable/ic_camera_audio_on_white"
             android:layout_width="60dp"
             android:layout_height="40dp" />
@@ -295,6 +297,7 @@
         android:background="#63636363"
         android:layout_marginTop="5dp"
         android:padding="5dp"
+        android:visibility="gone"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -331,6 +334,7 @@
         android:layout_marginTop="5dp"
         android:background="#63636363"
         android:orientation="vertical"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

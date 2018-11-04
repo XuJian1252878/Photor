@@ -44,10 +44,9 @@
 
     <ScrollView
         android:id="@+id/camera_setting_popup_container"
-
+        android:layout_marginBottom="100dp"
         android:layout_gravity="center"
         android:layout_width="300dp"
-
         android:layout_height="wrap_content" >
     </ScrollView>
 
@@ -219,7 +218,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:gravity="center_vertical"
+        android:gravity="center"
         android:padding="16dp"
         android:layout_marginBottom="100dp"
         android:orientation="horizontal"
@@ -236,6 +235,7 @@
         <Space
             android:layout_width="0dp"
             android:layout_height="1dp"
+            android:visibility="gone"
             android:layout_weight="1" />
 
         <ImageButton
@@ -244,6 +244,7 @@
             android:layout_height="20dp"
             android:scaleType="fitCenter"
             android:background="#00000000"
+            android:visibility="gone"
             android:src="@drawable/ic_video_on_white" />
 
         <Space
