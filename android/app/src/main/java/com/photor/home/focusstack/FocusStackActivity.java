@@ -290,7 +290,7 @@ public class FocusStackActivity extends PhotoOperateBaseActivity {
         builder.setView(dialogLayout);  // builder设置布局
 
 
-        // 在builder中设置确定按钮
+        // 在builder中设置取消按钮
         builder.setNegativeButton(R.string.cancel_action, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -301,7 +301,7 @@ public class FocusStackActivity extends PhotoOperateBaseActivity {
             }
         });
 
-        // builder 设置取消按钮
+        // builder 设置确定按钮
         builder.setPositiveButton(R.string.ok_action, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {

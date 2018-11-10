@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/vn.mbm.phimp.me"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="2dp"
+        android:id="@+id/exposure_card">
+
+        <ScrollView
+            android:id="@+id/exposure_params_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/text_dialog_title"
+                    android:layout_width="match_parent"
+                    android:textColor="@color/md_dark_primary_text"
+                    android:layout_height="wrap_content"
+                    android:background="@color/md_red_500"
+                    android:text="@string/exposure_params_dialog_title"
+                    android:padding="24dp"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="10dp"
+                    android:padding="10dp"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="@string/tone_mapping_method_selector"
+                        android:textSize="16sp"
+                        android:layout_width="0dp"
+                        android:gravity="center"
+                        android:layout_weight="3"
+                        android:padding="3dp"
+                        android:layout_height="wrap_content" />
+
+                    <com.shawnlin.numberpicker.NumberPicker
+                        android:id="@+id/tone_mapping_method_picker"
+                        android:layout_width="0dp"
+                        android:layout_weight="6"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        app:np_height="180dp"
+                        app:np_dividerColor="@color/colorPrimary"
+                        app:np_selectedTextColor="@color/colorPrimary"
+                        app:np_orientation="vertical"
+                        app:np_textColor="@color/colorPrimary"
+                        app:np_value="3" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/drago_params_panel"
+                    android:padding="10dp"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/gamma_drago_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/gamma_drago_seek_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/saturation_drago_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/saturation_drago_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/bias_drago_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/bias_drago_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/durand_params_panel"
+                    android:padding="10dp"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/gamma_durand_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/gamma_durand_seek_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/saturation_durand_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/saturation_durand_seek_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/contrast_durand_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/contrast_durand_seek_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/sigma_space_durand_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/sigma_space_durand_seek_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/sigma_color_durand_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/sigma_color_durand_seek_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/mantiuk_params_panel"
+                    android:padding="10dp"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/gamma_mantiuk_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/gamma_mantiuk_seek_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/saturation_mantiuk_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/saturation_mantiuk_seek_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/scale_mantiuk_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/scale_mantiuk_seek_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/reinhard_params_panel"
+                    android:padding="10dp"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/gamma_reinhard_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/gamma_reinhard_seek_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/color_adapt_reinhard_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/color_adapt_reinhard_seek_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/light_adapt_reinhard_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/light_adapt_reinhard_seek_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:padding="5dp"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/intensity_reinhard_label"
+                            android:textSize="16sp"
+                            android:gravity="center"
+                            android:layout_width="0dp"
+                            android:layout_weight="3"
+                            android:padding="3dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.xw.repo.BubbleSeekBar
+                            android:id="@+id/intensity_reinhard_seek_bar"
+                            android:gravity="center"
+                            app:bsb_show_progress_in_float="true"
+                            app:bsb_show_section_mark="true"
+                            app:bsb_show_section_text="true"
+                            app:bsb_show_thumb_text="true"
+                            android:layout_width="0dp"
+                            android:layout_weight="7"
+                            android:padding="3dp"
+                            app:bsb_section_text_position="below_section_mark"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+        </ScrollView>
+    </android.support.v7.widget.CardView>
+</LinearLayout>
