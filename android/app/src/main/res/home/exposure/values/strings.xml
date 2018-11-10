@@ -8,8 +8,7 @@
 
     <string name="exposure_btn_select_label">选择不同曝光图片</string>
     <string name="exposure_operate_btn_label">曝光合成</string>
-
     <string name="exposure_photo_count_not_enough">图片数量不足</string>
-
     <string name="exposure_progress_dialog_title">曝光合成</string>
+    <string name="expose_setting">曝光设置</string>
 </resources>
