@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
@@ -39,6 +40,12 @@ public class ExposureBaseActivity extends PhotoOperateBaseActivity {
         initUI();
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        return super.onCreateOptionsMenu(menu);
+    }
 
     private void initUI() {
 
