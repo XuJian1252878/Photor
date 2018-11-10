@@ -11,4 +11,51 @@
     <string name="exposure_photo_count_not_enough">图片数量不足</string>
     <string name="exposure_progress_dialog_title">曝光合成</string>
     <string name="expose_setting">曝光设置</string>
+    <string name="exposure_params_dialog_title">曝光合成参数设置</string>
+    
+    <string name="tone_mapping_method_selector">色调映射方法</string>
+    <string name="Drago">Drago</string>
+    <string name="Durand">Durand</string>
+    <string name="Mantiuk">Mantiuk</string>
+    <string name="Reinhard">Reinhard</string>
+
+    <string name="gamma_drago_label">gamma</string>
+    <string name="saturation_drago_label">saturation</string>
+    <string name="bias_drago_label">bias</string>
+
+    <string name="gamma_durand_label">gamma</string>
+    <string name="saturation_durand_label">saturation</string>
+    <string name="contrast_durand_label">contrast</string>
+    <string name="sigma_space_durand_label">sigma_space</string>
+    <string name="sigma_color_durand_label">sigma_color</string>
+
+    <string name="gamma_mantiuk_label">gamma</string>
+    <string name="saturation_mantiuk_label">saturation</string>
+    <string name="scale_mantiuk_label">scale</string>
+
+
+    <string name="gamma_reinhard_label">gamma</string>
+    <string name="color_adapt_reinhard_label">color_adapt</string>
+    <string name="light_adapt_reinhard_label">light_adapt</string>
+    <string name="intensity_reinhard_label">intensity</string>
+
+    <string name="gamma_drago">gamma_drago</string>
+    <string name="saturation_drago">saturation_drago</string>
+    <string name="bias_drago">bias_drago</string>
+
+    <string name="gamma_durand">gamma_durand</string>
+    <string name="saturation_durand">saturation_durand</string>
+    <string name="contrast_durand">contrast_durand</string>
+    <string name="sigma_space_durand">sigma_space_durand</string>
+    <string name="sigma_color_durand">sigma_color_durand</string>
+
+    <string name="gamma_mantiuk">gamma_mantiuk</string>
+    <string name="saturation_mantiuk">saturation_mantiuk</string>
+    <string name="scale_mantiuk">scale_mantiuk</string>
+
+    <string name="gamma_reinhard">gamma_reinhard</string>
+    <string name="color_adapt_reinhard">color_adapt_reinhard</string>
+    <string name="light_adapt_reinhard">light_adapt_reinhard</string>
+    <string name="intensity_reinhard">intensity_reinhard</string>
+
 </resources>

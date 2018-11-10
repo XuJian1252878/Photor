@@ -38,3 +38,41 @@ int ExposureMergeProcess(vector<string>& imagesPath, vector<float>& times, Mat* 
  * @param images 原始的曝光值不同的图片Mat
  */
 void readImagesAndTimes(vector<string>& imagesPath, vector<Mat>& images);
+
+
+int ExposureMergeProcessDrago(vector<string>& imagesPath,
+                              vector<float>& times,
+                              Mat* ldrDurand,
+                              string generateImgAbsPath,
+                              float gamma_drago,
+                              float saturation_drago,
+                              float bias_drago);
+
+
+int ExposureMergeProcessDurand(vector<string>& imagesPath,
+                               vector<float>& times,
+                               Mat* ldrDurand,
+                               string generateImgAbsPath,
+                               float gamma_durand,
+                               float saturation_durand,
+                               float contrast_durand,
+                               float sigma_space_durand,
+                               float sigma_color_durand);
+
+
+int ExposureMergeProcessMantiuk(vector<string>& imagesPath,
+                                vector<float>& times,
+                                Mat* ldrDurand,
+                                string generateImgAbsPath,
+                                float gamma_mantiuk,
+                                float saturation_mantiuk,
+                                float scale_mantiuk);
+
+int ExposureMergeProcessReinhard(vector<string>& imagesPath,
+                                 vector<float>& times,
+                                 Mat* ldrDurand,
+                                 string generateImgAbsPath,
+                                 float gamma_reinhard,
+                                 float color_adapt_reinhard,
+                                 float light_adapt_reinhard,
+                                 float intensity_reinhard);

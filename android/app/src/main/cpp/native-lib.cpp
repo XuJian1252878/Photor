@@ -331,7 +331,7 @@ Java_com_photor_home_staralign_StarAlignSplitActivity_reset(JNIEnv *env, jobject
 
 
 /******************************************************************************************************
- * 曝光合成操作
+ * 曝光合成操作 基本
  */
 extern "C"
 JNIEXPORT jint JNICALL
@@ -378,4 +378,220 @@ Java_com_photor_home_exposure_task_ExposureMergeThread_exposureMergePhotos(JNIEn
     string generateImgAbsPath = string(generateImgAbsPath_);
 
     return ExposureMergeProcess(photoVec, timeVec, resMat, generateImgAbsPath);
+}
+
+
+
+// Drago
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_photor_home_exposure_task_ExposureMergeThread_exposureMergePhotosDrago(JNIEnv *env, jobject instance,
+                                                                                jobject photos,
+                                                                                jobject exposureTimes,
+                                                                                jlong resImgAddr,
+                                                                                jstring resImgPath,
+                                                                                jfloat gamma_drago,
+                                                                                jfloat saturation_drago,
+                                                                                jfloat bias_drago) {
+
+    // TODO
+    // 获取ArrayList对象的class
+    jclass arrayList = static_cast<jclass>(env->FindClass("java/util/ArrayList"));
+    jmethodID arrayListSize = env->GetMethodID(arrayList, "size", "()I");
+    jmethodID arrayListGet = env->GetMethodID(arrayList, "get", "(I)Ljava/lang/Object;");
+
+    int photoSize = env->CallIntMethod(photos, arrayListSize);
+
+    // 获取ArrayList<Double>中的Double对象
+    jclass jcFloat = static_cast<jclass>(env->FindClass("java/lang/Float"));
+    jmethodID jmidFloatValue = env->GetMethodID(jcFloat, "floatValue", "()F");
+
+
+    jboolean isCopyStr = JNI_FALSE;
+    vector<string> photoVec;
+    vector<float> timeVec;
+    for (int index = 0; index < photoSize; index ++) {
+        // 获取图片路径列表
+        const char* sourcePhotoPathPtr = env->GetStringUTFChars(
+                static_cast<jstring>(env->CallObjectMethod(photos, arrayListGet, index)),
+                &isCopyStr);
+        photoVec.push_back(string(sourcePhotoPathPtr));
+
+        // 获取图片曝光信息列表
+        float time = env->CallFloatMethod(env->CallObjectMethod(exposureTimes, arrayListGet, index), jmidFloatValue);
+        timeVec.push_back(time);
+
+    }
+
+    // 生成结果Mat对象
+    Mat* resMat = (Mat*) resImgAddr;
+
+    // 生成结果Mat存储路径
+    const char *generateImgAbsPath_ = env->GetStringUTFChars(resImgPath, 0); // 存储对齐图片的路径信息
+    string generateImgAbsPath = string(generateImgAbsPath_);
+
+    return ExposureMergeProcessDrago(photoVec, timeVec, resMat, generateImgAbsPath, gamma_drago, saturation_drago, bias_drago);
+}
+
+
+//
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_photor_home_exposure_task_ExposureMergeThread_exposureMergePhotosDurand(JNIEnv *env, jobject instance,
+                                                                                 jobject photos,
+                                                                                 jobject exposureTimes,
+                                                                                 jlong resImgAddr,
+                                                                                 jstring resImgPath,
+                                                                                 jfloat gamma_durand,
+                                                                                 jfloat saturation_durand,
+                                                                                 jfloat contrast_durand,
+                                                                                 jfloat sigma_space_durand,
+                                                                                 jfloat sigma_color_durand) {
+
+    // TODO
+    // 获取ArrayList对象的class
+    jclass arrayList = static_cast<jclass>(env->FindClass("java/util/ArrayList"));
+    jmethodID arrayListSize = env->GetMethodID(arrayList, "size", "()I");
+    jmethodID arrayListGet = env->GetMethodID(arrayList, "get", "(I)Ljava/lang/Object;");
+
+    int photoSize = env->CallIntMethod(photos, arrayListSize);
+
+    // 获取ArrayList<Double>中的Double对象
+    jclass jcFloat = static_cast<jclass>(env->FindClass("java/lang/Float"));
+    jmethodID jmidFloatValue = env->GetMethodID(jcFloat, "floatValue", "()F");
+
+
+    jboolean isCopyStr = JNI_FALSE;
+    vector<string> photoVec;
+    vector<float> timeVec;
+    for (int index = 0; index < photoSize; index ++) {
+        // 获取图片路径列表
+        const char* sourcePhotoPathPtr = env->GetStringUTFChars(
+                static_cast<jstring>(env->CallObjectMethod(photos, arrayListGet, index)),
+                &isCopyStr);
+        photoVec.push_back(string(sourcePhotoPathPtr));
+
+        // 获取图片曝光信息列表
+        float time = env->CallFloatMethod(env->CallObjectMethod(exposureTimes, arrayListGet, index), jmidFloatValue);
+        timeVec.push_back(time);
+
+    }
+
+    // 生成结果Mat对象
+    Mat* resMat = (Mat*) resImgAddr;
+
+    // 生成结果Mat存储路径
+    const char *generateImgAbsPath_ = env->GetStringUTFChars(resImgPath, 0); // 存储对齐图片的路径信息
+    string generateImgAbsPath = string(generateImgAbsPath_);
+
+    return ExposureMergeProcessDurand(photoVec, timeVec, resMat, generateImgAbsPath,
+                                      gamma_durand, saturation_durand, contrast_durand,
+                                      sigma_space_durand, sigma_color_durand);
+}
+
+
+//
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_photor_home_exposure_task_ExposureMergeThread_exposureMergePhotosMantiuk(JNIEnv *env, jobject instance,
+                                                                                 jobject photos,
+                                                                                 jobject exposureTimes,
+                                                                                 jlong resImgAddr,
+                                                                                 jstring resImgPath,
+                                                                                 jfloat gamma_mantiuk,
+                                                                                 jfloat saturation_mantiuk,
+                                                                                 jfloat scale_mantiuk) {
+
+    // TODO
+    // 获取ArrayList对象的class
+    jclass arrayList = static_cast<jclass>(env->FindClass("java/util/ArrayList"));
+    jmethodID arrayListSize = env->GetMethodID(arrayList, "size", "()I");
+    jmethodID arrayListGet = env->GetMethodID(arrayList, "get", "(I)Ljava/lang/Object;");
+
+    int photoSize = env->CallIntMethod(photos, arrayListSize);
+
+    // 获取ArrayList<Double>中的Double对象
+    jclass jcFloat = static_cast<jclass>(env->FindClass("java/lang/Float"));
+    jmethodID jmidFloatValue = env->GetMethodID(jcFloat, "floatValue", "()F");
+
+
+    jboolean isCopyStr = JNI_FALSE;
+    vector<string> photoVec;
+    vector<float> timeVec;
+    for (int index = 0; index < photoSize; index ++) {
+        // 获取图片路径列表
+        const char* sourcePhotoPathPtr = env->GetStringUTFChars(
+                static_cast<jstring>(env->CallObjectMethod(photos, arrayListGet, index)),
+                &isCopyStr);
+        photoVec.push_back(string(sourcePhotoPathPtr));
+
+        // 获取图片曝光信息列表
+        float time = env->CallFloatMethod(env->CallObjectMethod(exposureTimes, arrayListGet, index), jmidFloatValue);
+        timeVec.push_back(time);
+
+    }
+
+    // 生成结果Mat对象
+    Mat* resMat = (Mat*) resImgAddr;
+
+    // 生成结果Mat存储路径
+    const char *generateImgAbsPath_ = env->GetStringUTFChars(resImgPath, 0); // 存储对齐图片的路径信息
+    string generateImgAbsPath = string(generateImgAbsPath_);
+
+    return ExposureMergeProcessMantiuk(photoVec, timeVec, resMat, generateImgAbsPath,
+                                       gamma_mantiuk, saturation_mantiuk, scale_mantiuk);
+}
+
+
+//
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_photor_home_exposure_task_ExposureMergeThread_exposureMergePhotosReinhard(JNIEnv *env, jobject instance,
+                                                                                  jobject photos,
+                                                                                  jobject exposureTimes,
+                                                                                  jlong resImgAddr,
+                                                                                  jstring resImgPath,
+                                                                                  jfloat gamma_reinhard,
+                                                                                  jfloat color_adapt_reinhard,
+                                                                                  jfloat light_adapt_reinhard,
+                                                                                   jfloat intensity_reinhard) {
+
+    // TODO
+    // 获取ArrayList对象的class
+    jclass arrayList = static_cast<jclass>(env->FindClass("java/util/ArrayList"));
+    jmethodID arrayListSize = env->GetMethodID(arrayList, "size", "()I");
+    jmethodID arrayListGet = env->GetMethodID(arrayList, "get", "(I)Ljava/lang/Object;");
+
+    int photoSize = env->CallIntMethod(photos, arrayListSize);
+
+    // 获取ArrayList<Double>中的Double对象
+    jclass jcFloat = static_cast<jclass>(env->FindClass("java/lang/Float"));
+    jmethodID jmidFloatValue = env->GetMethodID(jcFloat, "floatValue", "()F");
+
+
+    jboolean isCopyStr = JNI_FALSE;
+    vector<string> photoVec;
+    vector<float> timeVec;
+    for (int index = 0; index < photoSize; index ++) {
+        // 获取图片路径列表
+        const char* sourcePhotoPathPtr = env->GetStringUTFChars(
+                static_cast<jstring>(env->CallObjectMethod(photos, arrayListGet, index)),
+                &isCopyStr);
+        photoVec.push_back(string(sourcePhotoPathPtr));
+
+        // 获取图片曝光信息列表
+        float time = env->CallFloatMethod(env->CallObjectMethod(exposureTimes, arrayListGet, index), jmidFloatValue);
+        timeVec.push_back(time);
+
+    }
+
+    // 生成结果Mat对象
+    Mat* resMat = (Mat*) resImgAddr;
+
+    // 生成结果Mat存储路径
+    const char *generateImgAbsPath_ = env->GetStringUTFChars(resImgPath, 0); // 存储对齐图片的路径信息
+    string generateImgAbsPath = string(generateImgAbsPath_);
+
+    return ExposureMergeProcessReinhard(photoVec, timeVec, resMat, generateImgAbsPath,
+                                        gamma_reinhard, color_adapt_reinhard, light_adapt_reinhard, intensity_reinhard);
 }
