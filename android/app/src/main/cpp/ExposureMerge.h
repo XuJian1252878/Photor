@@ -5,10 +5,11 @@
 #ifndef PHOTOR_EXPOSUREMERGE_H
 #define PHOTOR_EXPOSUREMERGE_H
 
-#endif //PHOTOR_EXPOSUREMERGE_H
-
 #include <iostream>
 #include <opencv/cv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
 using namespace std;
@@ -20,6 +21,8 @@ using namespace std;
 #define LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG, __VA_ARGS__)
 #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG, __VA_ARGS__)
 #define LOGF(...)  __android_log_print(ANDROID_LOG_FATAL,LOG_TAG, __VA_ARGS__)
+
+#endif //PHOTOR_EXPOSUREMERGE_H
 
 
 /**

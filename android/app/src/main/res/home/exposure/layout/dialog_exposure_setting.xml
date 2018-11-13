@@ -52,13 +52,15 @@
 
                     <com.shawnlin.numberpicker.NumberPicker
                         android:id="@+id/tone_mapping_method_picker"
+                        android:padding="10dp"
                         android:layout_width="0dp"
                         android:layout_weight="6"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        app:np_height="180dp"
-                        app:np_dividerColor="@color/colorPrimary"
-                        app:np_selectedTextColor="@color/colorPrimary"
+                        app:np_dividerThickness="1dp"
+                        app:np_height="150dp"
+                        app:np_dividerColor="@color/blue_light"
+                        app:np_selectedTextColor="@color/blue_light"
                         app:np_orientation="vertical"
                         app:np_textColor="@color/colorPrimary"
                         app:np_value="3" />
@@ -291,7 +293,7 @@
 
                         <TextView
                             android:text="@string/sigma_space_durand_label"
-                            android:textSize="16sp"
+                            android:textSize="15sp"
                             android:gravity="center"
                             android:layout_width="0dp"
                             android:layout_weight="3"

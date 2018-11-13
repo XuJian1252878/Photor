@@ -58,4 +58,6 @@
     <string name="light_adapt_reinhard">light_adapt_reinhard</string>
     <string name="intensity_reinhard">intensity_reinhard</string>
 
+    <string name="toneMappingMethodIndex">toneMappingMethodIndex</string>
+
 </resources>
