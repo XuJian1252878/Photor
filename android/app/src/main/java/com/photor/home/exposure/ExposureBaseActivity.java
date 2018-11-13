@@ -63,6 +63,8 @@ public class ExposureBaseActivity extends PhotoOperateBaseActivity {
             float value = SP.getFloat(paramName, tmpe.getValue());
             tmpe.setValue(value);
         }
+        // 设置当前的色调映射函数
+        toneMappingMethodIndex = SP.getInt(getString(R.string.toneMappingMethodIndex), 0);
     }
 
 
@@ -117,6 +119,9 @@ public class ExposureBaseActivity extends PhotoOperateBaseActivity {
         toneMappingPicker.setValue(toneMappingMethodIndex + 1);
         showToneMappingPanel(dialogLayout, toneMappingMethodIndex);
 
+        // Set divider color
+        toneMappingPicker.setDividerColorResource(R.color.blue_light);
+        toneMappingPicker.setDividerThickness(1);
 
         // 初始化参数调节相关SeekBar
         for (ToneMappingParamEnum tmpe: ToneMappingParamEnum.values()) {
@@ -166,8 +171,9 @@ public class ExposureBaseActivity extends PhotoOperateBaseActivity {
                         SP.putFloat(paramName, tmpe.getValue());
                     }
                 }
-
                 dialogInterface.dismiss();  // 关闭AlertDialog的最好方式
+                // 设置当前选中的色调映射函数
+                SP.putInt(getString(R.string.toneMappingMethodIndex), toneMappingMethodIndex);
             }
         });
 

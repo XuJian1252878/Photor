@@ -3,11 +3,44 @@
 //
 #include "ExposureMerge.h"
 #include "Util.h"
+#include <chrono>
+#include<fstream>
+using namespace chrono;
 
 void readImagesAndTimes(vector<string>& imagesPath, vector<Mat>& images) {
+
+    // 获取最大图片文件的大小
+    int maxSize = 0;
+    for (int index = 0; index < imagesPath.size(); index ++) {
+        FILE* pFile = fopen(imagesPath[index].c_str(), "rb");
+        fseek(pFile, 0, SEEK_END);
+        int tmpSize = ftell(pFile);
+        if (tmpSize > maxSize) {
+            maxSize = tmpSize;  // byte
+        }
+    }
+
+    LOGD("readImagesAndTimes maxSize: %d", maxSize);
+    maxSize = maxSize / 1024 / 1024;
+    int scale = 1;
+
+    while (maxSize >= 6) {
+        scale *= 2;
+        maxSize /= 2;
+    }
+
+    LOGD("readImagesAndTimes scale: %d", scale);
+
     for (int index = 0; index < imagesPath.size(); index ++) {
         Mat im = imread(imagesPath[index], IMREAD_UNCHANGED);
-        images.push_back(im);
+        Mat imReal;
+        if (scale > 1) {
+            pyrDown(im, imReal, Size(im.cols/scale, im.rows/scale));
+            images.push_back(imReal);
+        } else {
+            images.push_back(im);
+        }
+
     }
 }
 
@@ -66,6 +99,9 @@ int ExposureMergeProcessDrago(vector<string>& imagesPath,
     Ptr<AlignMTB> alignMTB = createAlignMTB();
     alignMTB->process(images, images);
 
+
+    steady_clock::time_point t1 = steady_clock::now();
+
     // 3. 提取当前相机的响应函数(CRF)
     Mat responseDebevec;
     Ptr<CalibrateDebevec> calibrateDebevec = createCalibrateDebevec();
@@ -82,6 +118,12 @@ int ExposureMergeProcessDrago(vector<string>& imagesPath,
     Mat tmpResMat;
     Ptr<TonemapDrago> tonemapDrago = createTonemapDrago(gamma_drago, saturation_drago, bias_drago);
     tonemapDrago->process(hdrDebevec, tmpResMat);
+
+    steady_clock::time_point t2 = steady_clock::now();
+    duration<double> time_used = duration_cast<duration<double>>(t2 - t1);
+    LOGD("ExposureMergeProcessDrago: %lf", (time_used.count() * 1000));
+
+
     tmpResMat = 2 * tmpResMat * 255;  //  这个跟亮度有关系，不做*处理的话图片可能会有些暗
 
 
@@ -111,6 +153,8 @@ int ExposureMergeProcessDurand(vector<string>& imagesPath,
     Ptr<AlignMTB> alignMTB = createAlignMTB();
     alignMTB->process(images, images);
 
+    steady_clock::time_point t1 = steady_clock::now();
+
     // 3. 提取当前相机的响应函数(CRF)
     Mat responseDebevec;
     Ptr<CalibrateDebevec> calibrateDebevec = createCalibrateDebevec();
@@ -127,6 +171,11 @@ int ExposureMergeProcessDurand(vector<string>& imagesPath,
     Mat tmpResMat;
     Ptr<TonemapDurand> tonemapDurand = createTonemapDurand(gamma_durand, contrast_durand, saturation_durand, sigma_space_durand, sigma_color_durand);
     tonemapDurand->process(hdrDebevec, tmpResMat);
+
+    steady_clock::time_point t2 = steady_clock::now();
+    duration<double> time_used = duration_cast<duration<double>>(t2 - t1);
+    LOGD("ExposureMergeProcessDrago: %lf", (time_used.count() * 1000));
+
     tmpResMat = 2 * tmpResMat * 255;  //  这个跟亮度有关系，不做*处理的话图片可能会有些暗
 
 
@@ -154,6 +203,8 @@ int ExposureMergeProcessMantiuk(vector<string>& imagesPath,
     Ptr<AlignMTB> alignMTB = createAlignMTB();
     alignMTB->process(images, images);
 
+    steady_clock::time_point t1 = steady_clock::now();
+
     // 3. 提取当前相机的响应函数(CRF)
     Mat responseDebevec;
     Ptr<CalibrateDebevec> calibrateDebevec = createCalibrateDebevec();
@@ -170,6 +221,11 @@ int ExposureMergeProcessMantiuk(vector<string>& imagesPath,
     Mat tmpResMat;
     Ptr<TonemapMantiuk> tonemapMantiuk = createTonemapMantiuk(gamma_mantiuk, scale_mantiuk, saturation_mantiuk);
     tonemapMantiuk->process(hdrDebevec, tmpResMat);
+
+    steady_clock::time_point t2 = steady_clock::now();
+    duration<double> time_used = duration_cast<duration<double>>(t2 - t1);
+    LOGD("ExposureMergeProcessDrago: %lf", (time_used.count() * 1000));
+
     tmpResMat = 2 * tmpResMat * 255;  //  这个跟亮度有关系，不做*处理的话图片可能会有些暗
 
 
@@ -198,6 +254,8 @@ int ExposureMergeProcessReinhard(vector<string>& imagesPath,
     Ptr<AlignMTB> alignMTB = createAlignMTB();
     alignMTB->process(images, images);
 
+    steady_clock::time_point t1 = steady_clock::now();
+
     // 3. 提取当前相机的响应函数(CRF)
     Mat responseDebevec;
     Ptr<CalibrateDebevec> calibrateDebevec = createCalibrateDebevec();
@@ -214,6 +272,11 @@ int ExposureMergeProcessReinhard(vector<string>& imagesPath,
     Mat tmpResMat;
     Ptr<TonemapReinhard> tonemapReinhard = createTonemapReinhard(gamma_reinhard, intensity_reinhard, light_adapt_reinhard, color_adapt_reinhard);
     tonemapReinhard->process(hdrDebevec, tmpResMat);
+
+    steady_clock::time_point t2 = steady_clock::now();
+    duration<double> time_used = duration_cast<duration<double>>(t2 - t1);
+    LOGD("ExposureMergeProcessDrago: %lf", (time_used.count() * 1000));
+
     tmpResMat = 2 * tmpResMat * 255;  //  这个跟亮度有关系，不做*处理的话图片可能会有些暗
 
 
