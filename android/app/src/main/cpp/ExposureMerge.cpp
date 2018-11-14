@@ -34,12 +34,12 @@ void readImagesAndTimes(vector<string>& imagesPath, vector<Mat>& images) {
     for (int index = 0; index < imagesPath.size(); index ++) {
         Mat im = imread(imagesPath[index], IMREAD_UNCHANGED);
         Mat imReal;
-        if (scale > 1) {
-            pyrDown(im, imReal, Size(im.cols/scale, im.rows/scale));
+//        if (scale > 1) {
+            resize(im, imReal, Size(im.cols/scale, im.rows/scale), 0, 0, INTER_LINEAR);
             images.push_back(imReal);
-        } else {
-            images.push_back(im);
-        }
+//        } else {
+//            images.push_back(im);
+//        }
 
     }
 }
