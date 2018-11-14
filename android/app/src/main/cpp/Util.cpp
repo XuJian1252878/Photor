@@ -121,6 +121,7 @@ Mat_<Vec3b> superimposedImg(vector<Mat_<Vec3b>>& images, Mat_<Vec3b>& trainImg) 
     Ptr<SURF> extractor = SURF::create();
     Mat trainDescriptors;
     extractor->compute(trainImg, trainKeyPoints, trainDescriptors);
+    trainDescriptors.convertTo(trainDescriptors, CV_32F);
 
     resImg = Mat::zeros(images[0].rows, images[0].cols, images[0].type());
 
@@ -133,6 +134,7 @@ Mat_<Vec3b> superimposedImg(vector<Mat_<Vec3b>>& images, Mat_<Vec3b>& trainImg) 
 
         Mat queryDescriptors;
         extractor->compute(queryImg, queryKeyPoints, queryDescriptors);
+        queryDescriptors.convertTo(queryDescriptors, CV_32F);
 
         // 生成匹配点信息
         FlannBasedMatcher matcher;
