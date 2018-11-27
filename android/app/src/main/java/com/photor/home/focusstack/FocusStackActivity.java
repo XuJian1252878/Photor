@@ -47,7 +47,7 @@ public class FocusStackActivity extends PhotoOperateBaseActivity {
     private static final int MAX_PHOTO_COUNT = 15;
 
     private int bg_threshold = 70;
-    private int bg_threshold_start = 25, bg_threshold_end = 160;
+    private int bg_threshold_start = 0, bg_threshold_end = 255;
 
     private short kernels_size = 7;
     private short kernels_size_start = 3, kernels_size_end = 13;
