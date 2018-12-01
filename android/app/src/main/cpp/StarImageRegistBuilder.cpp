@@ -7,21 +7,23 @@
 
 struct registration_internal_data {
     StarImageRegistBuilder* starImageRegistBuilder;  // 类对象指针
-    void (StarImageRegistBuilder::*pmf)(StarImage&, int); // 类成员函数指针
+    void (StarImageRegistBuilder::*pmf)(StarImage&, int, int); // 类成员函数指针
     StarImage* resultStarImage;
-    int whichRow;
+    int rowStart;
+    int rowEnd;
 };
 
 void* registration_internal_thread(void* registration_internal_data_arg) {
     registration_internal_data* ptr_data_arg = static_cast<registration_internal_data*> (registration_internal_data_arg);
     // 取出 StarImageRegistBuilder 类
     StarImageRegistBuilder* ptrSIRB = ptr_data_arg->starImageRegistBuilder;
-    void (StarImageRegistBuilder::*pmf)(StarImage&, int) = ptr_data_arg->pmf;  // 析取成员函数
+    void (StarImageRegistBuilder::*pmf)(StarImage&, int, int) = ptr_data_arg->pmf;  // 析取成员函数
 
     StarImage& resultStarImage = *(ptr_data_arg->resultStarImage);
-    int whichRow = ptr_data_arg->whichRow;
+    int rowStart = ptr_data_arg->rowStart;
+    int rowEnd = ptr_data_arg->rowEnd;
 
-    (ptrSIRB->*pmf)(resultStarImage, whichRow);  // 调用成员函数
+    (ptrSIRB->*pmf)(resultStarImage, rowStart, rowEnd);  // 调用成员函数
 }
 
 /**
@@ -91,46 +93,57 @@ Mat_<Vec3b> StarImageRegistBuilder::registration(int mergeMode) {
                                           this->rowParts, this->columnParts, true); // true 表示 clone，深拷贝，不然会出现图片重叠的现象
 
     // 多线程操作实例（每一个线程处理一行小图片部分）
-    pthread_t processThreads[this->rowParts];
+    pthread_t processThreads[REGISTER_THREAD_NUMS];
     // 初始化，并且设置线程是可连接的
     pthread_attr_t threadAttr;
-    void *threadStatus;
 
     pthread_attr_init(&threadAttr);
     pthread_attr_setdetachstate(&threadAttr, PTHREAD_CREATE_JOINABLE);
 
-    registration_internal_data dataArgs[this->rowParts];
-    for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
-        dataArgs[rPartIndex] = {
+    registration_internal_data dataArgs[REGISTER_THREAD_NUMS];
+    int threadRowStep = this->rowParts / REGISTER_THREAD_NUMS;
+
+    for (int threadIndex = 0; threadIndex < REGISTER_THREAD_NUMS; threadIndex ++) {
+        dataArgs[threadIndex] = {
                 .starImageRegistBuilder = NULL,
                 .pmf = NULL,
                 .resultStarImage = NULL,
-                .whichRow = 0};
+                .rowStart = 0,
+                .rowEnd = 0
+        };
 
-        dataArgs[rPartIndex].starImageRegistBuilder = this;
-        dataArgs[rPartIndex].pmf = &StarImageRegistBuilder::registration_internal; // 填充成员函数地址
-        dataArgs[rPartIndex].whichRow = rPartIndex;
-        dataArgs[rPartIndex].resultStarImage = &resultStarImage;
+        dataArgs[threadIndex].starImageRegistBuilder = this;
+        dataArgs[threadIndex].pmf = &StarImageRegistBuilder::registration_internal; // 填充成员函数地址
+        dataArgs[threadIndex].rowStart = threadIndex * threadRowStep;
 
-        int rc = pthread_create(&processThreads[rPartIndex], NULL,
-                                registration_internal_thread, (void*) &dataArgs[rPartIndex]);
-        if (rc) {
-            LOGD("create register thread: %d failed", rPartIndex);
+        if (threadIndex == REGISTER_THREAD_NUMS - 1) {
+            // 最后一个线程（防止没有整除的情况）
+            dataArgs[threadIndex].rowEnd = this->rowParts;
         } else {
-            LOGD("create register thread: %d success", rPartIndex);
+            dataArgs[threadIndex].rowEnd = (threadIndex + 1) * threadRowStep;
+        }
+
+        dataArgs[threadIndex].resultStarImage = &resultStarImage;
+
+        int rc = pthread_create(&processThreads[threadIndex], NULL,
+                                registration_internal_thread, (void*) &dataArgs[threadIndex]);
+        if (rc) {
+            LOGD("create register thread: %d failed", threadIndex);
+        } else {
+            LOGD("create register thread: %d success", threadIndex);
         }
     }
 
     // 主线程需要等待子线程完成
     pthread_attr_destroy(&threadAttr);
     LOGD("create register pthread_attr_destroy");
-    for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
-        int rc = pthread_join(processThreads[rPartIndex], &threadStatus);
+    for (int threadIndex = 0; threadIndex < REGISTER_THREAD_NUMS; threadIndex ++) {
+        int rc = pthread_join(processThreads[threadIndex], NULL);
 
         if (rc) {
-            LOGD("join register thread: %d failed", rPartIndex);
+            LOGD("join register thread: %d failed", threadIndex);
         } else {
-            LOGD("join register thread: %d success", rPartIndex);
+            LOGD("join register thread: %d success", threadIndex);
         }
     }
 
@@ -173,17 +186,20 @@ Mat_<Vec3b> StarImageRegistBuilder::registration(int mergeMode) {
 /**
  * 多线程配准处理函数
  * @param resultStarImage
- * @param whichRow
+ * @param rowStart
+ * @param rowEnd
+ * [rowStart, rowEnd)
  */
-void StarImageRegistBuilder::registration_internal(StarImage& resultStarImage, int whichRow) {
+void StarImageRegistBuilder::registration_internal(StarImage& resultStarImage, int rowStart, int rowEnd) {
 
-    LOGD("enter registration_internal: %d success", whichRow);
+    LOGD("enter registration_internal: %d ~ %d success", rowStart, rowEnd);
 
-    int rPartIndex = whichRow;
-    // 开始对图像的每一个部分进行对齐操作，分别与targetStarImage 做对比
-    for (int index = 0; index < this->sourceStarImages.size(); index ++) {
-        StarImage tmpStarImage = this->sourceStarImages[index];  // 直接赋值，不是指针操作，
-        // 对于每一小块图像都做配准操作
+
+    for (int rPartIndex = rowStart; rPartIndex < rowEnd; rPartIndex ++) {
+        // 开始对图像的每一个部分进行对齐操作，分别与targetStarImage 做对比
+        for (int index = 0; index < this->sourceStarImages.size(); index ++) {
+            StarImage tmpStarImage = this->sourceStarImages[index];  // 直接赋值，不是指针操作，
+            // 对于每一小块图像都做配准操作
 //        for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
             for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex ++) {
                 Mat homo;
@@ -200,7 +216,7 @@ void StarImageRegistBuilder::registration_internal(StarImage& resultStarImage, i
                 }
                 resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(tmpRegistMat, queryImgTransform, this->skyMaskMat, this->imageCount);
             }
-//        }
+        }
     }
 }
 
