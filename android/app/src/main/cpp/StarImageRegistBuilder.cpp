@@ -99,20 +99,21 @@ Mat_<Vec3b> StarImageRegistBuilder::registration(int mergeMode) {
     pthread_attr_init(&threadAttr);
     pthread_attr_setdetachstate(&threadAttr, PTHREAD_CREATE_JOINABLE);
 
+    registration_internal_data dataArgs[this->rowParts];
     for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
-        struct registration_internal_data dataArg = {
+        dataArgs[rPartIndex] = {
                 .starImageRegistBuilder = NULL,
                 .pmf = NULL,
                 .resultStarImage = NULL,
                 .whichRow = 0};
 
-        dataArg.starImageRegistBuilder = this;
-        dataArg.pmf = &StarImageRegistBuilder::registration_internal; // 填充成员函数地址
-        dataArg.whichRow = rPartIndex;
-        dataArg.resultStarImage = &resultStarImage;
+        dataArgs[rPartIndex].starImageRegistBuilder = this;
+        dataArgs[rPartIndex].pmf = &StarImageRegistBuilder::registration_internal; // 填充成员函数地址
+        dataArgs[rPartIndex].whichRow = rPartIndex;
+        dataArgs[rPartIndex].resultStarImage = &resultStarImage;
 
         int rc = pthread_create(&processThreads[rPartIndex], NULL,
-                                registration_internal_thread, (void*) &dataArg);
+                                registration_internal_thread, (void*) &dataArgs[rPartIndex]);
         if (rc) {
             LOGD("create register thread: %d failed", rPartIndex);
         } else {
@@ -175,6 +176,8 @@ Mat_<Vec3b> StarImageRegistBuilder::registration(int mergeMode) {
  * @param whichRow
  */
 void StarImageRegistBuilder::registration_internal(StarImage& resultStarImage, int whichRow) {
+
+    LOGD("enter registration_internal: %d success", whichRow);
 
     int rPartIndex = whichRow;
     // 开始对图像的每一个部分进行对齐操作，分别与targetStarImage 做对比
