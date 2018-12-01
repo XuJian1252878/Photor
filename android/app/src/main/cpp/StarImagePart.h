@@ -5,12 +5,12 @@
 #ifndef IMAGEREGISTRATION_STARIMAGEPART_H
 #define IMAGEREGISTRATION_STARIMAGEPART_H
 
-#endif //IMAGEREGISTRATION_STARIMAGEPART_H
-
 #include <opencv/cv.hpp>
 #include <iostream>
 using namespace cv;
 using namespace std;
+
+#endif //IMAGEREGISTRATION_STARIMAGEPART_H
 
 class StarImagePart
 {

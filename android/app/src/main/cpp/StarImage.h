@@ -5,8 +5,6 @@
 #ifndef IMAGEREGISTRATION_STARIMAGE_H
 #define IMAGEREGISTRATION_STARIMAGE_H
 
-#endif //IMAGEREGISTRATION_STARIMAGE_H
-
 #include <iostream>
 #include <opencv/cv.hpp>
 
@@ -14,6 +12,8 @@
 
 using namespace cv;
 using namespace std;
+
+#endif //IMAGEREGISTRATION_STARIMAGE_H
 
 class StarImage
 {

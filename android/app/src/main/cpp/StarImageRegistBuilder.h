@@ -5,15 +5,12 @@
 #ifndef IMAGEREGISTRATION_STARIMAGEREGISTBUILDER_H
 #define IMAGEREGISTRATION_STARIMAGEREGISTBUILDER_H
 
-#endif //IMAGEREGISTRATION_STARIMAGEREGISTBUILDER_H
-
 #include <iostream>
 #include <opencv/cv.hpp>
-
-
 #include "StarImage.h"
 #include "opencv2/xfeatures2d.hpp"
 #include <map>
+#include <pthread.h>
 
 #include <android/log.h>
 #define  LOG_TAG    "JNI_PART"
@@ -27,6 +24,10 @@
 using namespace cv;
 using namespace std;
 using namespace cv::xfeatures2d;
+
+#endif //IMAGEREGISTRATION_STARIMAGEREGISTBUILDER_H
+
+struct registration_internal_data;
 
 class StarImageRegistBuilder
 {
@@ -61,4 +62,8 @@ public:
 private:
 
     Mat getImgTransform(StarImagePart sourceImagePart, StarImagePart targetImagePart, Mat& OriImgHomo, bool& existHomo);
+    // 多线程图像配准处理函数
+    void registration_internal(StarImage& resultStarImage, int whichRow);
 };
+
+void* registration_internal_thread(void* registration_internal_data_arg);

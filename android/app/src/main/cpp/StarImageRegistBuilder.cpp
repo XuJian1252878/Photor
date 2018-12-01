@@ -5,6 +5,25 @@
 #include "StarImageRegistBuilder.h"
 #include "Util.h"
 
+struct registration_internal_data {
+    StarImageRegistBuilder* starImageRegistBuilder;  // 类对象指针
+    void (StarImageRegistBuilder::*pmf)(StarImage&, int); // 类成员函数指针
+    StarImage* resultStarImage;
+    int whichRow;
+};
+
+void* registration_internal_thread(void* registration_internal_data_arg) {
+    registration_internal_data* ptr_data_arg = static_cast<registration_internal_data*> (registration_internal_data_arg);
+    // 取出 StarImageRegistBuilder 类
+    StarImageRegistBuilder* ptrSIRB = ptr_data_arg->starImageRegistBuilder;
+    void (StarImageRegistBuilder::*pmf)(StarImage&, int) = ptr_data_arg->pmf;  // 析取成员函数
+
+    StarImage& resultStarImage = *(ptr_data_arg->resultStarImage);
+    int whichRow = ptr_data_arg->whichRow;
+
+    (ptrSIRB->*pmf)(resultStarImage, whichRow);  // 调用成员函数
+}
+
 /**
  *
  * @param targetImage:  train image
@@ -71,12 +90,98 @@ Mat_<Vec3b> StarImageRegistBuilder::registration(int mergeMode) {
                                               this->targetStarImage.getImage().type(), cv::Scalar(0, 0, 0)),
                                           this->rowParts, this->columnParts, true); // true 表示 clone，深拷贝，不然会出现图片重叠的现象
 
+    // 多线程操作实例（每一个线程处理一行小图片部分）
+    pthread_t processThreads[this->rowParts];
+    // 初始化，并且设置线程是可连接的
+    pthread_attr_t threadAttr;
+    void *threadStatus;
+
+    pthread_attr_init(&threadAttr);
+    pthread_attr_setdetachstate(&threadAttr, PTHREAD_CREATE_JOINABLE);
+
+    for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
+        struct registration_internal_data dataArg = {
+                .starImageRegistBuilder = NULL,
+                .pmf = NULL,
+                .resultStarImage = NULL,
+                .whichRow = 0};
+
+        dataArg.starImageRegistBuilder = this;
+        dataArg.pmf = &StarImageRegistBuilder::registration_internal; // 填充成员函数地址
+        dataArg.whichRow = rPartIndex;
+        dataArg.resultStarImage = &resultStarImage;
+
+        int rc = pthread_create(&processThreads[rPartIndex], NULL,
+                                registration_internal_thread, (void*) &dataArg);
+        if (rc) {
+            LOGD("create register thread: %d failed", rPartIndex);
+        } else {
+            LOGD("create register thread: %d success", rPartIndex);
+        }
+    }
+
+    // 主线程需要等待子线程完成
+    pthread_attr_destroy(&threadAttr);
+    LOGD("create register pthread_attr_destroy");
+    for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
+        int rc = pthread_join(processThreads[rPartIndex], &threadStatus);
+
+        if (rc) {
+            LOGD("join register thread: %d failed", rPartIndex);
+        } else {
+            LOGD("join register thread: %d success", rPartIndex);
+        }
+    }
+
+//    // 开始对图像的每一个部分进行对齐操作，分别与targetStarImage 做对比
+//    for (int index = 0; index < this->sourceStarImages.size(); index ++) {
+//        StarImage tmpStarImage = this->sourceStarImages[index];  // 直接赋值，不是指针操作，
+//        // 对于每一小块图像都做配准操作
+//        for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
+//            for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex ++) {
+//                Mat homo;
+//                bool existHomo = false;
+//
+//                Mat tmpRegistMat = this->getImgTransform(tmpStarImage.getStarImagePart(rPartIndex, cPartIndex),
+//                                                         this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex), homo, existHomo);
+//
+//                Mat_<Vec3b>& queryImgTransform = this->sourceImages[index];
+//                if (existHomo) {
+//                    queryImgTransform = getTransformImgByHomo(queryImgTransform, homo);
+//                } else {
+//                    queryImgTransform = this->targetImage;
+//                }
+//                resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(tmpRegistMat, queryImgTransform, this->skyMaskMat, this->imageCount);
+//            }
+//        }
+//    }
+
+    // 对于配准图像和待配准图像做平均值操作（先买上目标图像的那一部分，这一段代码不能放在source整合的前面，不然图片会出现缝隙，原因待查）
+    for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
+        for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex++) {
+            Mat_<Vec3b> targetImg = this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
+            resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(targetImg, this->targetImage, this->skyMaskMat, this->imageCount);
+        }
+    }
+
+    // 对配准好的图像进行整合
+    return resultStarImage.mergeStarImageParts();
+}
+
+
+/**
+ * 多线程配准处理函数
+ * @param resultStarImage
+ * @param whichRow
+ */
+void StarImageRegistBuilder::registration_internal(StarImage& resultStarImage, int whichRow) {
+
+    int rPartIndex = whichRow;
     // 开始对图像的每一个部分进行对齐操作，分别与targetStarImage 做对比
     for (int index = 0; index < this->sourceStarImages.size(); index ++) {
-
         StarImage tmpStarImage = this->sourceStarImages[index];  // 直接赋值，不是指针操作，
         // 对于每一小块图像都做配准操作
-        for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
+//        for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
             for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex ++) {
                 Mat homo;
                 bool existHomo = false;
@@ -92,20 +197,10 @@ Mat_<Vec3b> StarImageRegistBuilder::registration(int mergeMode) {
                 }
                 resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(tmpRegistMat, queryImgTransform, this->skyMaskMat, this->imageCount);
             }
-        }
+//        }
     }
-
-    // 对于配准图像和待配准图像做平均值操作（先买上目标图像的那一部分，这一段代码不能放在source整合的前面，不然图片会出现缝隙，原因待查）
-    for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
-        for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex++) {
-            Mat_<Vec3b> targetImg = this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage();
-            resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(targetImg, this->targetImage, this->skyMaskMat, this->imageCount);
-        }
-    }
-
-    // 对配准好的图像进行整合
-    return resultStarImage.mergeStarImageParts();
 }
+
 
 /**
  *
