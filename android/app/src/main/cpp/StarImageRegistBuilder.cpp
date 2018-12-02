@@ -101,7 +101,7 @@ Mat_<Vec3b> StarImageRegistBuilder::registration(int mergeMode) {
     pthread_attr_setdetachstate(&threadAttr, PTHREAD_CREATE_JOINABLE);
 
     registration_internal_data dataArgs[REGISTER_THREAD_NUMS];
-    int threadRowStep = this->rowParts / REGISTER_THREAD_NUMS;
+    int threadRowStep = (int)ceil(this->rowParts * 1.0 / REGISTER_THREAD_NUMS);
 
     for (int threadIndex = 0; threadIndex < REGISTER_THREAD_NUMS; threadIndex ++) {
         dataArgs[threadIndex] = {

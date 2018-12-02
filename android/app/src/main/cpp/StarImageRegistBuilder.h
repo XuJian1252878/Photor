@@ -11,6 +11,7 @@
 #include "opencv2/xfeatures2d.hpp"
 #include <map>
 #include <pthread.h>
+#include <math.h>
 
 #include <android/log.h>
 #define  LOG_TAG    "JNI_PART"
