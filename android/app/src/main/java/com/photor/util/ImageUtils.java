@@ -9,12 +9,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
-import android.media.ThumbnailUtils;
-import android.provider.MediaStore;
 import android.view.Display;
 import android.view.WindowManager;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by xujian on 2018/3/5.
@@ -22,7 +23,7 @@ import java.io.IOException;
 
 public class ImageUtils {
 
-    private static final Bitmap.Config BITMAP_CONFIG;
+    private static final Bitmap.Config BITMAP_CONFIG_ARGB_8888;
 
     public static final Bitmap createBitmapFromPath(String path, Context context) {
         WindowManager manager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
@@ -131,7 +132,6 @@ public class ImageUtils {
             var9.printStackTrace();
             return null;
         }
-
     }
 
     public static int dp2px(Context context, float dp) {
@@ -147,9 +147,9 @@ public class ImageUtils {
             try {
                 Bitmap bitmap;
                 if(drawable instanceof ColorDrawable) {
-                    bitmap = Bitmap.createBitmap(2, 2, BITMAP_CONFIG);
+                    bitmap = Bitmap.createBitmap(2, 2, BITMAP_CONFIG_ARGB_8888);
                 } else {
-                    bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), BITMAP_CONFIG);
+                    bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), BITMAP_CONFIG_ARGB_8888);
                 }
 
                 Canvas canvas = new Canvas(bitmap);
@@ -164,7 +164,81 @@ public class ImageUtils {
     }
 
     static {
-        BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
+        BITMAP_CONFIG_ARGB_8888 = Bitmap.Config.ARGB_8888;
+    }
+
+
+    /**
+     * 加载原始图像信息
+     * @param path
+     * @return
+     */
+    public static Bitmap loadImageByPath(String path, int sampleSize) {
+        // 加载原始图像信息
+        Bitmap bitmap = null;
+        BitmapFactory.Options options = null;
+
+        try {
+            options = new BitmapFactory.Options();
+            options.inPurgeable = true;
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            options.inDither = false;
+            options.inJustDecodeBounds = false;
+            options.inSampleSize = sampleSize;
+            bitmap = BitmapFactory.decodeFile(path, options);
+            return bitmap;
+        } catch (OutOfMemoryError var8) {
+            options.inSampleSize *= 2;
+            bitmap = BitmapFactory.decodeFile(path, options);
+            return bitmap;
+        } catch (Exception var9) {
+            var9.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * @param bitmap
+     * @param memoryThreshold  M 为单位 默认为2M
+     * @return
+     */
+    public static int getImageSampleSizeByMemoryThreshold(Bitmap bitmap, int memoryThreshold) {
+        int byteCount = bitmap.getByteCount();
+        int sampleSize = 1;
+        while ( byteCount / 1024 / 1024 > memoryThreshold ) {
+            sampleSize *= 2;
+            byteCount /= 2;
+
+            // 图片长宽有一端缩减到1000以下的时候，停止压缩操作
+            if (bitmap.getWidth() / sampleSize < 1000 || bitmap.getHeight() / sampleSize < 1000) {
+                break;
+            }
+        }
+        return sampleSize;
+    }
+
+    /**
+     * 获取比例被压缩后的Bitmap
+     * @param paths
+     * @param memoryThreshold
+     * @return
+     */
+    public static List<Bitmap> getCompressedImage(List<String> paths, int memoryThreshold) {
+
+        if (paths == null || paths.size() <= 0) {
+            return null;
+        }
+
+        Bitmap sampleSizeBmp = loadImageByPath(paths.get(0), 1);
+        int sampleSize = getImageSampleSizeByMemoryThreshold(sampleSizeBmp, memoryThreshold);
+
+        List<Bitmap> bitmaps = new ArrayList<>();
+        for (int index = 0; index < paths.size(); index ++) {
+            Bitmap bitmap = loadImageByPath(paths.get(index), sampleSize);
+            bitmaps.add(bitmap);
+        }
+
+        return bitmaps;
     }
 
 }

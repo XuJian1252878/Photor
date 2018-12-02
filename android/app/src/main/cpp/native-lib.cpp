@@ -174,7 +174,7 @@ Java_com_photor_staralign_GrabCutActivity_grabCutOver(JNIEnv *env, jobject insta
 
 
 /**
- * 星空图片对齐方法
+ * 星空图片对齐方法 1
  */
 extern "C"
 JNIEXPORT jint JNICALL
@@ -238,6 +238,9 @@ Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv 
 
     // 基准星空部分图片
     Mat_<Vec3b> skyTargetImg;
+    LOGD("skyTargetImg type %d", skyTargetImg.type());
+    LOGD("skyMaskImg type %d", skyMaskImg.type());
+    LOGD("targetImage type %d", targetImage.type());
     targetImage.copyTo(skyTargetImg, skyMaskImg);
 
     // 基准地面部分图片
@@ -260,6 +263,114 @@ Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv 
 //        Mat_<Vec3b> imgMat;
 //        // 设置缩放后的原始图像信息
 //        resize(imgMat_, imgMat, Size(imgMat_.cols/scale, imgMat_.rows/scale), 0, 0, INTER_LINEAR);
+
+        // 存储星空部分图像
+        Mat_<Vec3b> skyImgMat;
+        imgMat.copyTo(skyImgMat, skyMaskImg);
+        // 存储地面部分图像
+        Mat_<Vec3b> groundImgMat;
+        imgMat.copyTo(groundImgMat, groundMaskImg);
+
+        skySourceImages.push_back(skyImgMat);
+        groundSourceImages.push_back(groundImgMat);
+    }
+
+    // 对星空部分进行对齐操作
+    StarImageRegistBuilder starImageRegistBuilder = StarImageRegistBuilder(skyTargetImg, skySourceImages, skyMaskImg, rowParts, columnParts);
+    Mat_<Vec3b> resSkyMat_ = starImageRegistBuilder.registration(StarImageRegistBuilder::MERGE_MODE_MEAN);
+    Mat_<Vec3b> resSkyMat;
+    resSkyMat_.copyTo(resSkyMat, skyMaskImg);
+
+    // 对地面部分进行对齐操作
+    Mat_<Vec3b> resGroundMat = superimposedImg(groundSourceImages, groundTargetImg);
+
+    // 分别整合星空和地面部分的图片
+    Mat_<Vec3b> resultImage = resSkyMat | resGroundMat;
+
+    // 通过传地址在java中获得mat的方式
+    resMatPtr->create(resultImage.rows, resultImage.cols, resultImage.type());
+    memcpy(resMatPtr->data, resultImage.data, resMatPtr->step * resMatPtr->rows);
+
+    // 将对齐结果写入文件中
+    imwrite(generateImgAbsPath, resultImage);
+    env->ReleaseStringUTFChars(generateImgAbsPath_, generateImgAbsPath);
+
+    return 1; // 表示成功放回对齐之后的图像信息
+}
+
+
+/**
+ * 星空图片对齐方法 2
+ */
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotosCompress(JNIEnv *env, jobject instance,
+                                                                                 jobject starMats,
+                                                                                 jint alignBasePhotoIndex,
+                                                                                 jlong alignResMatAddr,
+                                                                                 jstring maskImgPath_,
+                                                                                 jstring generateImgAbsPath_) {
+
+    const char *generateImgAbsPath = env->GetStringUTFChars(generateImgAbsPath_, 0); // 存储对齐图片的路径信息
+    const char *maskImgPath = env->GetStringUTFChars(maskImgPath_, 0); // 图片的掩膜信息
+
+    // 获取ArrayList对象的class
+    jclass photoArrayList = static_cast<jclass>(env->FindClass("java/util/ArrayList"));
+    jmethodID photoArrayListSize = env->GetMethodID(photoArrayList, "size", "()I");
+    jmethodID photoArrayListGet = env->GetMethodID(photoArrayList, "get", "(I)Ljava/lang/Object;");
+
+    jclass longClass = static_cast<jclass>(env->FindClass("java/lang/Long"));
+    jmethodID longValueMethod = env->GetMethodID(longClass, "longValue", "()J");
+
+    int starPhotoSize = env->CallIntMethod(starMats, photoArrayListSize);
+
+    if (starMats == NULL) {
+        return -2;  // 表示没有选择要对齐的星空图片
+    } else if (starPhotoSize < 2) {
+        return -1;  // 表示没有足够的图片进行对齐
+    }
+
+    Mat* resMatPtr = (Mat*) alignResMatAddr; // 存储图片对齐的结果信息
+
+    // 指明图片分块的策略 5 * 5
+    int rowParts = 5;
+    int columnParts = 5;
+
+    jobject targetImageObj = env->CallObjectMethod(starMats, photoArrayListGet, alignBasePhotoIndex);
+    Mat_<Vec3b>& targetImage = *((Mat_<Vec3b>*) (env->CallLongMethod(targetImageObj, longValueMethod)));  // 获得基准的图像信息
+
+    Mat groundMaskImg_ = imread(string(maskImgPath), IMREAD_UNCHANGED);
+    Mat groundMaskImg;
+    resize(groundMaskImg_, groundMaskImg, Size(targetImage.cols, targetImage.rows), 0, 0, INTER_CUBIC);
+
+    Mat skyMaskImg = ~ groundMaskImg;  // 获得可以分割的天空图片
+
+    // 对 mask Mat进行处理，解决星空和地面衔接处出现模糊像素的问题
+    adjustMaskPixel(skyMaskImg);
+    adjustMaskPixel(groundMaskImg);
+
+    // 基准星空部分图片
+    Mat_<Vec3b> skyTargetImg;
+    LOGD("skyTargetImg type %d", skyTargetImg.type());
+    LOGD("skyMaskImg type %d", skyMaskImg.type());
+    LOGD("targetImage type %d", targetImage.type());
+    targetImage.copyTo(skyTargetImg, skyMaskImg);  //
+
+    // 基准地面部分图片
+    Mat_<Vec3b> groundTargetImg;
+    targetImage.copyTo(groundTargetImg, groundMaskImg);
+
+    // 待配准的图片列表
+    std::vector<Mat_<Vec3b>> skySourceImages;
+    std::vector<Mat_<Vec3b>> groundSourceImages;
+
+    for (int index = 0; index < starPhotoSize; index ++) {
+        if (index == alignBasePhotoIndex)  // jint 和 int相互比较
+            continue;
+
+        // 读入原始的图像信息
+        jobject imgObj = env->CallObjectMethod(starMats, photoArrayListGet, index);
+        Mat_<Vec3b>& imgMat = *((Mat_<Vec3b>*) (env->CallObjectMethod(imgObj, longValueMethod)) );
 
         // 存储星空部分图像
         Mat_<Vec3b> skyImgMat;
