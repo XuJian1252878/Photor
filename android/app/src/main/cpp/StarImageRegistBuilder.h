@@ -51,9 +51,13 @@ private:
     int columnParts;  // 期望图像将被划分为 rowParts * columnParts 部分
     int imageCount;
 
+    bool imageMode = true;  // true表示星空部分的合并，false表示当前是地面部分的合并
+
 public:
 
-    StarImageRegistBuilder(Mat_<Vec3b>& targetImage, std::vector<Mat_<Vec3b>>& sourceImages, Mat& skyMaskMat, int rowParts, int columnParts);
+    StarImageRegistBuilder(Mat_<Vec3b>& targetImage,
+                           std::vector<Mat_<Vec3b>>& sourceImages,
+                           Mat& skyMaskMat, int rowParts, int columnParts, bool imageMode = true);
 
     void addSourceImagePath(string imgPath);
 

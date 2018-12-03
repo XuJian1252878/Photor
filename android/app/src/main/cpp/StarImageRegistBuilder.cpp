@@ -40,7 +40,7 @@ void* registration_internal_thread(void* registration_internal_data_arg) {
  * @param columnParts
  */
 StarImageRegistBuilder::StarImageRegistBuilder(Mat_<Vec3b>& targetImage, std::vector<Mat_<Vec3b>>& sourceImages,
-                                               Mat& skyMaskMat, int rowParts, int columnParts) {
+                                               Mat& skyMaskMat, int rowParts, int columnParts, bool imageMode) {
     this->rowParts = rowParts;
     this->columnParts = columnParts;
     this->imageCount = (int)sourceImages.size() + 1;
@@ -58,6 +58,7 @@ StarImageRegistBuilder::StarImageRegistBuilder(Mat_<Vec3b>& targetImage, std::ve
     }
 
     this->targetStarImage = StarImage(targetImage, this->rowParts, this->columnParts);
+    this->imageMode = imageMode;
 }
 
 
@@ -274,7 +275,7 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart& sourceImagePart, Star
          */
         matcher.knnMatch(descriptors_1, descriptors_2, knnMatches, 2);
     } catch (cv::Exception) {
-        return sourceImg; // 直接采集source img的信息。
+        return this->imageMode ? targetImg : sourceImg; // 直接采集source img的信息。
     }
 
     // 1. 最近邻次比律法，取出错误匹配点
@@ -375,15 +376,13 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart& sourceImagePart, Star
     // 测试代码：
     Mat img_matches;
     drawMatches( sourceImg, keypoints_1, targetImg, keypoints_2, matches, img_matches );
-    int rPartIndex = sourceImagePart.getRowPartIndex();
-    int cPartIndex = sourceImagePart.getColumnPartIndex();
 
     int IMG_MATCH_POINT_THRESHOLD = 10;  // 这里是个做文章的地方
 
     // 对应图片部分中没有特征点的情况（导致计算出的映射关系不佳，至少要4对匹配点才能计算出匹配关系）
     if (imagePoints1.size() >= IMG_MATCH_POINT_THRESHOLD && imagePoints2.size() < IMG_MATCH_POINT_THRESHOLD) {
         // 没有特征点信息，那么说明这个区域是没有特征的，所以返回 查询图片部分，作为内容填充
-        return sourceImg;
+        return this->imageMode ? targetImg : sourceImg;
     } else if (imagePoints1.size() < IMG_MATCH_POINT_THRESHOLD && imagePoints2.size() >= IMG_MATCH_POINT_THRESHOLD) {
         return targetImg;
     } else if (imagePoints1.size() < IMG_MATCH_POINT_THRESHOLD && imagePoints2.size() < IMG_MATCH_POINT_THRESHOLD) {
@@ -401,7 +400,7 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart& sourceImagePart, Star
     if (homo.rows < 3 || homo.cols < 3) {
         existHomo = false;
         if (imagePoints1.size() > imagePoints2.size()) {
-            return sourceImg; // 因为是星空图片，移动不会很大，在目标图片部分的特征点几乎没有的情况下，那么直接返回待配准图像进行填充细节。
+            return this->imageMode ? targetImg : sourceImg; // 因为是星空图片，移动不会很大，在目标图片部分的特征点几乎没有的情况下，那么直接返回待配准图像进行填充细节。
         } else {
             return targetImg;
         }

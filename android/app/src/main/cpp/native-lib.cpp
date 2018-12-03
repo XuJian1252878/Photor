@@ -334,17 +334,19 @@ Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotosCompress
     int columnParts = 5;
 
     jobject targetImageObj = env->CallObjectMethod(starMats, photoArrayListGet, alignBasePhotoIndex);
-    Mat_<Vec3b>& targetImage = *((Mat_<Vec3b>*) (env->CallLongMethod(targetImageObj, longValueMethod)));  // 获得基准的图像信息
+    Mat_<Vec3b>& targetImage_ = *((Mat_<Vec3b>*) (env->CallLongMethod(targetImageObj, longValueMethod)));  // 获得基准的图像信息
+    Mat_<Vec3b> targetImage;
+    cvtColor(targetImage_, targetImage, COLOR_RGB2BGR);
 
     Mat groundMaskImg_ = imread(string(maskImgPath), IMREAD_UNCHANGED);
     Mat groundMaskImg;
     resize(groundMaskImg_, groundMaskImg, Size(targetImage.cols, targetImage.rows), 0, 0, INTER_CUBIC);
 
+    adjustMaskPixel(groundMaskImg);
     Mat skyMaskImg = ~ groundMaskImg;  // 获得可以分割的天空图片
-
     // 对 mask Mat进行处理，解决星空和地面衔接处出现模糊像素的问题
     adjustMaskPixel(skyMaskImg);
-    adjustMaskPixel(groundMaskImg);
+
 
     // 基准星空部分图片
     Mat_<Vec3b> skyTargetImg;
@@ -364,7 +366,9 @@ Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotosCompress
 
         // 读入原始的图像信息
         jobject imgObj = env->CallObjectMethod(starMats, photoArrayListGet, index);
-        Mat_<Vec3b>& imgMat = *((Mat_<Vec3b>*) (env->CallLongMethod(imgObj, longValueMethod)) );
+        Mat_<Vec3b>& imgMat_ = *((Mat_<Vec3b>*) (env->CallLongMethod(imgObj, longValueMethod)) );
+        Mat_<Vec3b> imgMat;
+        cvtColor(imgMat_, imgMat, COLOR_RGB2BGR);
 
         // 存储星空部分图像
         Mat_<Vec3b> skyImgMat;

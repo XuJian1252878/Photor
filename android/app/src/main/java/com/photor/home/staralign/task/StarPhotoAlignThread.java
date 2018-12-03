@@ -80,8 +80,8 @@ public class StarPhotoAlignThread extends Thread {
              *  的错误。
              *  jni C++ 代码中 targetImage.copyTo(skyTargetImg, skyMaskImg); 出现  【targetImage 为matList.get(index) 的Mat，由原始的InputMat CopyTo而来】
              */
-//            Utils.bitmapToMat(bitmap, matList.get(index));
 
+            Utils.bitmapToMat(bitmap, inputMat);
             matList.add(inputMat);
             matNativeAddrList.add(matList.get(index).getNativeObjAddr());
         }
