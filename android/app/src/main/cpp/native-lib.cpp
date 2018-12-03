@@ -212,24 +212,29 @@ Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv 
     int rowParts = 5;
     int columnParts = 5;
 
-    Mat_<Vec3b> targetImage = imread(string(basicPhotoPathPtr), IMREAD_UNCHANGED);  // 获得基准的图像信息
+    Mat_<Vec3b> targetImage_ = imread(string(basicPhotoPathPtr), IMREAD_UNCHANGED);  // 获得基准的图像信息
     FILE* pFile = fopen(basicPhotoPathPtr, "rb");
     fseek(pFile, 0, SEEK_END);
     int targetImageSize = ftell(pFile) / 1024 / 1024;
     int scale = 1;  // 设置缩放函数
-    while (targetImageSize >= 6) {
+    while (targetImageSize >= 2) {
         scale *= 2;
         targetImageSize /= 2;
+
+        if (targetImage_.rows / scale < 1000 || targetImage_.cols / scale < 1000) {
+            break;
+        }
     }
-//    Mat_<Vec3b> targetImage;
-//    // 设置缩放后的星野图像
-//    resize(targetImage_, targetImage, Size(targetImage_.cols/scale, targetImage_.rows/scale), 0, 0, INTER_LINEAR);
+    fclose(pFile);  // 关闭图片文件信息
+
+    Mat_<Vec3b> targetImage;
+    // 设置缩放后的星野图像
+    resize(targetImage_, targetImage, Size(targetImage_.cols/scale, targetImage_.rows/scale), 0, 0, INTER_LINEAR);
 
     Mat groundMaskImg_ = imread(string(maskImgPath), IMREAD_UNCHANGED);
     Mat groundMaskImg;
     resize(groundMaskImg_, groundMaskImg, Size(groundMaskImg_.cols/scale, groundMaskImg_.rows/scale), 0, 0, INTER_LINEAR);
 
-//    groundMaskImg = groundMaskImg & 1;  // 获得可以分割地面图片的模板
     Mat skyMaskImg = ~ groundMaskImg;  // 获得可以分割的天空图片
 
     // 对 mask Mat进行处理，解决星空和地面衔接处出现模糊像素的问题
@@ -256,10 +261,10 @@ Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv 
                 &isCopyStr);
 
         // 读入原始的图像信息
-        Mat_<Vec3b> imgMat = imread(string(sourcePhotoPathPtr), IMREAD_UNCHANGED);
-//        Mat_<Vec3b> imgMat;
-//        // 设置缩放后的原始图像信息
-//        resize(imgMat_, imgMat, Size(imgMat_.cols/scale, imgMat_.rows/scale), 0, 0, INTER_LINEAR);
+        Mat_<Vec3b> imgMat_ = imread(string(sourcePhotoPathPtr), IMREAD_UNCHANGED);
+        Mat_<Vec3b> imgMat;
+        // 设置缩放后的原始图像信息
+        resize(imgMat_, imgMat, Size(imgMat_.cols/scale, imgMat_.rows/scale), 0, 0, INTER_LINEAR);
 
         // 存储星空部分图像
         Mat_<Vec3b> skyImgMat;

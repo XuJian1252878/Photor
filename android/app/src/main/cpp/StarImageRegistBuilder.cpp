@@ -262,9 +262,6 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart& sourceImagePart, Star
     extractor->compute(sourceImg, keypoints_1, descriptors_1);
     extractor->compute(targetImg, keypoints_2, descriptors_2);
 
-    descriptors_1.convertTo(descriptors_1, CV_32F);
-    descriptors_2.convertTo(descriptors_2, CV_32F);
-
     //-- Step 2: Matching descriptor vectors using FLANN matcher
     FlannBasedMatcher matcher;
     std::vector< vector<DMatch> > knnMatches;

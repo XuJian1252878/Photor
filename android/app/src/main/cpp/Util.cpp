@@ -140,7 +140,6 @@ Mat_<Vec3b> superimposedImg(vector<Mat_<Vec3b>>& images, Mat_<Vec3b>& trainImg) 
 
         Mat queryDescriptors;
         extractor->compute(queryImg, queryKeyPoints, queryDescriptors);
-        queryDescriptors.convertTo(queryDescriptors, CV_32F);
 
         // 生成匹配点信息
         FlannBasedMatcher matcher;
