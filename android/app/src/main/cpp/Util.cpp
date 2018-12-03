@@ -124,6 +124,7 @@ Mat_<Vec3b> superimposedImg(vector<Mat_<Vec3b>>& images, Mat_<Vec3b>& trainImg) 
     trainDescriptors.convertTo(trainDescriptors, CV_32F);
 
     resImg = Mat::zeros(images[0].rows, images[0].cols, images[0].type());
+    resImg += (trainImg / count);
 
     for (int index = 1; index < count; index ++) {
 
