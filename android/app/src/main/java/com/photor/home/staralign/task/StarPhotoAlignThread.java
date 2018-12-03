@@ -12,6 +12,9 @@ import com.photor.util.ImageUtils;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +37,7 @@ public class StarPhotoAlignThread extends Thread {
     private SweetAlertDialog starAlignProgressDialog;
     private StarAlignProgressListener starAlignProgressListener;
 
-    private List<Mat> matList = new ArrayList<>();
+//    private List<Mat> matList = new ArrayList<>();
 
     public StarPhotoAlignThread(Activity activity, ArrayList<String> starPhotos,
                                 int alignBasePhotoIndex, long alignResMatAddr,
@@ -50,9 +53,9 @@ public class StarPhotoAlignThread extends Thread {
         this.maskImgPath = maskImgPath;  // 用户划分的mask图片的存储路径
         this.starAlignProgressListener = starAlignProgressListener;
 
-        for (int index = 0; index < starPhotos.size(); index ++) {
-            matList.add(new Mat());
-        }
+//        for (int index = 0; index < starPhotos.size(); index ++) {
+//            matList.add(new Mat());
+//        }
     }
 
     @Override
@@ -64,15 +67,30 @@ public class StarPhotoAlignThread extends Thread {
         // 如果原始图片过大，那么对原始图片进行压缩
         List<Bitmap> bitmapList = ImageUtils.getCompressedImage(starPhotos, 5);
         ArrayList<Long> matNativeAddrList = new ArrayList<>();
+        List<Mat> matList = new ArrayList<>();
         for (int index = 0; index < bitmapList.size(); index ++) {
             Bitmap bitmap = bitmapList.get(index);
             Mat inputMat = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC3);
 
-            inputMat.copyTo(matList.get(index));
-            Utils.bitmapToMat(bitmap, matList.get(index));
+//            inputMat.copyTo(matList.get(index));
+            /**
+             *  这里的copyto直接导致了jni代码中
+             *  E/cv::error(): OpenCV(3.4.1)
+             *  Error: Assertion failed (((mtype) & ((1 << 3)*512 - 1)) == m.type()) in void cv::_OutputArray::create(int, const int*, int, int, bool, int) const, file /Users/xujian/Library/opencv/modules/core/src/matrix_wrap.cpp, line 1313
+             *  的错误。
+             *  jni C++ 代码中 targetImage.copyTo(skyTargetImg, skyMaskImg); 出现  【targetImage 为matList.get(index) 的Mat，由原始的InputMat CopyTo而来】
+             */
+//            Utils.bitmapToMat(bitmap, matList.get(index));
 
+            matList.add(inputMat);
             matNativeAddrList.add(matList.get(index).getNativeObjAddr());
         }
+
+//        Mat maskImg = Imgcodecs.imread(maskImgPath, Imgcodecs.CV_LOAD_IMAGE_ANYDEPTH);
+//        Size newMaskSize = new Size(bitmapList.get(0).getWidth(), bitmapList.get(0).getHeight());
+//        Mat resizeMaskImg = new Mat();
+//        Imgproc.resize(maskImg, resizeMaskImg, newMaskSize);
+//        Imgcodecs.imwrite(maskImgPath, resizeMaskImg);
 
         // 2. 第二种方式
         alignResFlag =  alignStarPhotosCompress(

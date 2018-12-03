@@ -225,9 +225,9 @@ Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv 
 //    // 设置缩放后的星野图像
 //    resize(targetImage_, targetImage, Size(targetImage_.cols/scale, targetImage_.rows/scale), 0, 0, INTER_LINEAR);
 
-    Mat groundMaskImg = imread(string(maskImgPath), IMREAD_UNCHANGED);
-//    Mat groundMaskImg;
-//    resize(groundMaskImg_, groundMaskImg, Size(groundMaskImg_.cols/scale, groundMaskImg_.rows/scale), 0, 0, INTER_LINEAR);
+    Mat groundMaskImg_ = imread(string(maskImgPath), IMREAD_UNCHANGED);
+    Mat groundMaskImg;
+    resize(groundMaskImg_, groundMaskImg, Size(groundMaskImg_.cols/scale, groundMaskImg_.rows/scale), 0, 0, INTER_LINEAR);
 
 //    groundMaskImg = groundMaskImg & 1;  // 获得可以分割地面图片的模板
     Mat skyMaskImg = ~ groundMaskImg;  // 获得可以分割的天空图片
@@ -238,9 +238,6 @@ Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotos(JNIEnv 
 
     // 基准星空部分图片
     Mat_<Vec3b> skyTargetImg;
-    LOGD("skyTargetImg type %d", skyTargetImg.type());
-    LOGD("skyMaskImg type %d", skyMaskImg.type());
-    LOGD("targetImage type %d", targetImage.type());
     targetImage.copyTo(skyTargetImg, skyMaskImg);
 
     // 基准地面部分图片
@@ -351,10 +348,7 @@ Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotosCompress
 
     // 基准星空部分图片
     Mat_<Vec3b> skyTargetImg;
-    LOGD("skyTargetImg type %d", skyTargetImg.type());
-    LOGD("skyMaskImg type %d", skyMaskImg.type());
-    LOGD("targetImage type %d", targetImage.type());
-    targetImage.copyTo(skyTargetImg, skyMaskImg);  //
+    targetImage.copyTo(skyTargetImg, skyMaskImg);
 
     // 基准地面部分图片
     Mat_<Vec3b> groundTargetImg;
@@ -370,7 +364,7 @@ Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotosCompress
 
         // 读入原始的图像信息
         jobject imgObj = env->CallObjectMethod(starMats, photoArrayListGet, index);
-        Mat_<Vec3b>& imgMat = *((Mat_<Vec3b>*) (env->CallObjectMethod(imgObj, longValueMethod)) );
+        Mat_<Vec3b>& imgMat = *((Mat_<Vec3b>*) (env->CallLongMethod(imgObj, longValueMethod)) );
 
         // 存储星空部分图像
         Mat_<Vec3b> skyImgMat;

@@ -63,7 +63,7 @@ public:
 
 private:
 
-    Mat getImgTransform(StarImagePart sourceImagePart, StarImagePart targetImagePart, Mat& OriImgHomo, bool& existHomo);
+    Mat getImgTransform(StarImagePart& sourceImagePart, StarImagePart& targetImagePart, Mat& OriImgHomo, bool& existHomo);
     // 多线程图像配准处理函数
     void registration_internal(StarImage& resultStarImage, int rowStart, int rowEnd);
 };

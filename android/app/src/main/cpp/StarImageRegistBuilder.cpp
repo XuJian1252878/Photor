@@ -194,14 +194,14 @@ void StarImageRegistBuilder::registration_internal(StarImage& resultStarImage, i
 
     LOGD("enter registration_internal: %d ~ %d success", rowStart, rowEnd);
 
-
     for (int rPartIndex = rowStart; rPartIndex < rowEnd; rPartIndex ++) {
         // 开始对图像的每一个部分进行对齐操作，分别与targetStarImage 做对比
         for (int index = 0; index < this->sourceStarImages.size(); index ++) {
-            StarImage tmpStarImage = this->sourceStarImages[index];  // 直接赋值，不是指针操作，
+            StarImage& tmpStarImage = this->sourceStarImages[index];  // 直接赋值，不是指针操作，
             // 对于每一小块图像都做配准操作
 //        for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
             for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex ++) {
+                LOGD("rPartIndex %d, index %d, cPartIndex %d. Start", rPartIndex, index, cPartIndex);
                 Mat homo;
                 bool existHomo = false;
 
@@ -215,6 +215,7 @@ void StarImageRegistBuilder::registration_internal(StarImage& resultStarImage, i
                     queryImgTransform = this->targetImage;
                 }
                 resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(tmpRegistMat, queryImgTransform, this->skyMaskMat, this->imageCount);
+                LOGD("rPartIndex %d, index %d, cPartIndex %d. End", rPartIndex, index, cPartIndex);
             }
         }
     }
@@ -227,7 +228,7 @@ void StarImageRegistBuilder::registration_internal(StarImage& resultStarImage, i
  * @param targetImagePart
  * @return
  */
-Mat StarImageRegistBuilder::getImgTransform(StarImagePart sourceImagePart, StarImagePart targetImagePart, Mat& oriImgHomo, bool& existHomo) {
+Mat StarImageRegistBuilder::getImgTransform(StarImagePart& sourceImagePart, StarImagePart& targetImagePart, Mat& oriImgHomo, bool& existHomo) {
     Mat sourceImg = sourceImagePart.getImage(); // query image
     Mat targetImg = targetImagePart.getImage(); // train image
 

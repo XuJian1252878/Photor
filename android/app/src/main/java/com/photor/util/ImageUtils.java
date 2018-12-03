@@ -180,9 +180,7 @@ public class ImageUtils {
 
         try {
             options = new BitmapFactory.Options();
-            options.inPurgeable = true;
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            options.inDither = false;
             options.inJustDecodeBounds = false;
             options.inSampleSize = sampleSize;
             bitmap = BitmapFactory.decodeFile(path, options);
