@@ -380,6 +380,7 @@ Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotosCompress
     // 对星空部分进行对齐操作
     StarImageRegistBuilder starImageRegistBuilder = StarImageRegistBuilder(skyTargetImg, skySourceImages, skyMaskImg, rowParts, columnParts);
     Mat_<Vec3b> resSkyMat_ = starImageRegistBuilder.registration(StarImageRegistBuilder::MERGE_MODE_MEAN);
+
     Mat_<Vec3b> resSkyMat;
     resSkyMat_.copyTo(resSkyMat, skyMaskImg);
 

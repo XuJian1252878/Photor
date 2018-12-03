@@ -24,6 +24,12 @@ void* registration_internal_thread(void* registration_internal_data_arg) {
     int rowEnd = ptr_data_arg->rowEnd;
 
     (ptrSIRB->*pmf)(resultStarImage, rowStart, rowEnd);  // 调用成员函数
+
+    /**
+     * 这里没有返回值的话，那么线程函数执行完成时将会出错。必须要有返回值
+     * 报错信息类似于：Fatal signal 4 (SIGILL), code 1, fault addr 0xc84f7ede pid 8
+     */
+    return (void*) 1;
 }
 
 /**
@@ -136,9 +142,9 @@ Mat_<Vec3b> StarImageRegistBuilder::registration(int mergeMode) {
 
     // 主线程需要等待子线程完成
     pthread_attr_destroy(&threadAttr);
-    LOGD("create register pthread_attr_destroy");
     for (int threadIndex = 0; threadIndex < REGISTER_THREAD_NUMS; threadIndex ++) {
         int rc = pthread_join(processThreads[threadIndex], NULL);
+        LOGD("pthread_join threadIndex: %d", threadIndex);
 
         if (rc) {
             LOGD("join register thread: %d failed", threadIndex);
@@ -199,7 +205,6 @@ void StarImageRegistBuilder::registration_internal(StarImage& resultStarImage, i
         for (int index = 0; index < this->sourceStarImages.size(); index ++) {
             StarImage& tmpStarImage = this->sourceStarImages[index];  // 直接赋值，不是指针操作，
             // 对于每一小块图像都做配准操作
-//        for (int rPartIndex = 0; rPartIndex < this->rowParts; rPartIndex ++) {
             for (int cPartIndex = 0; cPartIndex < this->columnParts; cPartIndex ++) {
                 LOGD("rPartIndex %d, index %d, cPartIndex %d. Start", rPartIndex, index, cPartIndex);
                 Mat homo;
@@ -208,7 +213,7 @@ void StarImageRegistBuilder::registration_internal(StarImage& resultStarImage, i
                 Mat tmpRegistMat = this->getImgTransform(tmpStarImage.getStarImagePart(rPartIndex, cPartIndex),
                                                          this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex), homo, existHomo);
 
-                Mat_<Vec3b>& queryImgTransform = this->sourceImages[index];
+                Mat_<Vec3b> queryImgTransform = this->sourceImages[index];
                 if (existHomo) {
                     queryImgTransform = getTransformImgByHomo(queryImgTransform, homo);
                 } else {
@@ -219,6 +224,7 @@ void StarImageRegistBuilder::registration_internal(StarImage& resultStarImage, i
             }
         }
     }
+    LOGD("leave registration_internal: %d ~ %d success", rowStart, rowEnd);
 }
 
 

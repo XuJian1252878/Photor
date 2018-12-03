@@ -85,7 +85,7 @@ public class StarPhotoAlignThread extends Thread {
             matList.add(inputMat);
             matNativeAddrList.add(matList.get(index).getNativeObjAddr());
         }
-
+//        // Java中Opencv Load Mat的方法
 //        Mat maskImg = Imgcodecs.imread(maskImgPath, Imgcodecs.CV_LOAD_IMAGE_ANYDEPTH);
 //        Size newMaskSize = new Size(bitmapList.get(0).getWidth(), bitmapList.get(0).getHeight());
 //        Mat resizeMaskImg = new Mat();

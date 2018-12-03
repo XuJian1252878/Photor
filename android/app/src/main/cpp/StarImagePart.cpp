@@ -109,7 +109,10 @@ void StarImagePart::addImagePixelValue(Mat& resultImg,
             if (isBlackPixel) {
                 int new_x = cIndex;
                 int new_y = rIndex;
-                if (new_x >= 0 && new_x < resultImg.cols && new_y >= 0 && new_y < resultImg.rows) {
+                if (new_x >= 0 && new_x < resultImg.cols &&
+                        new_y >= 0 && new_y < resultImg.rows &&
+                        queryImgTransform.rows > rMaskIndex + new_y &&
+                        queryImgTransform.cols > cMaskIndex + new_x) {
                     this->imagePart.at<Vec3b>(new_y, new_x) += (queryImgTransform.at<Vec3b>(rMaskIndex + new_y, cMaskIndex + new_x) * 1.0   / imageCount);
                 }
             }

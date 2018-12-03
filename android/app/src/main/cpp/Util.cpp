@@ -132,6 +132,11 @@ Mat_<Vec3b> superimposedImg(vector<Mat_<Vec3b>>& images, Mat_<Vec3b>& trainImg) 
         std::vector<KeyPoint> queryKeyPoints;
         detector->detect( queryImg, queryKeyPoints );
 
+        if (queryKeyPoints.size() <= 0) {
+            resImg += (trainImg / count);
+            continue;
+        }
+
         Mat queryDescriptors;
         extractor->compute(queryImg, queryKeyPoints, queryDescriptors);
         queryDescriptors.convertTo(queryDescriptors, CV_32F);
