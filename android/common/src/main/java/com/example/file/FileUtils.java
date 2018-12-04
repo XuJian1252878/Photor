@@ -56,12 +56,12 @@ import static com.example.constant.PhotoOperator.EXTRA_PHOTO_TO_PDF_PATH;
 public class FileUtils {
 
     private static final String TAG = "FileUtils";
-
     public static final String FOLDER_NAME = "photor";
     private static final String JPEG_FILE_PREFIX = "IMG_";
     private static final String JPEG_FILE_SUFFIX = ".jpg";
-
     private static final String EXTERNAL_STORAGE_PERMISSION = "android.permission.WRITE_EXTERNAL_STORAGE";
+
+    private static PreferenceUtil SP = null;
 
     public static File createTmpFile(Context context) throws IOException {
         File dir;
@@ -299,6 +299,10 @@ public class FileUtils {
      * @return
      */
     public static String generateImgsToPdf(Context context, List<String> selectedImgPaths) {
+
+        SP = PreferenceUtil.getInstance(context);
+        int pdfDisplayOnePageMode = SP.getInt(context.getString(R.string.pdf_image_display_one_page), 0);
+
         if (selectedImgPaths == null || selectedImgPaths.size() == 0) {
             return null;
         }
@@ -314,21 +318,32 @@ public class FileUtils {
             document.open();
 
             for (String imgPath: selectedImgPaths) {
-                // 每一张图片都占有pdf文件的一页
-                document.newPage();
                 Image image = Image.getInstance(imgPath);
-                float scaleWidth = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin() - 0) / image.getWidth()) * 100;
-                float scaleHeight = ((document.getPageSize().getHeight() - document.topMargin() - document.bottomMargin() - 0) / image.getHeight()) * 100;
-                image.scalePercent(scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
+                switch (pdfDisplayOnePageMode) {
+                    case 0:  // 居中显示
+                        // 每一张图片都占有pdf文件的一页
+                        document.newPage();
+                        float scaleWidth = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin() - 0) / image.getWidth()) * 100;
+                        float scaleHeight = ((document.getPageSize().getHeight() - document.topMargin() - document.bottomMargin() - 0) / image.getHeight()) * 100;
+                        image.scalePercent(scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
 
-                float scale = (scaleWidth < scaleHeight ? scaleWidth / 100f : scaleHeight / 100f);
-                float x = (document.getPageSize().getWidth() - image.getWidth() * scale) / 2f;
-                float y = (document.getPageSize().getHeight() - image.getHeight() * scale) / 2f;
+                        float scale = (scaleWidth < scaleHeight ? scaleWidth / 100f : scaleHeight / 100f);
+                        float x = (document.getPageSize().getWidth() - image.getWidth() * scale) / 2f;
+                        float y = (document.getPageSize().getHeight() - image.getHeight() * scale) / 2f;
 
-//                image.setAlignment(Image.ALIGN_CENTER);
-                image.setAbsolutePosition(x, y);
-
-                document.add(image);
+                        image.setAbsolutePosition(x, y);
+                        document.add(image);
+                        break;
+                    case 1:  // 铺满显示
+                        // 每一张图片都占有pdf文件的一页
+                        document.setPageSize(image);
+                        document.newPage();
+                        image.setAbsolutePosition(0, 0);
+                        document.add(image);
+                        break;
+                    default:
+                        break;
+                }
             }
 
             document.close();
@@ -349,6 +364,9 @@ public class FileUtils {
      * @return
      */
     public static String generateImgToPdf(Context context, String pathForDescription) {
+        SP = PreferenceUtil.getInstance(context);
+        int pdfDisplayOnePageMode = SP.getInt(context.getString(R.string.pdf_image_display_one_page), 0);
+
         try {
             // 转化当前的图片文件至pdf
             String pdfPath = FileUtils.generateImgPdfResPath();
@@ -361,16 +379,29 @@ public class FileUtils {
             document.open();
 
             Image image = Image.getInstance(pathForDescription); // 获得当前图片的对象
-            float scaleWidth = ((document.getPageSize().getWidth() - document.leftMargin()
-                    - document.rightMargin() - 0) / image.getWidth()) * 100;
-            float scaleHeight = ((document.getPageSize().getHeight() - document.topMargin()
-                    - document.bottomMargin() - 0) / image.getHeight()) * 100;
-            image.scalePercent(scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
+            switch (pdfDisplayOnePageMode) {
+                case 0:  // 居中
+                    // 居中显示图片信息
+                    float scaleWidth = ((document.getPageSize().getWidth() - document.leftMargin()
+                            - document.rightMargin() - 0) / image.getWidth()) * 100;
+                    float scaleHeight = ((document.getPageSize().getHeight() - document.topMargin()
+                            - document.bottomMargin() - 0) / image.getHeight()) * 100;
+                    image.scalePercent(scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
 
-            float scale = (scaleWidth < scaleHeight ? scaleWidth / 100f : scaleHeight / 100f);
-            float x = (document.getPageSize().getWidth() - image.getWidth() * scale) / 2f;
-            float y = (document.getPageSize().getHeight() - image.getHeight() * scale) / 2f;
-            image.setAbsolutePosition(x, y);
+                    float scale = (scaleWidth < scaleHeight ? scaleWidth / 100f : scaleHeight / 100f);
+                    float x = (document.getPageSize().getWidth() - image.getWidth() * scale) / 2f;
+                    float y = (document.getPageSize().getHeight() - image.getHeight() * scale) / 2f;
+                    image.setAbsolutePosition(x, y);
+                    break;
+
+                case 1: // 铺满
+                    document.setPageSize(image);
+                    image.setAbsolutePosition(0, 0);
+                    break;
+
+                default:
+                    break;
+            }
 
             document.add(image);
             document.close();

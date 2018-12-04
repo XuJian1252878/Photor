@@ -10,6 +10,7 @@
     <string name="pick_permission_rationale_write_storage">保存拍照图片需要您提供写存储权限</string>
 
     <string name="__picker_all_image">所有图片</string>
-
     <string name="permission_camera">该操作需要您提供照相机、写存储权限</string>
+
+    <string name="pdf_image_display_one_page">pdf_image_display_one_page</string>
 </resources>

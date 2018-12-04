@@ -11,6 +11,15 @@
     <string name="folder_column">相册列数</string>
     <string name="media_column">照片列数</string>
 
+    <string name="pdf_resolution">pdf输出分辨率</string>
+    <string name="pdf_resolution_sub">设置导出图片在pdf页面的显示方式</string>
+    <string name="pdf_export_title">pdf导出设置</string>
+
+    <string name="pdf_image_display_one_page_label">图片显示模式</string>
+
+    <string name="pdf_image_display_one_page_center_label">居中显示</string>
+    <string name="pdf_image_display_one_page_fill_label">填充显示</string>
+
     <string name="n_columns_folders">n_columns_folders</string>
     <string name="n_columns_media">n_columns_media</string>
     <string name="n_columns_folders_landscape">n_columns_folders_landscape</string>

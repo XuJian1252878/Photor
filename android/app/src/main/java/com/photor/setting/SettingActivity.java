@@ -19,7 +19,12 @@ import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.view.IconicsImageView;
 import com.photor.R;
 import com.photor.base.activity.BaseActivity;
+import com.photor.setting.event.PdfImageDisplayEnum;
 import com.photor.util.AlertDialogsHelper;
+import com.shawnlin.numberpicker.NumberPicker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,6 +46,8 @@ public class SettingActivity extends BaseActivity {
     @BindView(R.id.general_setting_title)
     TextView generalTextView;
 
+    private int pdfDisplayOnePageMode = 0;
+
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -60,9 +67,24 @@ public class SettingActivity extends BaseActivity {
         });
 
         /**
+         * 导出pdf文件 图片分辨率设置
+         */
+        findViewById(R.id.pdf_resolution).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pdfExportResolutionDialog();
+            }
+        });
+
+        /**
          * 主题背景设置
          */
         setTheme();
+
+        /**
+         * 初始化设置参数
+         */
+        pdfDisplayOnePageMode = SP.getInt(getString(R.string.pdf_image_display_one_page), 0);  // pdf显示设置
 
     }
 
@@ -95,19 +117,81 @@ public class SettingActivity extends BaseActivity {
         /** Icons **/
         color = ThemeHelper.getIconColor(this);
         ((IconicsImageView) findViewById(R.id.n_columns_icon)).setColor(color);
+        ((IconicsImageView) findViewById(R.id.pdf_resolution_icon)).setColor(color);
 
         /** TextViews **/
         color = ThemeHelper.getTextColor(this);
         ((TextView) findViewById(R.id.n_columns_Item_Title)).setTextColor(color);
+        ((TextView) findViewById(R.id.pdf_resolution_Title)).setTextColor(color);
 
         /** Sub Text Views**/
         color = ThemeHelper.getSubTextColor(this);
         ((TextView) findViewById(R.id.n_columns_Item_Title_Sub)).setTextColor(color);
+        ((TextView) findViewById(R.id.pdf_resolution_Title_Sub)).setTextColor(color);
 
         /**
          * 设置设置选项颜色信息
          */
         generalTextView.setTextColor(ThemeHelper.getPrimaryColor(this));
+    }
+
+    /**
+     * 设置图片导出为pdf的选项
+     */
+    private void pdfExportResolutionDialog() {
+        AlertDialog.Builder pdfDialogBuilder = new AlertDialog.Builder(SettingActivity.this, ThemeHelper.getDialogStyle());
+        View dialogLayout = getLayoutInflater().inflate(R.layout.dialog_pdf_export_setting, null);
+
+        // 设置当前对话框卡片的背景颜色
+        ((CardView)(dialogLayout.findViewById(R.id.pdf_export_card))).setCardBackgroundColor(ThemeHelper.getCardBackgroundColor(this));
+
+        // 设置文本相关信息
+        ((TextView)(dialogLayout.findViewById(R.id.pdf_export_title))).setBackgroundColor(ThemeHelper.getPrimaryColor(this));
+
+        // 设置图片显示选项
+        NumberPicker pdfDisplayOnePagePicker = dialogLayout.findViewById(R.id.pdf_image_display_one_page_picker);
+        List<String> pdfDisplayList = new ArrayList<>();
+        for (PdfImageDisplayEnum pde: PdfImageDisplayEnum.values()) {
+            pdfDisplayList.add(getString(pde.getLabelId()));
+        }
+        String[] pdfDisplayArray = pdfDisplayList.toArray(new String[pdfDisplayList.size()]);
+        pdfDisplayOnePagePicker.setMinValue(1);
+        pdfDisplayOnePagePicker.setMaxValue(pdfDisplayArray.length);
+        pdfDisplayOnePagePicker.setDisplayedValues(pdfDisplayArray);
+        pdfDisplayOnePagePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                pdfDisplayOnePageMode = newVal - 1;
+            }
+        });
+        pdfDisplayOnePageMode = SP.getInt(getString(R.string.pdf_image_display_one_page), 0);
+        pdfDisplayOnePagePicker.setValue(pdfDisplayOnePageMode + 1);
+        pdfDisplayOnePagePicker.setDividerColorResource(R.color.blue_light);
+        pdfDisplayOnePagePicker.setDividerThickness(1);
+        pdfDisplayOnePagePicker.setTextSize(R.dimen.size_15dp);
+        pdfDisplayOnePagePicker.setSelectedTextSize(R.dimen.size_20dp);
+
+
+        // 设置对话框按钮
+        pdfDialogBuilder.setPositiveButton(getString(R.string.ok_action), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                SP.putInt(getString(R.string.pdf_image_display_one_page), pdfDisplayOnePageMode);
+            }
+        });
+
+        // 设置取消对话框按钮
+        pdfDialogBuilder.setNegativeButton(getString(R.string.cancel_action), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+
+        pdfDialogBuilder.setView(dialogLayout);
+        AlertDialog pdfDialog = pdfDialogBuilder.create();
+        pdfDialog.show();
+        AlertDialogsHelper.setButtonTextColor(new int[]{DialogInterface.BUTTON_POSITIVE, DialogInterface.BUTTON_NEGATIVE},
+                ThemeHelper.getAccentColor(this), pdfDialog);
     }
 
     /**
