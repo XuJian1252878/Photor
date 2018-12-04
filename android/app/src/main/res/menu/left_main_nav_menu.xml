@@ -39,6 +39,13 @@
             android:icon="@drawable/ic_trashbin"
             android:title="@string/trashbin">
         </item>
+
+        <item
+            android:id="@+id/ll_drawer_setting"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/global_settings">
+
+        </item>
     </group>
 
 </menu>

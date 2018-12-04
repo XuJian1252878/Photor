@@ -4,10 +4,14 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.common.R;
@@ -15,6 +19,7 @@ import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.typeface.IIcon;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 public class ThemeHelper {
 
@@ -94,6 +99,32 @@ public class ThemeHelper {
 
     public static int getPopupToolbarStyle(Context context) {
         return R.style.LightActionBarMenu;
+    }
+
+    public static void themeSeekBar(Context context, SeekBar bar) {
+        bar.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(getAccentColor(context), PorterDuff.Mode.SRC_IN));
+        bar.getThumb().setColorFilter(new PorterDuffColorFilter(getAccentColor(context),PorterDuff.Mode.SRC_IN));
+    }
+
+    // 设置ScrollView 滑动条的颜色
+    public static void setScrollViewColor(Context context, ScrollView scr) {
+        try {
+            Field mScrollCacheField = View.class.getDeclaredField("mScrollCache");
+            mScrollCacheField.setAccessible(true);
+            Object mScrollCache = mScrollCacheField.get(scr); // scr is your Scroll View
+
+            Field scrollBarField = mScrollCache.getClass().getDeclaredField("scrollBar");
+            scrollBarField.setAccessible(true);
+            Object scrollBar = scrollBarField.get(mScrollCache);
+
+            Method method = scrollBar.getClass().getDeclaredMethod("setVerticalThumbDrawable", Drawable.class);
+            method.setAccessible(true);
+
+            ColorDrawable ColorDraw = new ColorDrawable(getPrimaryColor(context));
+            method.invoke(scrollBar, ColorDraw);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

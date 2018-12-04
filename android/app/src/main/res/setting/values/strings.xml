@@ -1,0 +1,19 @@
+<resources>
+
+    <string name="general">通用</string>
+
+    <string name="multi_column">相册列数</string>
+    <string name="multi_column_sub">设置相册主页面显示的相册列数信息</string>
+
+    <string name="poitrait">竖屏</string>
+    <string name="landscape">横屏</string>
+
+    <string name="folder_column">相册列数</string>
+    <string name="media_column">照片列数</string>
+
+    <string name="n_columns_folders">n_columns_folders</string>
+    <string name="n_columns_media">n_columns_media</string>
+    <string name="n_columns_folders_landscape">n_columns_folders_landscape</string>
+    <string name="n_columns_media_landscape">n_columns_media_landscape</string>
+
+</resources>

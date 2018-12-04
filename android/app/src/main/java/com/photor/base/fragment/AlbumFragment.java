@@ -682,8 +682,8 @@ public class AlbumFragment extends Fragment {
      */
     public int columnsCount() {
         return getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT
-                ? SP.getInt("n_columns_folders", 2)
-                : SP.getInt("n_columns_folders_landscape", 3);
+                ? SP.getInt(getString(R.string.n_columns_folders), 2)
+                : SP.getInt(getString(R.string.n_columns_folders_landscape), 3);
     }
 
     /**
@@ -692,8 +692,8 @@ public class AlbumFragment extends Fragment {
      */
     public int mediaCount() {
         return getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT
-                ? SP.getInt("n_columns_media", 3)
-                : SP.getInt("n_columns_media_landscape", 4);
+                ? SP.getInt(getString(R.string.n_columns_media), 3)
+                : SP.getInt(getString(R.string.n_columns_media_landscape), 4);
     }
 
     private void checkNothing() {
@@ -717,6 +717,14 @@ public class AlbumFragment extends Fragment {
         rvMedia.setBackgroundColor(com.example.theme.ThemeHelper.getBackgroundColor(getActivity()));
         rvAlbums.setScrollBarColor(com.example.theme.ThemeHelper.getPrimaryColor(getActivity()));
         rvMedia.setScrollBarColor(com.example.theme.ThemeHelper.getPrimaryColor(getActivity()));
+
+        /**
+         * 设置相册、图片adapter的列数
+         */
+        int spanCount = columnsCount();
+        rvAlbums.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
+        spanCount = mediaCount();
+        rvMedia.setLayoutManager(new GridLayoutManager(this.getContext(), spanCount));
     }
 
 

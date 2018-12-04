@@ -74,7 +74,6 @@
 
         <!-- 星野图片对齐界面 -->
         <activity android:name=".home.staralign.StarAlignBaseActivity" />
-        <activity android:name=".base.activity.PhotoOperateResultActivity" />
         <activity android:name=".home.staralign.StarAlignSplitActivity" />
         <activity android:name=".home.staralign.GrabCutActivity" />
 
@@ -139,6 +138,9 @@
 
         <!-- 回收站页面 -->
         <activity android:name=".album.activity.TrashBinActivity" />
+
+        <!-- 设置界面Activity -->
+        <activity android:name=".setting.SettingActivity"/>
 
     </application>
 

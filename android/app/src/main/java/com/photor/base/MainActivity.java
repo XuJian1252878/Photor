@@ -26,6 +26,7 @@ import com.photor.base.adapters.MainViewPagerAdapter;
 import com.photor.base.fragment.AlbumFragment;
 import com.photor.base.fragment.util.BottomNavigationEnum;
 import com.photor.base.fragment.util.FragmentDataGenerator;
+import com.photor.setting.SettingActivity;
 
 import org.opencv.android.OpenCVLoader;
 
@@ -126,12 +127,18 @@ public class MainActivity extends BaseActivity {
         // 设置默认选中
         navView.setCheckedItem(R.id.nav_call);
         navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            Intent intent;
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch(item.getItemId()) {
                     case R.id.ll_drawer_trashbin:
                         // 点击了回收站的按钮
-                        Intent intent = new Intent(MainActivity.this, TrashBinActivity.class);
+                        intent = new Intent(MainActivity.this, TrashBinActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.ll_drawer_setting:
+                        // 进入全局设置选项
+                        intent = new Intent(MainActivity.this, SettingActivity.class);
                         startActivity(intent);
                         break;
                     default:
