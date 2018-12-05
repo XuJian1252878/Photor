@@ -175,16 +175,18 @@ public class SettingActivity extends BaseActivity {
                     pdfWatermarkEditText.setCursorVisible(true);
                     pdfWatermarkEditText.setFocusableInTouchMode(true);
                     pdfWatermarkEditText.requestFocus();
+                    SP.putInt(SettingActivity.this.getString(R.string.pdf_watermark_switch), 1);
                 } else {
                     // 不允许输入
                     pdfWatermark = PdfWatermarkEnum.NO_WATERMARK.getIndex();
                     pdfWatermarkEditText.setCursorVisible(false);
                     pdfWatermarkEditText.setFocusableInTouchMode(false);
                     pdfWatermarkEditText.clearFocus();
+                    SP.putInt(SettingActivity.this.getString(R.string.pdf_watermark_switch), 0);
                 }
             }
         });
-        pdfWatermarkSwitch.setChecked(pdfWatermark == PdfWatermarkEnum.YES_WATERMARK.getIndex());
+        pdfWatermarkSwitch.setChecked(pdfWatermark != 0);
 
         // 设置水印内容的输入框事件
         pdfWatermarkEditText.addTextChangedListener(new TextWatcher() {
@@ -204,6 +206,7 @@ public class SettingActivity extends BaseActivity {
                 SP.putString(SettingActivity.this.getString(R.string.pdf_image_watermark_content), waterMark);
             }
         });
+        pdfWatermarkEditText.setText(SP.getString(SettingActivity.this.getString(R.string.pdf_image_watermark_content), ""));
 
         // 设置图片显示选项
         NumberPicker pdfDisplayOnePagePicker = dialogLayout.findViewById(R.id.pdf_image_display_one_page_picker);

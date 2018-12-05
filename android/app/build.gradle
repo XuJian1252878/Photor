@@ -183,6 +183,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
+
+    packagingOptions {
+        exclude 'com/itextpdf/text/pdf/fonts/cmap_info.txt'
+    }
 }
 
 repositories {

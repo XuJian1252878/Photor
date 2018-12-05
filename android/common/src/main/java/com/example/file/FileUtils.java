@@ -28,7 +28,15 @@ import com.example.preference.PreferenceUtil;
 import com.example.strings.StringUtils;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.GrayColor;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.ByteArrayInputStream;
@@ -46,8 +54,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
-import static com.example.constant.PhotoOperator.EXTRA_PHOTO_TO_PDF_PATH;
-
 
 /**
  * Created by xujian on 2018/2/5.
@@ -62,6 +68,19 @@ public class FileUtils {
     private static final String EXTERNAL_STORAGE_PERMISSION = "android.permission.WRITE_EXTERNAL_STORAGE";
 
     private static PreferenceUtil SP = null;
+    // pdf 文件相关设置
+    public static BaseFont CHINESE_FONT = null;
+    static {
+        try {
+            CHINESE_FONT = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H",BaseFont.NOT_EMBEDDED);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Font WATERMARK_FONT = new Font(CHINESE_FONT, 12, Font.NORMAL, GrayColor.GRAYWHITE);  // pdf 水印字体设置
 
     public static File createTmpFile(Context context) throws IOException {
         File dir;
@@ -301,7 +320,11 @@ public class FileUtils {
     public static String generateImgsToPdf(Context context, List<String> selectedImgPaths) {
 
         SP = PreferenceUtil.getInstance(context);
+        // 显示方式
         int pdfDisplayOnePageMode = SP.getInt(context.getString(R.string.pdf_image_display_one_page), 0);
+        // 显示水印相关
+        boolean pdfWatermarkSwitch = SP.getInt(context.getString(R.string.pdf_watermark_switch), 0) != 0;
+        String pdfImageWatermarkContent = SP.getString(context.getString(R.string.pdf_image_watermark_content), "");
 
         if (selectedImgPaths == null || selectedImgPaths.size() == 0) {
             return null;
@@ -314,11 +337,14 @@ public class FileUtils {
             }
 
             Document document = new Document();
-            PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
+            PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
             document.open();
+            PdfContentByte cb = pdfWriter.getDirectContentUnder();
 
             for (String imgPath: selectedImgPaths) {
                 Image image = Image.getInstance(imgPath);
+
+                // 图片显示方式设置
                 switch (pdfDisplayOnePageMode) {
                     case 0:  // 居中显示
                         // 每一张图片都占有pdf文件的一页
@@ -331,19 +357,30 @@ public class FileUtils {
                         float x = (document.getPageSize().getWidth() - image.getWidth() * scale) / 2f;
                         float y = (document.getPageSize().getHeight() - image.getHeight() * scale) / 2f;
 
+                        image.scaleToFit(image.getWidth() * scale, image.getHeight() * scale);
+                        // 水印设置
+                        if (pdfWatermarkSwitch) {
+                            image = getWatermarkedImage(cb, image, pdfImageWatermarkContent);
+                        }
+
                         image.setAbsolutePosition(x, y);
-                        document.add(image);
                         break;
                     case 1:  // 铺满显示
                         // 每一张图片都占有pdf文件的一页
                         document.setPageSize(image);
                         document.newPage();
+
+                        // 水印设置
+                        if (pdfWatermarkSwitch) {
+                            image = getWatermarkedImage(cb, image, pdfImageWatermarkContent);
+                        }
                         image.setAbsolutePosition(0, 0);
-                        document.add(image);
                         break;
                     default:
                         break;
                 }
+
+                document.add(image);
             }
 
             document.close();
@@ -357,6 +394,16 @@ public class FileUtils {
         return null;
     }
 
+    public static Image getWatermarkedImage(PdfContentByte cb, Image img, String watermark) throws DocumentException {
+        float width = img.getScaledWidth();
+        float height = img.getScaledHeight();
+        PdfTemplate template = cb.createTemplate(width, height);
+        template.addImage(img, width, 0, 0, height, 0, 0);
+        ColumnText.showTextAligned(template, Element.ALIGN_CENTER,
+                new Phrase(watermark, WATERMARK_FONT), width / 2, height / 2, 30);
+        return Image.getInstance(template);
+    }
+
     /**
      * 生成pdf文件信息
      * @param context
@@ -366,6 +413,9 @@ public class FileUtils {
     public static String generateImgToPdf(Context context, String pathForDescription) {
         SP = PreferenceUtil.getInstance(context);
         int pdfDisplayOnePageMode = SP.getInt(context.getString(R.string.pdf_image_display_one_page), 0);
+        // 显示水印相关
+        boolean pdfWatermarkSwitch = SP.getInt(context.getString(R.string.pdf_watermark_switch), 0) != 0;
+        String pdfImageWatermarkContent = SP.getString(context.getString(R.string.pdf_image_watermark_content), "");
 
         try {
             // 转化当前的图片文件至pdf
@@ -375,8 +425,9 @@ public class FileUtils {
                 pdfFile.createNewFile();
             }
             Document document = new Document();
-            PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
+            PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
             document.open();
+            PdfContentByte cb = pdfWriter.getDirectContentUnder();
 
             Image image = Image.getInstance(pathForDescription); // 获得当前图片的对象
             switch (pdfDisplayOnePageMode) {
@@ -391,11 +442,22 @@ public class FileUtils {
                     float scale = (scaleWidth < scaleHeight ? scaleWidth / 100f : scaleHeight / 100f);
                     float x = (document.getPageSize().getWidth() - image.getWidth() * scale) / 2f;
                     float y = (document.getPageSize().getHeight() - image.getHeight() * scale) / 2f;
+
+                    image.scaleToFit(image.getWidth() * scale, image.getHeight() * scale);
+                    // 水印设置
+                    if (pdfWatermarkSwitch) {
+                        image = getWatermarkedImage(cb, image, pdfImageWatermarkContent);
+                    }
+
                     image.setAbsolutePosition(x, y);
                     break;
 
                 case 1: // 铺满
                     document.setPageSize(image);
+                    // 水印设置
+                    if (pdfWatermarkSwitch) {
+                        image = getWatermarkedImage(cb, image, pdfImageWatermarkContent);
+                    }
                     image.setAbsolutePosition(0, 0);
                     break;
 
