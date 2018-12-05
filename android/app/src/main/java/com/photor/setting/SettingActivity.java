@@ -7,9 +7,16 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.preference.PreferenceUtil;
@@ -20,6 +27,7 @@ import com.mikepenz.iconics.view.IconicsImageView;
 import com.photor.R;
 import com.photor.base.activity.BaseActivity;
 import com.photor.setting.event.PdfImageDisplayEnum;
+import com.photor.setting.event.PdfWatermarkEnum;
 import com.photor.util.AlertDialogsHelper;
 import com.shawnlin.numberpicker.NumberPicker;
 
@@ -46,7 +54,8 @@ public class SettingActivity extends BaseActivity {
     @BindView(R.id.general_setting_title)
     TextView generalTextView;
 
-    private int pdfDisplayOnePageMode = 0;
+    private int pdfDisplayOnePageMode = 0;  // image 在pdf文件中的显示格式
+    private int pdfWatermark = 0;  // 控制pdf文件是否有水印，0没有 1有
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -85,6 +94,7 @@ public class SettingActivity extends BaseActivity {
          * 初始化设置参数
          */
         pdfDisplayOnePageMode = SP.getInt(getString(R.string.pdf_image_display_one_page), 0);  // pdf显示设置
+        pdfWatermark = SP.getInt(getString(R.string.pdf_watermark_switch), PdfWatermarkEnum.YES_WATERMARK.getIndex()); // 设置水印
 
     }
 
@@ -148,6 +158,53 @@ public class SettingActivity extends BaseActivity {
         // 设置文本相关信息
         ((TextView)(dialogLayout.findViewById(R.id.pdf_export_title))).setBackgroundColor(ThemeHelper.getPrimaryColor(this));
 
+        // pdf 水印设置
+        pdfWatermark = SP.getInt(getString(R.string.pdf_watermark_switch), PdfWatermarkEnum.YES_WATERMARK.getIndex());
+
+        Switch pdfWatermarkSwitch = dialogLayout.findViewById(R.id.pdf_watermark_switch);
+        EditText pdfWatermarkEditText = dialogLayout.findViewById(R.id.pdf_image_watermark_content);
+
+        pdfWatermarkSwitch.setTextOff(getString(R.string.pdf_image_watermark_no));
+        pdfWatermarkSwitch.setTextOn(getString(R.string.pdf_image_watermark_yes));
+        pdfWatermarkSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    // 允许输入
+                    pdfWatermark = PdfWatermarkEnum.YES_WATERMARK.getIndex();
+                    pdfWatermarkEditText.setCursorVisible(true);
+                    pdfWatermarkEditText.setFocusableInTouchMode(true);
+                    pdfWatermarkEditText.requestFocus();
+                } else {
+                    // 不允许输入
+                    pdfWatermark = PdfWatermarkEnum.NO_WATERMARK.getIndex();
+                    pdfWatermarkEditText.setCursorVisible(false);
+                    pdfWatermarkEditText.setFocusableInTouchMode(false);
+                    pdfWatermarkEditText.clearFocus();
+                }
+            }
+        });
+        pdfWatermarkSwitch.setChecked(pdfWatermark == PdfWatermarkEnum.YES_WATERMARK.getIndex());
+
+        // 设置水印内容的输入框事件
+        pdfWatermarkEditText.addTextChangedListener(new TextWatcher() {
+            String waterMark = null;
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                waterMark = SP.getString(SettingActivity.this.getString(R.string.pdf_image_watermark_content), "");
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                waterMark = charSequence.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                SP.putString(SettingActivity.this.getString(R.string.pdf_image_watermark_content), waterMark);
+            }
+        });
+
         // 设置图片显示选项
         NumberPicker pdfDisplayOnePagePicker = dialogLayout.findViewById(R.id.pdf_image_display_one_page_picker);
         List<String> pdfDisplayList = new ArrayList<>();
@@ -170,7 +227,6 @@ public class SettingActivity extends BaseActivity {
         pdfDisplayOnePagePicker.setDividerThickness(1);
         pdfDisplayOnePagePicker.setTextSize(R.dimen.size_15dp);
         pdfDisplayOnePagePicker.setSelectedTextSize(R.dimen.size_20dp);
-
 
         // 设置对话框按钮
         pdfDialogBuilder.setPositiveButton(getString(R.string.ok_action), new DialogInterface.OnClickListener() {

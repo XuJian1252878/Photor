@@ -20,6 +20,13 @@
     <string name="pdf_image_display_one_page_center_label">居中显示</string>
     <string name="pdf_image_display_one_page_fill_label">填充显示</string>
 
+    <string name="pdf_image_watermark_label">显示水印</string>
+    <string name="pdf_image_watermark_yes">是</string>
+    <string name="pdf_image_watermark_no">否</string>
+    <string name="pdf_image_watermark_content_label">水印内容</string>
+    <string name="pdf_image_watermark_content_hint">水印文字</string>
+
+
     <string name="n_columns_folders">n_columns_folders</string>
     <string name="n_columns_media">n_columns_media</string>
     <string name="n_columns_folders_landscape">n_columns_folders_landscape</string>
