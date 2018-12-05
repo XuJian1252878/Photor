@@ -36,6 +36,7 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.CMYKColor;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.GrayColor;
 import com.itextpdf.text.pdf.PdfContentByte;
@@ -55,6 +56,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -374,6 +376,16 @@ public class FileUtils {
                     case 0:  // 居中显示
                         // 每一张图片都占有pdf文件的一页
                         document.newPage();
+                        if (pdfHeader) {
+                            // 头注
+                            //下划线
+                            PdfContentByte canvas = pdfWriter.getDirectContent();
+                            CMYKColor magentaColor = new CMYKColor(1.f, 1.f, 1.f, 1.f);
+                            canvas.setColorStroke(magentaColor);
+                            canvas.moveTo(document.left(), document.top() - 4);
+                            canvas.lineTo(document.right(), document.top() - 4);
+                            canvas.closePathStroke();
+                        }
                         float scaleWidth = ((document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin() - 0) / image.getWidth()) * 100;
                         float scaleHeight = ((document.getPageSize().getHeight() - document.topMargin() - document.bottomMargin() - 0) / image.getHeight()) * 100;
                         image.scalePercent(scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
@@ -394,6 +406,16 @@ public class FileUtils {
                         // 每一张图片都占有pdf文件的一页
                         document.setPageSize(image);
                         document.newPage();
+                        if (pdfHeader) {
+                            // 头注
+                            //下划线
+                            PdfContentByte canvas = pdfWriter.getDirectContent();
+                            CMYKColor magentaColor = new CMYKColor(1.f, 1.f, 1.f, 1.f);
+                            canvas.setColorStroke(magentaColor);
+                            canvas.moveTo(document.left(), document.top() - 4);
+                            canvas.lineTo(document.right(), document.top() - 4);
+                            canvas.closePathStroke();
+                        }
 
                         // 水印设置
                         if (pdfWatermarkSwitch) {
@@ -445,7 +467,7 @@ public class FileUtils {
         public void onEndPage(PdfWriter writer, Document document) {
             try {
                 ColumnText ct = new ColumnText(writer.getDirectContent());
-                ct.setSimpleColumn(new Rectangle(36, 832, 559, 810));
+                ct.setSimpleColumn(new Rectangle(36, 822, 559, 800));
                 for (Element e : headerElement) {
                     ct.addElement(e);
                 }
@@ -468,90 +490,9 @@ public class FileUtils {
      * @return
      */
     public static String generateImgToPdf(Context context, String pathForDescription) throws IOException {
-        SP = PreferenceUtil.getInstance(context);
-        int pdfDisplayOnePageMode = SP.getInt(context.getString(R.string.pdf_image_display_one_page), 0);
-        // 显示水印相关
-        boolean pdfWatermarkSwitch = SP.getInt(context.getString(R.string.pdf_watermark_switch), 0) != 0;
-        String pdfImageWatermarkContent = SP.getString(context.getString(R.string.pdf_image_watermark_content), "");
-
-        // 头注相关
-        boolean pdfHeader = SP.getInt(context.getString(R.string.pdf_headers_switch), 0) != 0;
-        String pdfHeaderContent = SP.getString(context.getString(R.string.pdf_image_headers_content), "");
-
-        // 脚注相关
-        boolean pdfFootor = SP.getInt(context.getString(R.string.pdf_footer_switch), 0) != 0;
-        String pdfFootorContent = SP.getString(context.getString(R.string.pdf_image_footer_content), "");
-
-        // pdf文件头注脚注
-        String PDF_HEADER =
-                "<table width=\"100%\" border=\"0\"><tr><td>Header</td><td align=\"right\">" + pdfHeaderContent + "</td></tr></table>";
-        String PDF_FOOTER =
-                "<table width=\"100%\" border=\"0\"><tr><td>Footer</td><td align=\"right\">" + pdfFootorContent + "</td></tr></table>";
-
-        ITextPdfHeaderFooter iTextPdfHeaderFooter = new ITextPdfHeaderFooter(PDF_HEADER, PDF_FOOTER);
-
-        try {
-            // 转化当前的图片文件至pdf
-            String pdfPath = FileUtils.generateImgPdfResPath();
-            File pdfFile = new File(pdfPath);
-            if (!pdfFile.exists()) {
-                pdfFile.createNewFile();
-            }
-            Document document = new Document();
-            PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
-            // 设置pdf的头注脚注信息
-            if (pdfHeader || pdfFootor) {
-                pdfWriter.setPageEvent(iTextPdfHeaderFooter);
-            }
-            document.open();
-            PdfContentByte cb = pdfWriter.getDirectContentUnder();
-
-            Image image = Image.getInstance(pathForDescription); // 获得当前图片的对象
-            switch (pdfDisplayOnePageMode) {
-                case 0:  // 居中
-                    // 居中显示图片信息
-                    float scaleWidth = ((document.getPageSize().getWidth() - document.leftMargin()
-                            - document.rightMargin() - 0) / image.getWidth()) * 100;
-                    float scaleHeight = ((document.getPageSize().getHeight() - document.topMargin()
-                            - document.bottomMargin() - 0) / image.getHeight()) * 100;
-                    image.scalePercent(scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
-
-                    float scale = (scaleWidth < scaleHeight ? scaleWidth / 100f : scaleHeight / 100f);
-                    float x = (document.getPageSize().getWidth() - image.getWidth() * scale) / 2f;
-                    float y = (document.getPageSize().getHeight() - image.getHeight() * scale) / 2f;
-
-                    image.scaleToFit(image.getWidth() * scale, image.getHeight() * scale);
-                    // 水印设置
-                    if (pdfWatermarkSwitch) {
-                        image = getWatermarkedImage(cb, image, pdfImageWatermarkContent);
-                    }
-
-                    image.setAbsolutePosition(x, y);
-                    break;
-
-                case 1: // 铺满
-                    document.setPageSize(image);
-                    // 水印设置
-                    if (pdfWatermarkSwitch) {
-                        image = getWatermarkedImage(cb, image, pdfImageWatermarkContent);
-                    }
-                    image.setAbsolutePosition(0, 0);
-                    break;
-
-                default:
-                    break;
-            }
-
-            document.add(image);
-            document.close();
-            return pdfPath;
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        List<String> selectedImgPaths = new ArrayList<>();
+        selectedImgPaths.add(pathForDescription);
+        generateImgsToPdf(context, selectedImgPaths);
         return null;
     }
 
