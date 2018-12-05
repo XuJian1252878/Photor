@@ -52,6 +52,7 @@ dependencies {
     // iText 图片转化为 pdf的库
     implementation 'com.itextpdf:itextg:5.5.10'
     implementation group: 'com.itextpdf', name: 'itext-asian', version: '5.2.0'
+    implementation group: 'com.itextpdf.tool', name: 'xmlworker', version: '5.5.10'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'

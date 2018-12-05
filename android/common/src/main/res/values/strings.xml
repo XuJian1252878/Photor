@@ -13,7 +13,14 @@
     <string name="permission_camera">该操作需要您提供照相机、写存储权限</string>
 
     <string name="pdf_image_display_one_page">pdf_image_display_one_page</string>
+
     <string name="pdf_watermark_switch">pdf_watermark_switch</string>
     <string name="pdf_image_watermark_content">pdf_image_watermark_content</string>
+
+    <string name="pdf_headers_switch">pdf_headers_switch</string>
+    <string name="pdf_image_headers_content">pdf_image_headers_content</string>
+
+    <string name="pdf_footer_switch">pdf_footer_switch</string>
+    <string name="pdf_image_footer_content">pdf_image_footer_content</string>
 
 </resources>

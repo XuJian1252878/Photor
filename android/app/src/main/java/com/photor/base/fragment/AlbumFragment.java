@@ -81,6 +81,7 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1680,7 +1681,12 @@ public class AlbumFragment extends Fragment {
                 }
 
                 // 将img全部转化到一个pdf文件中
-                String pdfPath = FileUtils.generateImgsToPdf(albumFragment.getActivity(), selectImgPath);
+                String pdfPath = null;
+                try {
+                    pdfPath = FileUtils.generateImgsToPdf(albumFragment.getActivity(), selectImgPath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return pdfPath;
             }
             return null;

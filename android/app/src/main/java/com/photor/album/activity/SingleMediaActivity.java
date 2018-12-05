@@ -68,6 +68,7 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -566,7 +567,12 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
 
         @Override
         protected String doInBackground(Void... voids) {
-            String pdfPath = FileUtils.generateImgToPdf(SingleMediaActivity.this, pathForDescription);
+            String pdfPath = null;
+            try {
+                pdfPath = FileUtils.generateImgToPdf(SingleMediaActivity.this, pathForDescription);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return pdfPath;
         }
 

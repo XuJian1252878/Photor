@@ -29,15 +29,21 @@ import com.example.strings.StringUtils;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.ExceptionConverter;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.GrayColor;
 import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.ElementList;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -79,7 +85,6 @@ public class FileUtils {
             e.printStackTrace();
         }
     }
-
     public static Font WATERMARK_FONT = new Font(CHINESE_FONT, 12, Font.NORMAL, GrayColor.GRAYWHITE);  // pdf 水印字体设置
 
     public static File createTmpFile(Context context) throws IOException {
@@ -317,7 +322,7 @@ public class FileUtils {
      * @param selectedImgPaths
      * @return
      */
-    public static String generateImgsToPdf(Context context, List<String> selectedImgPaths) {
+    public static String generateImgsToPdf(Context context, List<String> selectedImgPaths) throws IOException {
 
         SP = PreferenceUtil.getInstance(context);
         // 显示方式
@@ -325,6 +330,22 @@ public class FileUtils {
         // 显示水印相关
         boolean pdfWatermarkSwitch = SP.getInt(context.getString(R.string.pdf_watermark_switch), 0) != 0;
         String pdfImageWatermarkContent = SP.getString(context.getString(R.string.pdf_image_watermark_content), "");
+
+        // 头注相关
+        boolean pdfHeader = SP.getInt(context.getString(R.string.pdf_headers_switch), 0) != 0;
+        String pdfHeaderContent = SP.getString(context.getString(R.string.pdf_image_headers_content), "");
+
+        // 脚注相关
+        boolean pdfFootor = SP.getInt(context.getString(R.string.pdf_footer_switch), 0) != 0;
+        String pdfFootorContent = SP.getString(context.getString(R.string.pdf_image_footer_content), "");
+
+        // pdf文件头注脚注
+        String PDF_HEADER =
+                "<table width=\"100%\" border=\"0\"><tr><td>Header</td><td align=\"right\">" + pdfHeaderContent + "</td></tr></table>";
+        String PDF_FOOTER =
+                "<table width=\"100%\" border=\"0\"><tr><td>Footer</td><td align=\"right\">" + pdfFootorContent + "</td></tr></table>";
+
+        ITextPdfHeaderFooter iTextPdfHeaderFooter = new ITextPdfHeaderFooter(PDF_HEADER, PDF_FOOTER);
 
         if (selectedImgPaths == null || selectedImgPaths.size() == 0) {
             return null;
@@ -338,6 +359,10 @@ public class FileUtils {
 
             Document document = new Document();
             PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
+            // 设置pdf的头注脚注信息
+            if (pdfHeader || pdfFootor) {
+                pdfWriter.setPageEvent(iTextPdfHeaderFooter);
+            }
             document.open();
             PdfContentByte cb = pdfWriter.getDirectContentUnder();
 
@@ -405,17 +430,65 @@ public class FileUtils {
     }
 
     /**
+     * 控制pdf文件显示头注脚注信息
+     */
+    private static class ITextPdfHeaderFooter extends PdfPageEventHelper {
+        protected ElementList headerElement;
+        protected ElementList footerElement;
+
+        public ITextPdfHeaderFooter(String header, String footer) throws IOException {
+            this.headerElement = XMLWorkerHelper.parseToElementList(new Paragraph(header, WATERMARK_FONT).getContent(), null);
+            this.footerElement = XMLWorkerHelper.parseToElementList(new Paragraph(footer, WATERMARK_FONT).getContent(), null);
+        }
+
+        @Override
+        public void onEndPage(PdfWriter writer, Document document) {
+            try {
+                ColumnText ct = new ColumnText(writer.getDirectContent());
+                ct.setSimpleColumn(new Rectangle(36, 832, 559, 810));
+                for (Element e : headerElement) {
+                    ct.addElement(e);
+                }
+                ct.go();
+                ct.setSimpleColumn(new Rectangle(36, 10, 559, 32));
+                for (Element e : footerElement) {
+                    ct.addElement(e);
+                }
+                ct.go();
+            } catch (DocumentException de) {
+                throw new ExceptionConverter(de);
+            }
+        }
+    }
+
+    /**
      * 生成pdf文件信息
      * @param context
      * @param pathForDescription
      * @return
      */
-    public static String generateImgToPdf(Context context, String pathForDescription) {
+    public static String generateImgToPdf(Context context, String pathForDescription) throws IOException {
         SP = PreferenceUtil.getInstance(context);
         int pdfDisplayOnePageMode = SP.getInt(context.getString(R.string.pdf_image_display_one_page), 0);
         // 显示水印相关
         boolean pdfWatermarkSwitch = SP.getInt(context.getString(R.string.pdf_watermark_switch), 0) != 0;
         String pdfImageWatermarkContent = SP.getString(context.getString(R.string.pdf_image_watermark_content), "");
+
+        // 头注相关
+        boolean pdfHeader = SP.getInt(context.getString(R.string.pdf_headers_switch), 0) != 0;
+        String pdfHeaderContent = SP.getString(context.getString(R.string.pdf_image_headers_content), "");
+
+        // 脚注相关
+        boolean pdfFootor = SP.getInt(context.getString(R.string.pdf_footer_switch), 0) != 0;
+        String pdfFootorContent = SP.getString(context.getString(R.string.pdf_image_footer_content), "");
+
+        // pdf文件头注脚注
+        String PDF_HEADER =
+                "<table width=\"100%\" border=\"0\"><tr><td>Header</td><td align=\"right\">" + pdfHeaderContent + "</td></tr></table>";
+        String PDF_FOOTER =
+                "<table width=\"100%\" border=\"0\"><tr><td>Footer</td><td align=\"right\">" + pdfFootorContent + "</td></tr></table>";
+
+        ITextPdfHeaderFooter iTextPdfHeaderFooter = new ITextPdfHeaderFooter(PDF_HEADER, PDF_FOOTER);
 
         try {
             // 转化当前的图片文件至pdf
@@ -426,6 +499,10 @@ public class FileUtils {
             }
             Document document = new Document();
             PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
+            // 设置pdf的头注脚注信息
+            if (pdfHeader || pdfFootor) {
+                pdfWriter.setPageEvent(iTextPdfHeaderFooter);
+            }
             document.open();
             PdfContentByte cb = pdfWriter.getDirectContentUnder();
 

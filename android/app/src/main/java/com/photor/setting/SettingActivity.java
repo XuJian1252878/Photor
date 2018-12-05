@@ -8,8 +8,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
-import android.text.InputFilter;
-import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -27,6 +25,8 @@ import com.mikepenz.iconics.view.IconicsImageView;
 import com.photor.R;
 import com.photor.base.activity.BaseActivity;
 import com.photor.setting.event.PdfImageDisplayEnum;
+import com.photor.setting.event.PdfImageFootersEnum;
+import com.photor.setting.event.PdfImageHeadersEnum;
 import com.photor.setting.event.PdfWatermarkEnum;
 import com.photor.util.AlertDialogsHelper;
 import com.shawnlin.numberpicker.NumberPicker;
@@ -56,6 +56,8 @@ public class SettingActivity extends BaseActivity {
 
     private int pdfDisplayOnePageMode = 0;  // image 在pdf文件中的显示格式
     private int pdfWatermark = 0;  // 控制pdf文件是否有水印，0没有 1有
+    private int pdfHeader = 0;  // pdf 文件是否有头注
+    private int pdfFooter = 0; // pdf 文件是否有脚注
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -95,7 +97,8 @@ public class SettingActivity extends BaseActivity {
          */
         pdfDisplayOnePageMode = SP.getInt(getString(R.string.pdf_image_display_one_page), 0);  // pdf显示设置
         pdfWatermark = SP.getInt(getString(R.string.pdf_watermark_switch), PdfWatermarkEnum.YES_WATERMARK.getIndex()); // 设置水印
-
+        pdfHeader = SP.getInt(getString(R.string.pdf_headers_switch), PdfImageHeadersEnum.HEADERS_YES.getIndex()); // 头注
+        pdfFooter = SP.getInt(getString(R.string.pdf_footer_switch), PdfImageFootersEnum.FOOTER_YES.getIndex()); // 脚注
     }
 
     private void setTheme() {
@@ -164,8 +167,8 @@ public class SettingActivity extends BaseActivity {
         Switch pdfWatermarkSwitch = dialogLayout.findViewById(R.id.pdf_watermark_switch);
         EditText pdfWatermarkEditText = dialogLayout.findViewById(R.id.pdf_image_watermark_content);
 
-        pdfWatermarkSwitch.setTextOff(getString(R.string.pdf_image_watermark_no));
-        pdfWatermarkSwitch.setTextOn(getString(R.string.pdf_image_watermark_yes));
+        pdfWatermarkSwitch.setTextOff(getString(R.string.pdf_image_no));
+        pdfWatermarkSwitch.setTextOn(getString(R.string.pdf_image_yes));
         pdfWatermarkSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -207,6 +210,95 @@ public class SettingActivity extends BaseActivity {
             }
         });
         pdfWatermarkEditText.setText(SP.getString(SettingActivity.this.getString(R.string.pdf_image_watermark_content), ""));
+
+        // 头注设置
+        pdfHeader = SP.getInt(getString(R.string.pdf_headers_switch), PdfImageHeadersEnum.HEADERS_YES.getIndex());
+        Switch pdfHeadersSwitch = dialogLayout.findViewById(R.id.pdf_headers_switch);
+        EditText pdfHeadersEditText = dialogLayout.findViewById(R.id.pdf_image_headers_content);
+        pdfHeadersSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    pdfHeader = PdfImageHeadersEnum.HEADERS_YES.getIndex();
+                    pdfHeadersEditText.setCursorVisible(true);
+                    pdfHeadersEditText.setFocusableInTouchMode(true);
+                    pdfHeadersEditText.requestFocus();
+                    SP.putInt(SettingActivity.this.getString(R.string.pdf_headers_switch), pdfHeader);
+                } else {
+                    // 不允许输入
+                    pdfHeader = PdfImageHeadersEnum.HEADERS_NO.getIndex();
+                    pdfHeadersEditText.setCursorVisible(false);
+                    pdfHeadersEditText.setFocusableInTouchMode(false);
+                    pdfHeadersEditText.clearFocus();
+                    SP.putInt(SettingActivity.this.getString(R.string.pdf_headers_switch), pdfHeader);
+                }
+            }
+        });
+        pdfHeadersSwitch.setChecked(pdfHeader != 0);
+
+        // 设置头注内容的输入框事件
+        pdfHeadersEditText.addTextChangedListener(new TextWatcher() {
+            String headers = null;
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                headers = SP.getString(SettingActivity.this.getString(R.string.pdf_image_headers_content), "");
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                headers = charSequence.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                SP.putString(SettingActivity.this.getString(R.string.pdf_image_headers_content), headers);
+            }
+        });
+        pdfHeadersEditText.setText(SP.getString(SettingActivity.this.getString(R.string.pdf_image_headers_content), ""));
+
+        // 脚注设置
+        Switch pdfFootorSwitch = dialogLayout.findViewById(R.id.pdf_footer_switch);
+        EditText pdfFootorEditText = dialogLayout.findViewById(R.id.pdf_image_footer_content);
+        pdfFootorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    pdfFooter = PdfImageFootersEnum.FOOTER_YES.getIndex();
+                    pdfFootorEditText.setCursorVisible(true);
+                    pdfFootorEditText.setFocusableInTouchMode(true);
+                    pdfFootorEditText.requestFocus();
+                    SP.putInt(SettingActivity.this.getString(R.string.pdf_footer_switch), 1);
+                } else {
+                    pdfFooter = PdfImageFootersEnum.FOOTER_NO.getIndex();
+                    pdfFootorEditText.setCursorVisible(false);
+                    pdfFootorEditText.setFocusableInTouchMode(false);
+                    pdfFootorEditText.clearFocus();
+                    SP.putInt(SettingActivity.this.getString(R.string.pdf_footer_switch), 0);
+                }
+            }
+        });
+        pdfFootorSwitch.setChecked(pdfFooter != 0);
+
+        // 设置脚注内容的输入框事件
+        pdfFootorEditText.addTextChangedListener(new TextWatcher() {
+            String footor = null;
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                footor = SP.getString(SettingActivity.this.getString(R.string.pdf_image_footer_content), "");
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                footor = charSequence.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                SP.putString(SettingActivity.this.getString(R.string.pdf_image_footer_content), footor);
+            }
+        });
+        pdfFootorEditText.setText(SP.getString(SettingActivity.this.getString(R.string.pdf_image_footer_content), ""));
+
 
         // 设置图片显示选项
         NumberPicker pdfDisplayOnePagePicker = dialogLayout.findViewById(R.id.pdf_image_display_one_page_picker);
