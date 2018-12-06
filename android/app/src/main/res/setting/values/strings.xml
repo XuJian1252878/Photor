@@ -25,6 +25,7 @@
     <string name="pdf_image_no">否</string>
     <string name="pdf_image_watermark_content_label">水印内容</string>
     <string name="pdf_image_watermark_content_hint">水印文字</string>
+    <string name="pdf_image_watermark_text_size_label">水印字号</string>
 
     <string name="pdf_image_headers_label">头注</string>
     <string name="pdf_image_headers_content_label">头注内容</string>
@@ -34,9 +35,23 @@
     <string name="pdf_image_footer_content_label">脚注内容</string>
     <string name="pdf_image_footer_content_hint">脚注文字</string>
 
+    <string name="pdf_image_header_footer_text_size_label">头脚注字号</string>
+
     <string name="n_columns_folders">n_columns_folders</string>
     <string name="n_columns_media">n_columns_media</string>
     <string name="n_columns_folders_landscape">n_columns_folders_landscape</string>
     <string name="n_columns_media_landscape">n_columns_media_landscape</string>
+
+    <string name="pdf_image_tz_12">12</string>
+    <string name="pdf_image_tz_14">14</string>
+    <string name="pdf_image_tz_16">16</string>
+    <string name="pdf_image_tz_18">18</string>
+    <string name="pdf_image_tz_20">20</string>
+    <string name="pdf_image_tz_25">25</string>
+    <string name="pdf_image_tz_30">30</string>
+    <string name="pdf_image_tz_35">35</string>
+    <string name="pdf_image_tz_50">50</string>
+    <string name="pdf_image_tz_70">70</string>
+    <string name="pdf_image_tz_100">100</string>
 
 </resources>

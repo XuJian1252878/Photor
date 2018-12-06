@@ -332,6 +332,9 @@ public class FileUtils {
         // 显示水印相关
         boolean pdfWatermarkSwitch = SP.getInt(context.getString(R.string.pdf_watermark_switch), 0) != 0;
         String pdfImageWatermarkContent = SP.getString(context.getString(R.string.pdf_image_watermark_content), "");
+        // 水印文字大小
+        int watermarkTextSize = SP.getInt(context.getString(R.string.pdf_image_watermark_text_size), 12);
+        WATERMARK_FONT = new Font(CHINESE_FONT, watermarkTextSize, Font.NORMAL, GrayColor.GRAYWHITE);
 
         // 头注相关
         boolean pdfHeader = SP.getInt(context.getString(R.string.pdf_headers_switch), 0) != 0;

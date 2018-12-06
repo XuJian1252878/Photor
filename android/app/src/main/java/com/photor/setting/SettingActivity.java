@@ -10,10 +10,13 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -27,6 +30,7 @@ import com.photor.base.activity.BaseActivity;
 import com.photor.setting.event.PdfImageDisplayEnum;
 import com.photor.setting.event.PdfImageFootersEnum;
 import com.photor.setting.event.PdfImageHeadersEnum;
+import com.photor.setting.event.PdfTextSizeEnum;
 import com.photor.setting.event.PdfWatermarkEnum;
 import com.photor.util.AlertDialogsHelper;
 import com.shawnlin.numberpicker.NumberPicker;
@@ -299,6 +303,56 @@ public class SettingActivity extends BaseActivity {
         });
         pdfFootorEditText.setText(SP.getString(SettingActivity.this.getString(R.string.pdf_image_footer_content), ""));
 
+        List<String> pdfTextSizeList = new ArrayList<>();
+        for (PdfTextSizeEnum ptse: PdfTextSizeEnum.values()) {
+            String textSizeDesc = getString(ptse.getStringId());
+            pdfTextSizeList.add(textSizeDesc);
+        }
+        String[] pdfTextSizeArray = pdfTextSizeList.toArray(new String[pdfTextSizeList.size()]);
+
+        // 水印字号设置
+        Spinner pdfWatermarkSpinner = dialogLayout.findViewById(R.id.pdf_image_watermark_text_size_spinner);
+        ArrayAdapter<String> watermarkTzAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, pdfTextSizeArray);
+        watermarkTzAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        pdfWatermarkSpinner.setAdapter(watermarkTzAdapter);
+        pdfWatermarkSpinner.setVisibility(View.VISIBLE);
+        pdfWatermarkSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                int textSize = PdfTextSizeEnum.getTextSizeById(i);
+                SP.putInt(SettingActivity.this.getString(R.string.pdf_image_watermark_text_size), textSize);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        pdfWatermarkSpinner.setSelection(PdfTextSizeEnum.getIdByTextSize(
+                SP.getInt(getString(R.string.pdf_image_watermark_text_size),
+                PdfTextSizeEnum.TZ12.getTextSize())));
+
+        // 头脚注字号设置
+        Spinner pdfImageHeaderFooterSpinner = dialogLayout.findViewById(R.id.pdf_image_header_footer_text_size_spinner);
+        ArrayAdapter<String> FtTzAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, pdfTextSizeArray);
+        FtTzAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        pdfImageHeaderFooterSpinner.setAdapter(FtTzAdapter);
+        pdfImageHeaderFooterSpinner.setVisibility(View.VISIBLE);
+        pdfImageHeaderFooterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                int textSize = PdfTextSizeEnum.getTextSizeById(i);
+                SP.putInt(SettingActivity.this.getString(R.string.pdf_image_header_footer_text_size), textSize);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        pdfImageHeaderFooterSpinner.setSelection(PdfTextSizeEnum.getIdByTextSize(
+                SP.getInt(getString(R.string.pdf_image_header_footer_text_size),
+                        PdfTextSizeEnum.TZ12.getTextSize())));
 
         // 设置图片显示选项
         NumberPicker pdfDisplayOnePagePicker = dialogLayout.findViewById(R.id.pdf_image_display_one_page_picker);

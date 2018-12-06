@@ -23,4 +23,7 @@
     <string name="pdf_footer_switch">pdf_footer_switch</string>
     <string name="pdf_image_footer_content">pdf_image_footer_content</string>
 
+    <string name="pdf_image_watermark_text_size">pdf_image_watermark_text_size</string>
+    <string name="pdf_image_header_footer_text_size">pdf_image_header_footer_text_size</string>
+
 </resources>

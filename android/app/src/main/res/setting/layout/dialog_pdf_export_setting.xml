@@ -222,6 +222,46 @@
 
                     </LinearLayout>
 
+                    <!-- 水印字号大小调整 -->
+                    <LinearLayout
+                        android:padding="@dimen/card_elevation"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_weight="2"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="@string/pdf_image_watermark_text_size_label"
+                            android:textColor="@color/md_grey_400"/>
+
+                        <Spinner
+                            android:id="@+id/pdf_image_watermark_text_size_spinner"
+                            android:layout_weight="3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:layout_weight="2"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="@string/pdf_image_header_footer_text_size_label"
+                            android:textColor="@color/md_grey_400"/>
+
+                        <Spinner
+                            android:id="@+id/pdf_image_header_footer_text_size_spinner"
+                            android:layout_weight="3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+
 
                 </LinearLayout>
             </ScrollView>
