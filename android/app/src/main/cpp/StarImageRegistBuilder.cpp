@@ -46,7 +46,7 @@ StarImageRegistBuilder::StarImageRegistBuilder(Mat_<Vec3b>& targetImage, std::ve
     this->imageCount = (int)sourceImages.size() + 1;
 
     this->skyMaskMat = skyMaskMat;
-    this->skyBoundaryRange = (int)(skyMaskMat.rows * 0.005);
+    this->skyBoundaryRange = (int)(skyMaskMat.rows * 0.05);
 
     this->targetImage = targetImage;
     this->sourceImages = sourceImages;
@@ -240,8 +240,8 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart& sourceImagePart, Star
     Mat targetImg = targetImagePart.getImage(); // train image
 
     // 取出当前mask起始点的位置
-    int rMaskIndex = sourceImagePart.getRowPartIndex() * sourceImg.rows;
-    int cMaskIndex = sourceImagePart.getColumnPartIndex() * sourceImg.cols;
+    int rMaskIndex = sourceImagePart.getAlignStartRowIndex();
+    int cMaskIndex = sourceImagePart.getAlignStartColumnIndex();
 
 
 //        if( !sourceImg.data || !targetImg.data )
