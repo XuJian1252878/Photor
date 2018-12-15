@@ -144,7 +144,7 @@ Mat_<Vec3b> superimposedImg(vector<Mat_<Vec3b>>& images, Mat_<Vec3b>& trainImg) 
         // 生成匹配点信息
         FlannBasedMatcher matcher;
         std::vector< vector<DMatch> > knnMatches;
-        matcher.knnMatch(trainDescriptors, queryDescriptors, knnMatches, 2);
+        matcher.knnMatch(queryDescriptors, trainDescriptors, knnMatches, 2);
 
         // 筛选符合条件的特征点信息（最近邻次比率法）
         std::vector<DMatch> matches;
@@ -155,8 +155,8 @@ Mat_<Vec3b> superimposedImg(vector<Mat_<Vec3b>>& images, Mat_<Vec3b>& trainImg) 
             if (firstMatch.distance < 0.75 * secondMatch.distance) {
                 matches.push_back(firstMatch);
 
-                trainMatchPoints.push_back(trainKeyPoints[firstMatch.queryIdx].pt);
-                queryMatchPoints.push_back(queryKeyPoints[firstMatch.trainIdx].pt);
+                queryMatchPoints.push_back(trainKeyPoints[firstMatch.queryIdx].pt);
+                trainMatchPoints.push_back(queryKeyPoints[firstMatch.trainIdx].pt);
             }
         }
 
@@ -198,7 +198,7 @@ Mat_<Vec3b> superimposedImg(Mat_<Vec3b>& queryImg, Mat_<Vec3b>& trainImg) {
     // 生成匹配点信息
     FlannBasedMatcher matcher;
     std::vector<vector<DMatch> > knnMatches;
-    matcher.knnMatch(trainDescriptors, queryDescriptors, knnMatches, 2);
+    matcher.knnMatch(queryDescriptors, trainDescriptors, knnMatches, 2);
 
     // 筛选符合条件的特征点信息（最近邻次比率法）
     std::vector<DMatch> matches;
@@ -209,8 +209,8 @@ Mat_<Vec3b> superimposedImg(Mat_<Vec3b>& queryImg, Mat_<Vec3b>& trainImg) {
         if (firstMatch.distance < 0.75 * secondMatch.distance) {
             matches.push_back(firstMatch);
 
-            trainMatchPoints.push_back(trainKeyPoints[firstMatch.queryIdx].pt);
-            queryMatchPoints.push_back(queryKeyPoints[firstMatch.trainIdx].pt);
+            queryMatchPoints.push_back(trainKeyPoints[firstMatch.queryIdx].pt);
+            trainMatchPoints.push_back(queryKeyPoints[firstMatch.trainIdx].pt);
         }
     }
 
