@@ -211,17 +211,39 @@ void StarImageRegistBuilder::registration_internal(StarImage& resultStarImage, i
                 Mat homo;
                 bool existHomo = false;
 
-                Mat tmpRegistMat = this->getImgTransform(tmpStarImage.getStarImagePart(rPartIndex, cPartIndex),
-                                                         this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex), homo, existHomo);
+                // -------
+                int rMaskIndexStart = this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getAlignStartRowIndex();
+                int rMaskIndexEnd = this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getAlignEndRowIndex() - 1;
+                int cMaskIndexMiddle = (this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getAlignStartColumnIndex()
+                                        + this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getAlignEndColumnIndex()) / 2;
+                int maskStartPixelValue = this->skyMaskMat.at<uchar>(rMaskIndexStart, cMaskIndexMiddle);
+                int maskEndPixelValue = this->skyMaskMat.at<uchar>(rMaskIndexEnd - ((rMaskIndexEnd - rMaskIndexStart) >> 2), cMaskIndexMiddle);
 
-//                Mat_<Vec3b>& queryImgTransform = this->sourceImages[index];  // 按照这种逻辑来看，原始图片在经过射影变换之后，在边缘处还是会出现黑边，这样子就无法弥补了。
-//                if (existHomo) {
-//                    queryImgTransform = getTransformImgByHomo(queryImgTransform, homo);
-//                } else {
-//                    queryImgTransform = this->targetImage;
-//                }
-                Mat_<Vec3b>& queryImgTransform = this->targetImage;
-                resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(tmpRegistMat, queryImgTransform, this->skyMaskMat, this->imageCount);
+                if (maskStartPixelValue > 127 && maskEndPixelValue > 127) {
+                    Mat tmpRegistMat = this->getImgTransform(tmpStarImage.getStarImagePart(rPartIndex, cPartIndex),
+                                                             this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex), homo, existHomo);
+
+                    Mat_<Vec3b>& queryImgTransform = this->targetImage;
+                    resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(tmpRegistMat, queryImgTransform, this->skyMaskMat, this->imageCount);
+                } else {
+                    resultStarImage.getStarImagePart(rPartIndex, cPartIndex)
+                            .addImagePixelValue(
+                                    this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage(),
+                                    this->imageCount);
+                }
+
+//                Mat tmpRegistMat = this->getImgTransform(tmpStarImage.getStarImagePart(rPartIndex, cPartIndex),
+//                                                         this->targetStarImage.getStarImagePart(rPartIndex, cPartIndex), homo, existHomo);
+//
+////                Mat_<Vec3b>& queryImgTransform = this->sourceImages[index];  // 按照这种逻辑来看，原始图片在经过射影变换之后，在边缘处还是会出现黑边，这样子就无法弥补了。
+////                if (existHomo) {
+////                    queryImgTransform = getTransformImgByHomo(queryImgTransform, homo);
+////                } else {
+////                    queryImgTransform = this->targetImage;
+////                }
+//                Mat_<Vec3b>& queryImgTransform = this->targetImage;
+//                resultStarImage.getStarImagePart(rPartIndex, cPartIndex).addImagePixelValue(tmpRegistMat, queryImgTransform, this->skyMaskMat, this->imageCount);
+                tmpStarImage.getStarImagePart(rPartIndex, cPartIndex).getImage().release();
                 LOGD("rPartIndex %d, index %d, cPartIndex %d. End", rPartIndex, index, cPartIndex);
             }
         }
