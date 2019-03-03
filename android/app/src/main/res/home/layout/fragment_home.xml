@@ -1,59 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fbutton="http://schemas.android.com/tools"
     android:orientation="vertical"
+    android:background="@color/grey"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingBottom="?attr/actionBarSize">
 
-    <TextView
-        android:text="home"
-        android:textColor="@color/colorPrimary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"/>
-
-
-    <Button
-        android:id="@+id/opencv_test"
-        android:text="opencv 测试"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"/>
+    <!--<TextView-->
+        <!--android:text="home"-->
+        <!--android:textColor="@color/colorPrimary"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center_vertical"/>-->
 
 
-    <Button
-        android:id="@+id/star_align_enter_btn"
-        android:text="@string/star_align_enter_btn_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <!--<Button-->
+        <!--android:id="@+id/opencv_test"-->
+        <!--android:text="opencv 测试"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center_vertical"/>-->
 
-    <Button
-        android:id="@+id/dof_calc_enter_btn"
-        android:text="@string/dof_calc_enter_btn_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <!--<Button-->
+        <!--android:id="@+id/image_scanner"-->
+        <!--android:text="@string/image_scanner_label"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content" />-->
 
-    <Button
-        android:id="@+id/exposure_enter_btn"
-        android:text="@string/exposure_enter_btn_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <!--<Button-->
+        <!--android:id="@+id/image_edit"-->
+        <!--android:text="@string/image_edit_enter_label"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content" />-->
 
-    <Button
-        android:id="@+id/image_scanner"
-        android:text="@string/image_scanner_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/image_edit"
-        android:text="@string/image_edit_enter_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/focus_stack_btn"
-        android:text="@string/image_focus_stack_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:src="@drawable/home_page_image_item_view"
+                android:layout_width="@dimen/home_page_image_view_size"
+                android:layout_height="@dimen/home_page_image_view_size" />
+
+            <info.hoang8f.widget.FButton
+                android:id="@+id/star_align_enter_btn"
+                android:text="@string/star_align_enter_btn_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/sub_medium_spacing"
+                android:textColor="@color/white"
+                android:background="@color/blue_dark"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="2dp"
+                fbutton:cornerRadius="15dp"
+                android:layout_marginBottom="@dimen/share_cell_text_margin"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_height="match_parent">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:src="@drawable/home_page_image_item_view"
+                android:layout_width="@dimen/home_page_image_view_size"
+                android:layout_height="@dimen/home_page_image_view_size" />
+
+            <info.hoang8f.widget.FButton
+                android:id="@+id/dof_calc_enter_btn"
+                android:text="@string/dof_calc_enter_btn_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/sub_medium_spacing"
+                android:textColor="@color/white"
+                android:background="@color/blue_dark"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="2dp"
+                fbutton:cornerRadius="15dp"
+                android:layout_marginBottom="@dimen/share_cell_text_margin"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:layout_height="match_parent"
+            >
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:src="@drawable/home_page_image_item_view"
+                android:layout_width="@dimen/home_page_image_view_size"
+                android:layout_height="@dimen/home_page_image_view_size" />
+
+            <info.hoang8f.widget.FButton
+                android:id="@+id/exposure_enter_btn"
+                android:text="@string/exposure_enter_btn_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/sub_medium_spacing"
+                android:textColor="@color/white"
+                android:background="@color/blue_dark"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="2dp"
+                fbutton:cornerRadius="15dp"
+                android:layout_marginBottom="@dimen/share_cell_text_margin"
+                />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:layout_height="match_parent"
+            >
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:src="@drawable/home_page_image_item_view"
+                android:layout_width="@dimen/home_page_image_view_size"
+                android:layout_height="@dimen/home_page_image_view_size" />
+
+            <info.hoang8f.widget.FButton
+                android:id="@+id/focus_stack_btn"
+                android:text="@string/image_focus_stack_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/sub_medium_spacing"
+                android:textColor="@color/white"
+                android:background="@color/blue_dark"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="2dp"
+                fbutton:cornerRadius="15dp"
+                android:layout_marginBottom="@dimen/share_cell_text_margin"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -58,24 +58,30 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // opencv android sdk 测试函数
-        Button opencvTestButton = rootView.findViewById(R.id.opencv_test);
-        opencvTestButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(checkPermission(Manifest.permission.CAMERA,REQUEST_PERMISSION))
-                    init();
-            }
-        });
+//        // opencv android sdk 测试函数
+//        Button opencvTestButton = rootView.findViewById(R.id.opencv_test);
+//        opencvTestButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(checkPermission(Manifest.permission.CAMERA,REQUEST_PERMISSION))
+//                    init();
+//            }
+//        });
 
-        // 星空图片测试
+        // 星空图片对齐按钮
         rootView.findViewById(R.id.star_align_enter_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 不动态申请权限的话，之后的写文件操作会失败。
-                if (PermissionsUtils.checkCameraPermission(HomeFragment.this, REQUEST_CAMERA_PERMISSION_STAR_ALIGN)) {
-                    startStarAlign();
-                }
+
+                enterModuleActivity(new LoadingActivityEffect() {
+                    @Override
+                    public void effect() {
+                        // 不动态申请权限的话，之后的写文件操作会失败。
+                        if (PermissionsUtils.checkCameraPermission(HomeFragment.this, REQUEST_CAMERA_PERMISSION_STAR_ALIGN)) {
+                            startStarAlign();
+                        }
+                    }
+                });
             }
         });
 
@@ -83,7 +89,13 @@ public class HomeFragment extends Fragment {
         rootView.findViewById(R.id.dof_calc_enter_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDofCalc();
+
+                enterModuleActivity(new LoadingActivityEffect() {
+                    @Override
+                    public void effect() {
+                        startDofCalc();
+                    }
+                });
             }
         });
 
@@ -91,33 +103,49 @@ public class HomeFragment extends Fragment {
         rootView.findViewById(R.id.exposure_enter_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (PermissionsUtils.checkCameraPermission(HomeFragment.this, REQUEST_CAMERA_PERMISSION_EXPOSURE)) {
-                    startExposure();
-                }
+
+                enterModuleActivity(new LoadingActivityEffect() {
+                    @Override
+                    public void effect() {
+                        if (PermissionsUtils.checkCameraPermission(HomeFragment.this, REQUEST_CAMERA_PERMISSION_EXPOSURE)) {
+                            startExposure();
+                        }
+                    }
+                });
             }
         });
 
         // 图片信息扫描
-        rootView.findViewById(R.id.image_scanner).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startImageScanner();
-            }
-        });
+//        rootView.findViewById(R.id.image_scanner).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startImageScanner();
+//            }
+//        });
 
-        // 测试图片编辑功能
-        rootView.findViewById(R.id.image_edit).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startImageEdit();
-            }
-        });
+        // 图片编辑功能
+//        rootView.findViewById(R.id.image_edit).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                enterModuleActivity(new LoadingActivityEffect() {
+//                    @Override
+//                    public void effect() {
+//                        startImageEdit();
+//                    }
+//                });
+//            }
+//        });
 
         // 景深合成
         rootView.findViewById(R.id.focus_stack_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startFocusStack();
+                enterModuleActivity(new LoadingActivityEffect() {
+                    @Override
+                    public void effect() {
+                        startFocusStack();
+                    }
+                });
             }
         });
 
@@ -226,4 +254,15 @@ public class HomeFragment extends Fragment {
     private void startFocusStack() {
         startActivity(new Intent(getActivity(), FocusStackActivity.class));
     }
+
+    // 用于进入各功能模块的Activity
+    private void enterModuleActivity(LoadingActivityEffect loadingActivityEffect) {
+        // 进入各个module的activity
+        loadingActivityEffect.effect();
+    }
+}
+
+// 用来进行加载进入新的Activity效果的接口
+interface LoadingActivityEffect {
+    public void effect();
 }

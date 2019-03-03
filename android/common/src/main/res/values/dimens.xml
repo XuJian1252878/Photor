@@ -36,6 +36,9 @@
     <dimen name="zero">0dp</dimen>
     <dimen name="display_text_min_height">32dp</dimen>
 
+    <!-- 首页主功能说明图片大小 -->
+    <dimen name="home_page_image_view_size">180dp</dimen>
+
     <!---->
     <dimen name="setting_margin_end">44dp</dimen>
 

@@ -127,6 +127,10 @@ public class TextStickerView extends View {
         mHelpPaint.setStrokeWidth(4);
     }
 
+    /**
+     * 文字发生变化，重新设置文字
+     * @param text
+     */
     public void setText(String text) {
         this.mText = text;
         invalidate();
@@ -153,7 +157,7 @@ public class TextStickerView extends View {
         if (TextUtils.isEmpty(mText))
             return;
 
-        parseText();
+        parseText();  // 将文字进行分行操作，存储于mTextContents
         drawContent(canvas);
     }
 

@@ -188,6 +188,7 @@ public class EditImageActivity extends BaseActivity {
             bottomGallery.getAdapter().notifyDataSetChanged();
             // 说明是在空白的bitmap上进行编辑
             String emptyBitmapPath = FileUtils.generateImgAbsPath();
+            // 需要完善，用户可设置
             int width = 3024;
             int height = 4032;
             Bitmap.Config conf = Bitmap.Config.ARGB_8888;
