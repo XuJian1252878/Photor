@@ -49,7 +49,7 @@
             android:layout_height="match_parent">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:src="@drawable/home_page_image_item_view"
+                android:src="@drawable/home_page_star_align"
                 android:layout_width="@dimen/home_page_image_view_size"
                 android:layout_height="@dimen/home_page_image_view_size" />
 

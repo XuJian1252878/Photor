@@ -125,7 +125,7 @@ public class MainActivity extends BaseActivity {
         mDrawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navView = findViewById(R.id.left_main_nav_view);
         // 设置默认选中
-        navView.setCheckedItem(R.id.nav_call);
+        navView.setCheckedItem(R.id.nav_friends);
         navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             Intent intent;
             @Override

@@ -4,11 +4,11 @@
 
     <!-- 表示一个菜单组，一个菜单组只能单选 -->
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_call"
-            android:icon="@drawable/nav_call"
-            android:title="Call">
-        </item>
+        <!--<item-->
+            <!--android:id="@+id/nav_call"-->
+            <!--android:icon="@drawable/nav_call"-->
+            <!--android:title="Call">-->
+        <!--</item>-->
 
         <item
             android:id="@+id/nav_friends"
@@ -28,11 +28,11 @@
             android:title="Mail">
         </item>
 
-        <item
-            android:id="@+id/nav_task"
-            android:icon="@drawable/nav_task"
-            android:title="Task">
-        </item>
+        <!--<item-->
+            <!--android:id="@+id/nav_task"-->
+            <!--android:icon="@drawable/nav_task"-->
+            <!--android:title="Task">-->
+        <!--</item>-->
 
         <item
             android:id="@+id/ll_drawer_trashbin"
