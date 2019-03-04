@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fbutton="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:background="@color/grey"
+    android:background="@drawable/fragment_home_bgknd"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="?attr/actionBarSize">
@@ -76,7 +76,7 @@
             android:layout_height="match_parent">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:src="@drawable/home_page_image_item_view"
+                android:src="@drawable/home_page_dof_calc"
                 android:layout_width="@dimen/home_page_image_view_size"
                 android:layout_height="@dimen/home_page_image_view_size" />
 
@@ -141,7 +141,7 @@
             >
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:src="@drawable/home_page_image_item_view"
+                android:src="@drawable/home_page_focus_stack"
                 android:layout_width="@dimen/home_page_image_view_size"
                 android:layout_height="@dimen/home_page_image_view_size" />
 
