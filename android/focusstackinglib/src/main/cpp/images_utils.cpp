@@ -85,6 +85,32 @@ namespace images_utils {
         return opencv_matrix;
     }
 
+    cv::Mat matrix2CvMat(Matrix<uint8_t>& matrix, cv::Mat image) {
+        int channels = image.channels();
+        cv::Mat opencv_matrix;
+
+        switch (channels) {
+            case 1 :
+                opencv_matrix = cv::Mat(matrix.getShape().y, matrix.getShape().x, CV_8UC1);
+                break;
+            case 3 :
+                opencv_matrix = cv::Mat(matrix.getShape().y, matrix.getShape().x, CV_8UC3);
+                break;
+        }
+
+
+        for (size_t row = 0; row < matrix.getShape().y; row++) {
+            uint8_t* opencv_matrix_row_pointer = opencv_matrix.ptr(row);
+            for (size_t col = 0; col < matrix.getShape().x; col++) {
+                for (size_t channel = 0; channel < channels; channel++) {
+                    opencv_matrix_row_pointer[col * channels + channel] = matrix.at(col, row, channelBGR2RGB(channel, channels));
+                }
+            }
+        }
+
+        return opencv_matrix;
+    }
+
     short channelBGR2RGB(short BGR_channel, short channels_num) {
         return channels_num - BGR_channel - 1;
     }

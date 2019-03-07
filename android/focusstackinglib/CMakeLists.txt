@@ -171,6 +171,8 @@ add_library( # Sets the name of the library.
              src/main/cpp/images_utils.cpp
              src/main/cpp/laplacian_kernel.cpp
              src/main/cpp/shape.cpp
+             src/main/cpp/laplacian_blending.cpp
+             src/main/cpp/focus_stack_main.cpp
              src/main/cpp/focus_stack_processing.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a

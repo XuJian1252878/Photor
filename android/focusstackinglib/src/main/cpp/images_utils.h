@@ -14,6 +14,8 @@ namespace images_utils {
     
     Matrix<uint8_t> cvMat2Matrix(cv::Mat& opencv_matrix);
     cv::Mat matrix2CvMat(Matrix<uint8_t>& matrix);
+
+    cv::Mat matrix2CvMat(Matrix<uint8_t>& matrix, cv::Mat image);
     
     short channelBGR2RGB(short BGR_channel, short channels_num);
     bool dirExists(std::string dir_path);

@@ -12,6 +12,7 @@ sigma(sigma)
     generate1DKernel(kernel_size, sigma);
 }
 
+// 生成二维高斯模版的具体数值
 void GaussianKernel::generate2DKernel(unsigned short kernel_size, float sigma) {
     int kernel_reach = (kernel_size - 1) / 2;
     kernel_values.resize(kernel_size * kernel_size);
@@ -62,4 +63,11 @@ float GaussianKernel::at1D(int idx) {
 
 bool GaussianKernel::isSeparableInto1D() {
     return true;
+}
+
+void GaussianKernel::changeMultiple(float multiple) {
+
+    for (int index = 0; index < kernel_values.size(); index ++) {
+        kernel_values[index] = kernel_values[index] * multiple;
+    }
 }

@@ -17,6 +17,7 @@ import java.util.List;
 public class FocusStackProcessing {
 
     private static final String TAG = "FocusStack";
+    private static native boolean nativeFocusStackImage(List<String> inputImagePaths, long outAddr, int bg_threshold, short kernels_size, float gaussian_sigma, String resImagePath);
 
     // 加载native代码库
     static {
@@ -60,11 +61,10 @@ public class FocusStackProcessing {
      * 景深合成的native函数
      * @param inputImagePaths
      * @param outAddr
-     * @param bg_threshold
      * @param kernels_size
      * @param gaussian_sigma
      * @return
      */
-    private static native boolean nativeFocusStackImage(List<String> inputImagePaths, long outAddr, int bg_threshold, short kernels_size, float gaussian_sigma, String resImagePath);
+    private static native boolean nativeFocusStackImage1(List<String> inputImagePaths, long outAddr, short kernels_size, float gaussian_sigma, String resImagePath);
 
 }

@@ -20,4 +20,6 @@ class GaussianKernel : public FilterKernel {
 
         float at1D(int idx) override;
         bool isSeparableInto1D() override;
+
+        void changeMultiple(float multiple);
 };
