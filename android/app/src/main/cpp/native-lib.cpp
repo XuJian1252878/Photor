@@ -394,8 +394,8 @@ Java_com_photor_home_staralign_task_StarPhotoAlignThread_alignStarPhotosCompress
     resSkyMat_.copyTo(resSkyMat, skyMaskImg);
 
     // 对地面部分进行对齐操作
-    Mat_<Vec3b> resGroundMat = superimposedImg(groundSourceImages, groundTargetImg);
-    imwrite(generateImgAbsPath, resGroundMat);
+    Mat_<Vec3b> resGroundMat = addMeanImgs(groundSourceImages, groundTargetImg);
+//    imwrite(generateImgAbsPath, resGroundMat);
 
     // 分别整合星空和地面部分的图片
     Mat_<Vec3b> resultImage = resSkyMat | resGroundMat;

@@ -397,7 +397,7 @@ Mat StarImageRegistBuilder::getImgTransform(StarImagePart& sourceImagePart, Star
     Mat img_matches;
     drawMatches( sourceImg, keypoints_1, targetImg, keypoints_2, matches, img_matches );
 
-    int IMG_MATCH_POINT_THRESHOLD = 10;  // 这里是个做文章的地方
+    int IMG_MATCH_POINT_THRESHOLD = 10;
 
     // 对应图片部分中没有特征点的情况（导致计算出的映射关系不佳，至少要4对匹配点才能计算出匹配关系）
     if (imagePoints1.size() >= IMG_MATCH_POINT_THRESHOLD && imagePoints2.size() < IMG_MATCH_POINT_THRESHOLD) {

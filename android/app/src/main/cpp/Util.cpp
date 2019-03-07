@@ -30,6 +30,20 @@ Mat_<Vec3b> addMeanImgs(std::vector<Mat_<Vec3b>>& sourceImages) {
     return resImage;
 }
 
+Mat_<Vec3b> addMeanImgs(std::vector<Mat_<Vec3b>>& sourceImages, Mat_<Vec3b>& targetImage) {
+    Mat_<Vec3b> resImage;
+    if (sourceImages.size() <= 0) {
+        return resImage;
+    }
+
+    sourceImages.push_back(targetImage);
+    resImage = Mat(sourceImages[0].rows, sourceImages[0].cols, sourceImages[0].type());
+    for (int index = 0; index < sourceImages.size(); index ++) {
+        resImage += (sourceImages[index] / sourceImages.size());
+    }
+    return resImage;
+}
+
 /**
  * 对一组图像进行图像配准操作
  * @param images 引用参数，函数调用后每幅图像都为配准之后的图像
