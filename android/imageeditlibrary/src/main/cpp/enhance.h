@@ -17,5 +17,4 @@ extern "C" {
     void adjustVignette(cv::Mat &inp, cv::Mat &out, int val);
     void adjustSharpness(cv::Mat &inp, cv::Mat &out, int val);
     void adjustBlur(cv::Mat &inp, cv::Mat &out, int val);
-    void applyGammaEffect(cv::Mat &inp, cv::Mat &out, int val);
 }

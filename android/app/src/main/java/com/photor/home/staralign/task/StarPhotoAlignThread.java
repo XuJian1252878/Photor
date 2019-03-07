@@ -65,7 +65,7 @@ public class StarPhotoAlignThread extends Thread {
 //        alignResFlag = alignStarPhotos(starPhotos, alignBasePhotoIndex, alignResMatAddr, maskImgPath, generateImgAbsPath);
 
         // 如果原始图片过大，那么对原始图片进行压缩
-        List<Bitmap> bitmapList = ImageUtils.getCompressedImage(starPhotos, 5);
+        List<Bitmap> bitmapList = ImageUtils.getCompressedImage(starPhotos, 2);
         ArrayList<Long> matNativeAddrList = new ArrayList<>();
         List<Mat> matList = new ArrayList<>();
         for (int index = 0; index < bitmapList.size(); index ++) {
