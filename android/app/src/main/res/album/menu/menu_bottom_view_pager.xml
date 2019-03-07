@@ -15,12 +15,12 @@
         android:icon="@drawable/ic_mode_edit_white"
         android:title="Edit"/>
 
-    <item
-        android:id="@+id/action_crop"
-        android:orderInCategory="2"
-        android:icon="@drawable/ic_crop"
-        app:showAsAction="always"
-        android:title="Crop"/>
+    <!--<item-->
+        <!--android:id="@+id/action_crop"-->
+        <!--android:orderInCategory="2"-->
+        <!--android:icon="@drawable/ic_crop"-->
+        <!--app:showAsAction="always"-->
+        <!--android:title="Crop"/>-->
 
     <item
             android:id="@+id/action_slideshow"

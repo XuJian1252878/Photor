@@ -166,7 +166,7 @@ public class MainActivity extends BaseActivity {
 
         // 测试BottomNavigationView的小气泡功能
         // add badge
-        addBadgeAt(2, 1);
+//        addBadgeAt(2, 1);
 
         // 4. 设置主页面的ViewPager
         mMainViewPager.setAdapter(new MainViewPagerAdapter(getSupportFragmentManager()));

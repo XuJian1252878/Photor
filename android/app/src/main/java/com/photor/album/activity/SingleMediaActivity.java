@@ -330,7 +330,7 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
             bottomMenu.findItem(R.id.action_share).setVisible(false);
             bottomMenu.findItem(R.id.restore_action).setVisible(true);
             bottomMenu.findItem(R.id.action_details).setVisible(false);
-            bottomMenu.findItem(R.id.action_crop).setVisible(false);
+//            bottomMenu.findItem(R.id.action_crop).setVisible(false);
         }
 
         // 将ActionMenuView的点击事件跟OptionMenuItem的一起绑定起来，然后一起处理点击事件
@@ -469,12 +469,12 @@ public class SingleMediaActivity extends BaseActivity implements ImageAdapter.On
                 exifIntent.putExtra(EXTRA_IS_SAVED_CROP_RES, false);  // 说明不是经过裁剪之后的图片
                 startActivity(exifIntent);
                 return true;
-            case R.id.action_crop:
-                handler.removeCallbacks(slideShowRunnable);
-                Intent cropIntent = new Intent(SingleMediaActivity.this, ImageCropActivity.class);
-                cropIntent.putExtra(EXTRA_ORI_IMG_PATH, pathForDescription);
-                startActivity(cropIntent);
-                return true;
+//            case R.id.action_crop:
+//                handler.removeCallbacks(slideShowRunnable);
+//                Intent cropIntent = new Intent(SingleMediaActivity.this, ImageCropActivity.class);
+//                cropIntent.putExtra(EXTRA_ORI_IMG_PATH, pathForDescription);
+//                startActivity(cropIntent);
+//                return true;
             case R.id.action_edit:
                 imgEditResPath = FileUtils.generateImgEditResPath();  // 生成编辑后结果图片的位置
                 EditImageActivity.start(this, pathForDescription, imgEditResPath, REQUEST_ACTION_EDITIMAGE);
