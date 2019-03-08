@@ -1,7 +1,6 @@
 package com.photor.home.focusstack;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -25,11 +24,13 @@ import com.example.photopicker.PhotoPicker;
 import com.example.photopicker.PhotoPreview;
 import com.example.preference.PreferenceUtil;
 import com.example.theme.ThemeHelper;
+import com.ontbee.legacyforks.cn.pedant.SweetAlert.SweetAlertDialog;
 import com.photor.R;
 import com.photor.base.activity.PhotoOperateBaseActivity;
 import com.photor.base.adapters.PhotoAdapter;
 import com.photor.base.adapters.event.PhotoItemClickListener;
 import com.photor.home.exposure.event.ExposureEnum;
+import com.photor.home.exposure.task.ExposureMergeThread;
 import com.photor.home.focusstack.event.FocusStackEnum;
 import com.photor.util.AlertDialogsHelper;
 import com.xw.repo.BubbleSeekBar;
@@ -321,19 +322,36 @@ public class FocusStackActivity extends PhotoOperateBaseActivity {
                 ThemeHelper.getAccentColor(this), dialog);
     }
 
+
     /**
      * 进行景深合成的任务
      */
     private class FocusStackTask extends AsyncTask<Void, Void, Bitmap> {
-        private Dialog dialog;
+//        private Dialog dialog;
+        private SweetAlertDialog focusStackProcessDialog;
+        boolean isCancel = false;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             resFocusStackPath = FileUtils.generateImgAbsPath();
-            dialog = AlertDialogsHelper.getLoadingDialog(FocusStackActivity.this,
-                    getResources().getString(R.string.loading), false);
-            dialog.show();
+//            dialog = AlertDialogsHelper.getLoadingDialog(FocusStackActivity.this,
+//                    getResources().getString(R.string.loading), false);
+//            dialog.show();
+            focusStackProcessDialog = new SweetAlertDialog(FocusStackActivity.this, SweetAlertDialog.PROGRESS_TYPE);
+            focusStackProcessDialog.setTitleText(FocusStackActivity.this.getString(R.string.focus_stack_dialog_title));  // 设置对话框title
+            focusStackProcessDialog.getProgressHelper().setBarColor(ThemeHelper.getPrimaryColor(FocusStackActivity.this));// 设置对话框进度条颜色
+            focusStackProcessDialog.setContentText(FocusStackActivity.this.getString(R.string.loading))
+                    .setCancelText("取消景深合成操作")
+                    .showCancelButton(true)
+                    .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            isCancel = true;
+                            focusStackProcessDialog.dismiss();
+                        }
+                    })
+                    .show();
         }
 
         @Override
@@ -348,9 +366,9 @@ public class FocusStackActivity extends PhotoOperateBaseActivity {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             super.onPostExecute(bitmap);
-            if (bitmap != null) {
+            if (bitmap != null && !isCancel) {
 //                FileUtils.saveImgBitmap(resFocusStackPath, bitmap);  // native代码中已经存储了景深合成的图像，所以不需要存储第二次
-                dialog.dismiss();
+                focusStackProcessDialog.dismiss();
                 // 开启显示结果图片的Activity
                 FocusStackOperator.builder()
                         .setFocusStackResPath(resFocusStackPath)
@@ -359,7 +377,7 @@ public class FocusStackActivity extends PhotoOperateBaseActivity {
                         .start(FocusStackActivity.this);
 
             } else {
-                dialog.dismiss();
+                focusStackProcessDialog.dismiss();
                 Toast.makeText(FocusStackActivity.this,
                         ExposureEnum.EXPOSURE_MERGE_FAILED.getMessage(),
                         Toast.LENGTH_SHORT).show();
